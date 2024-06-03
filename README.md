@@ -14,16 +14,10 @@ An app for all FIFA players or any other soccer game.
 
 ---
 
-### :gear: .ENV exemplo
-
-to run this app, you need an **.ENV** file, here is an example.
-
----
-
 ### :star: Compilação Bundle release da loja android
 
 ```sh
-    flutter build appbundle --dart-define-from-file=.env
+    flutter build appbundle
 ```
 
 ---
@@ -31,7 +25,7 @@ to run this app, you need an **.ENV** file, here is an example.
 ### :star2: Compilação APK release com ofuscação de codigo
 
 ```sh
-    flutter build apk --split-per-abi --release --dart-define-from-file=.env
+    flutter build apk --split-per-abi --release
 ```
 
 ---
@@ -42,7 +36,7 @@ to run this app, you need an **.ENV** file, here is an example.
     flutter pub run flutter_native_splash:create
     flutter pub run flutter_launcher_icons
     flutter pub run build_runner build
-    flutter run --dart-define-from-file=.env
+    flutter run
 ```
 
 ## :bulb: Caso algo não estiver funcionando adequadamente
@@ -53,7 +47,7 @@ to run this app, you need an **.ENV** file, here is an example.
     flutter pub run flutter_native_splash:create
     flutter pub run flutter_launcher_icons
     flutter pub run build_runner build --delete-conflicting-outputs
-    flutter run --dart-define-from-file=.env
+    flutter run
 ```
 
 ---
