@@ -1,0 +1,25 @@
+{
+  "pages": {
+    "home": {
+      "app_bar": "Tipo de jogo",
+      "solo": "Solo",
+      "solo_help": "Sorteie seu time e o time da 'máquina' automaticamente!",
+      "x1": "X1",
+      "x1_help": "Sorteie seu time e o de seu amigo!",
+      "tournament": "Torneio",
+      "tournament_help": "Crie uma ligua própria para jogar com seus amigos!"
+    },
+    "result_raffle": {
+      "app_bar": "Resultado do Sorteio",
+      "title": "Você sorteou 2 times, e agora está prestes a se divertir com seus amigos jogando com times aleatorio.",
+      "player1": "Jogador 1",
+      "player2": "Jogador 2",
+      "machine": "Máquina"
+    }
+  },
+  "routes": {
+    "app_bar": "Tela não encontrada",
+    "title": "Erro 404",
+    "subtitle": "Oppss, parece que essa tela não existe!"
+  }
+}

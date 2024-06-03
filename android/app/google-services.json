@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "225717618575",
+    "project_id": "fc-teams-drawer",
+    "storage_bucket": "fc-teams-drawer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225717618575:android:77e3c81344e2e0690eedfa",
+        "android_client_info": {
+          "package_name": "dev.tiagobruckmann.fc_teams_drawer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBG2UpdimWRZ1gV07RP2insJjwR16_f3Zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
