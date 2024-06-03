@@ -50,4 +50,10 @@
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 	</dict>
+
+	<key>NSCameraUsageDescription</key>
+    <string>We would like to access your camera to raffle your teams.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We would like to access your camera to raffle your teams.</string>
+
 </plist>
