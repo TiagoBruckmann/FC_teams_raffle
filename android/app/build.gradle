@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         applicationId "dev.tiagobruckmann.fc_teams_drawer"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
