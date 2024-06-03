@@ -23,9 +23,9 @@ class Themes {
   // .****************
   static const DividerThemeData _dividerThemeDataDark = DividerThemeData(
     color: _secondaryColorDark,
-    indent: 16,
-    endIndent: 16,
-    thickness: 2,
+    indent: 10,
+    endIndent: 10,
+    thickness: 1,
   );
 
   static const TextStyle _headlineLargeTextDark = TextStyle(
@@ -78,6 +78,7 @@ class Themes {
     appBarTheme: const AppBarTheme(
       backgroundColor: _primaryColorDark,
       centerTitle: true,
+      titleTextStyle: _displaySmallTextDark,
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarBrightness: Brightness.light,
         statusBarColor: _primaryColorDark,

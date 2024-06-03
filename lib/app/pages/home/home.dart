@@ -1,3 +1,4 @@
+import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 import 'package:fc_teams_drawer/app/pages/home/mobx/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -23,6 +24,14 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric( horizontal: 16 ),
             child: Column(
               children: [
+
+                Padding(
+                  padding: const EdgeInsets.only( bottom: 60 ),
+                  child: Image.asset(
+                    AppImages.logoPng,
+                    height: 200,
+                  ),
+                ),
 
                 SizedBox(
                   width: double.maxFinite,

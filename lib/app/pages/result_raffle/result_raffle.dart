@@ -28,39 +28,53 @@ class ResultRaffle extends StatelessWidget {
                 padding: const EdgeInsets.only( top: 20, bottom: 40),
                 child: Text(
                   FlutterI18n.translate(context, "pages.result_raffle.title"),
-                  style: theme.textTheme.headlineLarge,
+                  style: theme.textTheme.displaySmall?.apply(
+                    letterSpacingDelta: 2.5,
+                  ),
                 ),
               ),
 
               for ( int i = 0; i < listTeams.length; i++ )
-                ListTile(
-                  leading: Image.asset(
-                    "assets/img/teams/${listTeams[i].logo}.png",
-                    height: 40,
-                  ),
-                  title: Text(
-                    FlutterI18n.translate(context, "pages.result_raffle.${( i > 0 && isSolo )
-                      ? "machine"
-                      : "player${i + 1}"}",
+                Column(
+                  children: [
+
+                    ListTile(
+                      leading: Image.asset(
+                        "assets/img/teams/${listTeams[i].logo}.png",
+                        height: 120,
+                      ),
+                      title: Text(
+                        FlutterI18n.translate(context, "pages.result_raffle.${( i > 0 && isSolo )
+                          ? "machine"
+                          : "player${i + 1}"}",
+                        ),
+                        style: theme.textTheme.displaySmall,
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric( vertical: 5 ),
+                            child: Text(
+                              listTeams[i].name,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+
+                          Text(
+                            FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": listTeams[i].league}),
+                            style: theme.textTheme.bodySmall,
+                          ),
+
+                        ],
+                      ),
                     ),
-                    style: theme.textTheme.displaySmall,
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
 
-                      Text(
-                        listTeams[i].name,
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                    if ( i < listTeams.length )
+                      const Divider(),
 
-                      Text(
-                        FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": listTeams[i].league}),
-                        style: theme.textTheme.bodyMedium,
-                      ),
-
-                    ],
-                  ),
+                  ],
                 ),
 
             ],
