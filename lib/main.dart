@@ -1,4 +1,5 @@
 import 'package:fc_teams_drawer/app/core/routes/routes.dart';
+import 'package:fc_teams_drawer/app/core/services/firebase_options.dart';
 import 'package:fc_teams_drawer/app/core/services/languages.dart';
 import 'package:fc_teams_drawer/app/core/style/themes.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -15,7 +16,9 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await FirebaseAppCheck.instance.activate();
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
@@ -25,7 +28,7 @@ void main() async {
     return true;
   };
 
-  await FirebasePerformance.instance.setPerformanceCollectionEnabled(!kDebugMode);
+  await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
   configureDependencies();
 

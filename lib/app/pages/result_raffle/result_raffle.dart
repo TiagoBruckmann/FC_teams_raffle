@@ -24,9 +24,12 @@ class ResultRaffle extends StatelessWidget {
           child: Column(
             children: [
 
-              Text(
-                FlutterI18n.translate(context, "pages.result_raffle.title"),
-                style: theme.textTheme.headlineLarge,
+              Padding(
+                padding: const EdgeInsets.only( top: 20, bottom: 40),
+                child: Text(
+                  FlutterI18n.translate(context, "pages.result_raffle.title"),
+                  style: theme.textTheme.headlineLarge,
+                ),
               ),
 
               for ( int i = 0; i < listTeams.length; i++ )
@@ -36,9 +39,10 @@ class ResultRaffle extends StatelessWidget {
                     height: 40,
                   ),
                   title: Text(
-                  ( i > 0 && isSolo )
-                    ? FlutterI18n.translate(context, "pages.result_raffle.machine")
-                    : FlutterI18n.translate(context, "pages.result_raffle.player${i + 1}"),
+                    FlutterI18n.translate(context, "pages.result_raffle.${( i > 0 && isSolo )
+                      ? "machine"
+                      : "player${i + 1}"}",
+                    ),
                     style: theme.textTheme.displaySmall,
                   ),
                   subtitle: Column(
@@ -51,7 +55,7 @@ class ResultRaffle extends StatelessWidget {
                       ),
 
                       Text(
-                        listTeams[i].league,
+                        FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": listTeams[i].league}),
                         style: theme.textTheme.bodyMedium,
                       ),
 

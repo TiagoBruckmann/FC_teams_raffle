@@ -14,7 +14,8 @@
       "title": "Você sorteou 2 times, e agora está prestes a se divertir com seus amigos jogando com times aleatorio.",
       "player1": "Jogador 1",
       "player2": "Jogador 2",
-      "machine": "Máquina"
+      "machine": "Máquina",
+      "league": "Liga: {league}"
     }
   },
   "routes": {

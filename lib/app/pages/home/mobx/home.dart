@@ -19,14 +19,14 @@ abstract class _HomeMobx with Store {
       "is_solo": isSolo,
       "teams": const [
         TeamEntity(
-          "Borussia Dortmund",
-          "Alemã",
-          "borussia_dortmund",
+          "Inter de Milão",
+          "Italiana",
+          "inter_milao",
         ),
         TeamEntity(
-          "Real Madrid",
-          "Espanhola",
-          "real_madrid",
+          "Liverpool",
+          "Inglesa",
+          "liverpool",
         ),
       ],
     };

@@ -13,6 +13,17 @@ mixin _$HomeMobx on _HomeMobx, Store {
       ActionController(name: '_HomeMobx', context: context);
 
   @override
+  void goToResponse(bool isSolo) {
+    final _$actionInfo =
+        _$_HomeMobxActionController.startAction(name: '_HomeMobx.goToResponse');
+    try {
+      return super.goToResponse(isSolo);
+    } finally {
+      _$_HomeMobxActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void goToSolo() {
     final _$actionInfo =
         _$_HomeMobxActionController.startAction(name: '_HomeMobx.goToSolo');

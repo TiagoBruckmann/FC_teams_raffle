@@ -18,7 +18,7 @@ class NavigationRoutes {
       return;
     }
 
-    if ( type == NavigationTypeEnum.pushAndRemoveUntil.value ) {
+    if ( type == NavigationTypeEnum.push.value ) {
       Navigator.pushNamed(
         currentContext,
         route,
