@@ -1,4 +1,5 @@
 *.lock
+*.jks
 
 # Miscellaneous
 *.class
