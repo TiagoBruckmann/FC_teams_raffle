@@ -2,7 +2,7 @@ name: fc_teams_drawer
 description: "An app for all FIFA players or any other soccer game."
 publish_to: 'none'
 
-version: 1.0.0+8
+version: 1.0.0+9
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -14,18 +14,16 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   firebase_performance: ^0.9.4+7
   flutter_secure_storage: ^9.2.2
-  font_awesome_flutter: ^10.7.0
   firebase_crashlytics: ^3.5.7
   firebase_app_check: ^0.2.2+7
   firebase_analytics: ^10.10.7
   shimmer_animation: ^2.1.0+1
   isar_flutter_libs: 3.1.0+1
-  firebase_storage: ^11.7.7
+  firebase_database: ^10.5.7
   connectivity_plus: ^6.0.3
   device_info_plus: ^10.1.0
   package_info_plus: ^4.2.0
   new_version_plus: ^0.0.11
-  cloud_firestore: ^4.17.5
   cupertino_icons: ^1.0.8
   flutter_mobx: ^2.2.1+1
   firebase_core: ^2.32.0
