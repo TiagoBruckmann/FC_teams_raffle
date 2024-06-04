@@ -1,0 +1,31 @@
+{
+  "btn_update": "Update",
+  "pages": {
+    "home": {
+      "app_bar": "Game Type",
+      "solo": "Solo",
+      "solo_help": "Draw your team and the 'machine' team automatically!",
+      "x1": "1 v 1",
+      "x1_help": "Draw your team and your friend's team!",
+      "tournament": "Tournament",
+      "tournament_help": "Create your own league to play with your friends!"
+    },
+    "result_raffle": {
+      "app_bar": "Draw Result",
+      "title": "You drew 2 teams, and now you are about to have fun with random teams.",
+      "player1": "Player 1",
+      "player2": "Player 2",
+      "machine": "Machine",
+      "league": "League: {league}"
+    },
+    "update": {
+      "title": "Hello, dear player",
+      "subtitle": "We have a new version for you! Update your app and check out the new features!"
+    }
+  },
+  "routes": {
+    "app_bar": "Screen not found",
+    "title": "Error 404",
+    "subtitle": "Oops, it looks like this screen doesn't exist!"
+  }
+}
