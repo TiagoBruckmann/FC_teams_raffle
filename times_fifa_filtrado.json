@@ -1,0 +1,289 @@
+{
+    "teams": [
+      {
+        "name": "Manchester United",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Liverpool",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Chelsea",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Arsenal",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Manchester City",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Tottenham Hotspur",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Everton",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Leicester City",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "West Ham United",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Aston Villa",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Newcastle United",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Wolverhampton Wanderers",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Crystal Palace",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Leeds United",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Brighton & Hove Albion",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Watford",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "Brentford",
+        "image": "OK",
+        "league": "Inglesa"
+      },
+      {
+        "name": "FC Barcelona",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Real Madrid",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Atlético de Madrid",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Sevilla",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Real Betis",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Real Sociedad",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Villarreal",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Athletic Bilbao",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Valencia",
+        "image": "OK",
+        "league": "Espanhola"
+      },
+      {
+        "name": "Bayern de Munique",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "Borussia Dortmund",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "RB Leipzig",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "Borussia Monchengladbach",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "Bayer Leverkusen",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "VfL Wolfsburg",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "Eintracht Frankfurt",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "FC Augsburg",
+        "image": "OK",
+        "league": "Alemã"
+      },
+      {
+        "name": "Juventus",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Inter de Milão",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "AC Milan",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Napoli",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "AS Roma",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Lazio",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Atalanta",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Fiorentina",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Empoli",
+        "image": "OK",
+        "league": "Italiana"
+      },
+      {
+        "name": "Paris Saint-Germain",
+        "image": "OK",
+        "league": "Francesa"
+      },
+      {
+        "name": "Lyon",
+        "image": "OK",
+        "league": "Francesa"
+      },
+      {
+        "name": "Marseille",
+        "image": "OK",
+        "league": "Francesa"
+      },
+      {
+        "name": "AS Monaco",
+        "image": "OK",
+        "league": "Francesa"
+      },
+      {
+        "name": "Lille",
+        "image": "OK",
+        "league": "Francesa"
+      },
+      {
+        "name": "Benfica",
+        "image": "OK",
+        "league": "Portuguesa"
+      },
+      {
+        "name": "Porto",
+        "image": "OK",
+        "league": "Portuguesa"
+      },
+      {
+        "name": "Sporting CP",
+        "image": "OK",
+        "league": "Portuguesa"
+      },
+      {
+        "name": "Braga",
+        "image": "OK",
+        "league": "Portuguesa"
+      },
+      {
+        "name": "Al-Ittihad",
+        "image": "OK",
+        "league": "Saudita"
+      },
+      {
+        "name": "Al-Nassr",
+        "image": "OK",
+        "league": "Saudita"
+      },
+      {
+        "name": "Al-Hilal",
+        "image": "OK",
+        "league": "Saudita"
+      },
+      {
+        "name": "Al-Ahli",
+        "image": "OK",
+        "league": "Saudita"
+      },
+      {
+        "name": "Inter Miami",
+        "image": "OK",
+        "league": "Americana"
+      }
+    ]
+  }
