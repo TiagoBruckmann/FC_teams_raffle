@@ -1,4 +1,4 @@
-# fc_teams_drawer
+# fc_teams_raffle
 
 An app for all FIFA players or any other soccer game.
 

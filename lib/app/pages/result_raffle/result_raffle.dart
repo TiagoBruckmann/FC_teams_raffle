@@ -3,6 +3,7 @@ import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class ResultRaffle extends StatefulWidget {
   final bool isSolo;
@@ -76,6 +77,24 @@ class _ResultRaffleState extends State<ResultRaffle> {
 
                               Image.asset(
                                 "assets/img/teams/${_mobx.teamsList[i].logo}.png",
+                                errorBuilder: ( builder, exception, stackTrace ) {
+
+                                  Session.appEvents.sharedErrorEvent("load_image_error", exception.toString());
+                                  Session.crash.onError("load_image_error", error: exception, stackTrace: stackTrace);
+
+                                  return Shimmer(
+                                    duration: const Duration(seconds: 5),
+                                    color: Colors.grey[50]!,
+                                    colorOpacity: 0.3,
+                                    enabled: true,
+                                    direction: const ShimmerDirection.fromLTRB(),
+                                    child: Image.asset(
+                                      "assets/img/teams/chelsea.png",
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  );
+
+                                },
                               ),
 
                             ],

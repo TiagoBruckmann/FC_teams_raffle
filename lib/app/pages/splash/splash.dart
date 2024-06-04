@@ -1,3 +1,4 @@
+import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
 import 'package:fc_teams_drawer/app/pages/splash/mobx/splash.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
@@ -16,6 +17,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    Session.appEvents.sendScreen("splash_page");
     _splashMobx.startTimer();
   }
 

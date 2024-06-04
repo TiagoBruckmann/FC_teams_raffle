@@ -1,18 +1,26 @@
 # Registro de alterações
 
-FC Drawer - An app for all FIFA players or any other soccer game.
+FC Raffle - An app for all FIFA players or any other soccer game.
 
 ---
 
 ### :gear: Versão 1.0.0
 
-Some texts.
-Versão publicada no dia ?/?/2024.
+Está é a versão inicial do app, onde é possivel sortear os principais times do FC 24, (antigo Fifa).
+Nessa versão é possivel selecionar par sortear entre amigos ou contra a "máquina".
+Temos um total de 57 times.
+
+Versão publicada no dia 05/06/2024.
 
 **:bulb: Novas funcionalidades**
 
 <ul>
-    <li>Funcionalidades.</li>
+    <li>57 principais times das ligas: Saudita, Espanhola, Inglesa, Americana, Francesa, Italiana, Alemã e Portuguesa.</li>
+    <li>Integração com o Crashlytics.</li>
+    <li>Integração com o Performance.</li>    
+    <li>Integração com o Analytics.</li>    
+    <li>Sorteador contra a máquina.</li>
+    <li>Sorteador para 1v1.</li>
 </ul>
 
 ---
