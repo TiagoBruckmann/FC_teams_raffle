@@ -45,10 +45,6 @@ class AppEvents {
     _logEvent(eventName, params);
   }
 
-  Future<void> login( String loginMethod ) async{
-    await _analytics.logSignUp(signUpMethod: loginMethod);
-  }
-
   Future<void> _logEvent(String eventName, Map<String, String> params) async {
 
     PackageInfo packageInfo = await PackageInfo.fromPlatform();

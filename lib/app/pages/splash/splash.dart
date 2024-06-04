@@ -1,9 +1,5 @@
-// pacotes nativos flutter
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
-
-// import das telas
 import 'package:fc_teams_drawer/app/pages/splash/mobx/splash.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 
@@ -19,10 +15,7 @@ class SplashPage extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
 
-    Timer(
-      const Duration(seconds: 3),
-      () => splashMobx.goToHome(),
-    );
+    splashMobx.startTimer();
 
     return SafeArea(
       child: Scaffold(

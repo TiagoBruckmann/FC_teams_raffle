@@ -1,12 +1,33 @@
 import 'package:fc_teams_drawer/domain/entities/team.dart';
+import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-class ResultRaffle extends StatelessWidget {
+class ResultRaffle extends StatefulWidget {
   final bool isSolo;
   final List<TeamEntity> listTeams;
   const ResultRaffle({ super.key, required this.isSolo, required this.listTeams });
 
+  @override
+  State<ResultRaffle> createState() => _ResultRaffleState();
+}
+
+class _ResultRaffleState extends State<ResultRaffle> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    Session.appEvents.sendScreen(
+      "result_raffle_page",
+      params: {
+        "is_solo": widget.isSolo,
+        "list_teams": widget.listTeams.toString(),
+      },
+    );
+
+  }
+  
   @override
   Widget build(BuildContext context) {
 
@@ -34,19 +55,19 @@ class ResultRaffle extends StatelessWidget {
                 ),
               ),
 
-              for ( int i = 0; i < listTeams.length; i++ )
+              for ( int i = 0; i < widget.listTeams.length; i++ )
                 Column(
                   children: [
 
                     ListTile(
                       leading: Image.asset(
-                        "assets/img/teams/${listTeams[i].logo}.png",
+                        "assets/img/teams/${widget.listTeams[i].logo}.png",
                         height: 120,
                       ),
                       title: Text(
-                        FlutterI18n.translate(context, "pages.result_raffle.${( i > 0 && isSolo )
-                          ? "machine"
-                          : "player${i + 1}"}",
+                        FlutterI18n.translate(context, "pages.result_raffle.${( i > 0 && widget.isSolo )
+                            ? "machine"
+                            : "player${i + 1}"}",
                         ),
                         style: theme.textTheme.displaySmall,
                       ),
@@ -57,13 +78,13 @@ class ResultRaffle extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric( vertical: 5 ),
                             child: Text(
-                              listTeams[i].name,
+                              widget.listTeams[i].name,
                               style: theme.textTheme.bodySmall,
                             ),
                           ),
 
                           Text(
-                            FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": listTeams[i].league}),
+                            FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": widget.listTeams[i].league}),
                             style: theme.textTheme.bodySmall,
                           ),
 
@@ -71,7 +92,7 @@ class ResultRaffle extends StatelessWidget {
                       ),
                     ),
 
-                    if ( i < listTeams.length )
+                    if ( i < widget.listTeams.length )
                       const Divider(),
 
                   ],

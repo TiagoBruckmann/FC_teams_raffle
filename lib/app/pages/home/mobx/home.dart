@@ -1,10 +1,10 @@
-// imports telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/domain/entities/team.dart';
-
-// import dos pacotes
+import 'package:fc_teams_drawer/session.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 
 part 'home.g.dart';
 
@@ -12,8 +12,33 @@ class HomeMobx extends _HomeMobx with _$HomeMobx {}
 
 abstract class _HomeMobx with Store {
 
+  final currentContext = Session.globalContext.currentContext!;
+
   @action
-  void goToResponse( bool isSolo ) {
+  Future<void> verifyVersion() async {
+    final newVersion = NewVersionPlus();
+    final status = await newVersion.getVersionStatus();
+    if ( status != null && currentContext.mounted ) {
+      if ( status.canUpdate && int.parse(status.localVersion.replaceAll(".", "")) < int.parse(status.storeVersion.replaceAll(".", "")) ) {
+
+        Session.appEvents.sharedEventString("new_version", status.storeVersion);
+
+        newVersion.showUpdateDialog(
+          context: currentContext,
+          allowDismissal: false,
+          versionStatus: status,
+          dialogTitle: FlutterI18n.translate(currentContext, "pages.update.title"),
+          dialogText: FlutterI18n.translate(currentContext, "pages.update.subtitle"),
+          updateButtonText: FlutterI18n.translate(currentContext, "btn_update"),
+          launchModeVersion: LaunchModeVersion.external,
+        );
+
+      }
+    }
+  }
+
+  @action
+  void goToResponse({ bool isSolo = true }) {
 
     final map = {
       "is_solo": isSolo,
@@ -31,16 +56,10 @@ abstract class _HomeMobx with Store {
       ],
     };
 
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, "/result-raffle", extra: map);
+    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.resultRaffle.name, extra: map);
   }
 
   @action
-  void goToSolo() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, "/solo");
-
-  @action
-  void goToX1() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, "/x1");
-
-  @action
-  void goToTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, "/tournament");
+  void goToTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.tournament.name);
 
 }

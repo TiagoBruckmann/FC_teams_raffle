@@ -1,4 +1,5 @@
 import 'package:fc_teams_drawer/app/core/routes/routes.dart';
+import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/firebase_options.dart';
 import 'package:fc_teams_drawer/app/core/services/languages.dart';
 import 'package:fc_teams_drawer/app/core/style/themes.dart';
@@ -46,7 +47,7 @@ void main() async {
         darkTheme: Themes.darkTheme,
         theme: Themes.darkTheme,
         onGenerateRoute: Routes.generateRoutes,
-        initialRoute: "/splash",
+        initialRoute: RoutesNameEnum.splash.name,
         supportedLocales: supportedLocale,
         localizationsDelegates: localizationsDelegate,
         debugShowCheckedModeBanner: false,

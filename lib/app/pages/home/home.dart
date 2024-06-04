@@ -1,17 +1,37 @@
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 import 'package:fc_teams_drawer/app/pages/home/mobx/home.dart';
+import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  final HomeMobx _mobx = HomeMobx();
+
+  @override
+  void initState() {
+    super.initState();
+    Session.appEvents.sendScreen("home_page");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _mobx.verifyVersion();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    
-    final HomeMobx mobx = HomeMobx();
+
     final theme = Theme.of(context);
-    
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -36,7 +56,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: double.maxFinite,
                   child: ElevatedButton(
-                    onPressed: () => mobx.goToResponse( true ),
+                    onPressed: () => _mobx.goToResponse(),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -62,7 +82,7 @@ class HomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric( vertical: 20 ),
                   width: double.maxFinite,
                   child: ElevatedButton(
-                    onPressed: () => mobx.goToResponse( false ),
+                    onPressed: () => _mobx.goToResponse( isSolo: false ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -87,7 +107,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: double.maxFinite,
                   child: ElevatedButton(
-                    onPressed: () => mobx.goToTournament(),
+                    onPressed: () => _mobx.goToTournament(),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
