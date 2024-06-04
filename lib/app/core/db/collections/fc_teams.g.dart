@@ -26,7 +26,7 @@ const FCTeamsCollectionSchema = CollectionSchema(
     r'versionDataSync': PropertySchema(
       id: 1,
       name: r'versionDataSync',
-      type: IsarType.string,
+      type: IsarType.long,
     )
   },
   estimateSize: _fCTeamsCollectionEstimateSize,
@@ -63,12 +63,6 @@ int _fCTeamsCollectionEstimateSize(
       }
     }
   }
-  {
-    final value = object.versionDataSync;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -84,7 +78,7 @@ void _fCTeamsCollectionSerialize(
     TeamCollectionSchema.serialize,
     object.teamCollection,
   );
-  writer.writeString(offsets[1], object.versionDataSync);
+  writer.writeLong(offsets[1], object.versionDataSync);
 }
 
 FCTeamsCollection _fCTeamsCollectionDeserialize(
@@ -100,7 +94,7 @@ FCTeamsCollection _fCTeamsCollectionDeserialize(
       allOffsets,
       TeamCollection(),
     ),
-    versionDataSync: reader.readStringOrNull(offsets[1]),
+    versionDataSync: reader.readLongOrNull(offsets[1]),
   );
   object.id = id;
   return object;
@@ -121,7 +115,7 @@ P _fCTeamsCollectionDeserializeProp<P>(
         TeamCollection(),
       )) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -405,58 +399,49 @@ extension FCTeamsCollectionQueryFilter
   }
 
   QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+      versionDataSyncEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'versionDataSync',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
       versionDataSyncGreaterThan(
-    String? value, {
+    int? value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'versionDataSync',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
       versionDataSyncLessThan(
-    String? value, {
+    int? value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'versionDataSync',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
       versionDataSyncBetween(
-    String? lower,
-    String? upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -465,77 +450,6 @@ extension FCTeamsCollectionQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'versionDataSync',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'versionDataSync',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'versionDataSync',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'versionDataSync',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'versionDataSync',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<FCTeamsCollection, FCTeamsCollection, QAfterFilterCondition>
-      versionDataSyncIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'versionDataSync',
-        value: '',
       ));
     });
   }
@@ -604,10 +518,9 @@ extension FCTeamsCollectionQuerySortThenBy
 extension FCTeamsCollectionQueryWhereDistinct
     on QueryBuilder<FCTeamsCollection, FCTeamsCollection, QDistinct> {
   QueryBuilder<FCTeamsCollection, FCTeamsCollection, QDistinct>
-      distinctByVersionDataSync({bool caseSensitive = true}) {
+      distinctByVersionDataSync() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'versionDataSync',
-          caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'versionDataSync');
     });
   }
 }
@@ -627,7 +540,7 @@ extension FCTeamsCollectionQueryProperty
     });
   }
 
-  QueryBuilder<FCTeamsCollection, String?, QQueryOperations>
+  QueryBuilder<FCTeamsCollection, int?, QQueryOperations>
       versionDataSyncProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'versionDataSync');

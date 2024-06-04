@@ -1,6 +1,5 @@
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/domain/entities/team.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
@@ -42,18 +41,6 @@ abstract class _HomeMobx with Store {
 
     final map = {
       "is_solo": isSolo,
-      "teams": const [
-        TeamEntity(
-          "Inter de Milão",
-          "Italiana",
-          "inter_milao",
-        ),
-        TeamEntity(
-          "Liverpool",
-          "Inglesa",
-          "liverpool",
-        ),
-      ],
     };
 
     return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.resultRaffle.name, extra: map);

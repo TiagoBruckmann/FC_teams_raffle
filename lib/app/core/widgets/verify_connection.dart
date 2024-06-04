@@ -11,7 +11,6 @@ import 'package:fc_teams_drawer/app/core/widgets/loading_connection.dart';
 import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
 
 // import dos pacotes
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
@@ -54,8 +53,8 @@ class VerifyConnection extends StatelessWidget {
             ? null
             : FloatingActionButton(
               onPressed: () => function!.call(),
-              child: FaIcon(
-                FontAwesomeIcons.plus,
+              child: Icon(
+                Icons.add,
                 color: theme.colorScheme.background,
                 size: 18,
               ),

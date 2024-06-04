@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fc_teams_drawer/app/pages/splash/mobx/splash.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
   @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+
+  final SplashMobx _splashMobx = SplashMobx();
+
+  @override
+  void initState() {
+    super.initState();
+    _splashMobx.startTimer();
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    final SplashMobx splashMobx = SplashMobx();
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-
-    splashMobx.startTimer();
-
     return SafeArea(
       child: Scaffold(
         body: Center(

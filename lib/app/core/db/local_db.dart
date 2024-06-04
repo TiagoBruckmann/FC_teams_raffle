@@ -32,12 +32,10 @@ class LocalDb {
 
       final response = await _openDb();
 
-      final versionDataSync = await Session.secureStorage.readStorage("version_data_sync") ?? dataModel.versionDataSync;
-
       final totalDocuments = await response.fCTeamsCollections
           .where()
           .filter()
-          .versionDataSyncGreaterThan(versionDataSync)
+          .versionDataSyncEqualTo(dataModel.versionDataSync)
           .count();
 
       if ( totalDocuments > 1 ) {
@@ -54,7 +52,7 @@ class LocalDb {
     }
   }
 
-  Future<FCTeamsCollection?> getFCTeamCollection( String versionDataSync ) async {
+  Future<FCTeamsCollection?> getFCTeamCollection( int versionDataSync ) async {
     try {
 
       final response = await _openDb();
@@ -62,7 +60,7 @@ class LocalDb {
       final dataSync = await response.fCTeamsCollections
           .where()
           .filter()
-          .versionDataSyncGreaterThan(versionDataSync)
+          .versionDataSyncEqualTo(versionDataSync)
           .findFirst();
 
       if ( dataSync == null ) {
@@ -95,7 +93,8 @@ class LocalDb {
 
     int response = -1;
     if ( object is FCTeamsCollection ) {
-      await Session.secureStorage.writeStorage("version_data_sync", object.versionDataSync ?? "0");
+
+      await Session.secureStorage.writeStorage("version_data_sync", object.versionDataSync.toString());
       response = await isar.writeTxn(() async => await isar.fCTeamsCollections.put(object));
     }
 

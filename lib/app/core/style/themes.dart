@@ -121,8 +121,18 @@ class Themes {
       ),
     ),
     iconTheme: const IconThemeData(
-      color: _primaryColorDark,
-      size: 18,
+      color: _secondaryColorDark,
+      size: 22,
+    ),
+    tooltipTheme: TooltipThemeData(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: _secondaryColorDark,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      showDuration: const Duration(seconds: 5),
+      textStyle: _bodySmallTextDark,
+      preferBelow: true,
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       linearTrackColor: _tertiaryColorDark,

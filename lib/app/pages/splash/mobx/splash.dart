@@ -29,8 +29,8 @@ abstract class _SplashMobx with Store {
     final successOrFailure = await _useCase.getDataSync();
 
     successOrFailure.fold(
-      (failure) => null,
-      (success) => SharedServices.logSuccess("success _getDataSync splash"),
+      (failure) => SharedServices.logError("failure_getDataSync_splash", message: failure.message),
+      (success) => SharedServices.logSuccess("success_getDataSync_splash"),
     );
 
   }

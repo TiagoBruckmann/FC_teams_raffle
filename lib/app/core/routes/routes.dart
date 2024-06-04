@@ -3,7 +3,6 @@ import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 import 'package:fc_teams_drawer/app/pages/home/home.dart';
 import 'package:fc_teams_drawer/app/pages/result_raffle/result_raffle.dart';
 import 'package:fc_teams_drawer/app/pages/splash/splash.dart';
-import 'package:fc_teams_drawer/domain/entities/team.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
@@ -28,11 +27,9 @@ class Routes {
 
             final map = args as Map<String, dynamic>;
             bool isSolo = map["is_solo"];
-            final listTeams = map["teams"] as List<TeamEntity>;
 
             return ResultRaffle(
               isSolo: isSolo,
-              listTeams: listTeams,
             );
 
           },

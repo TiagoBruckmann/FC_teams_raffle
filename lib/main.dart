@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:fc_teams_drawer/app/core/routes/routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/firebase_options.dart';
 import 'package:fc_teams_drawer/app/core/services/languages.dart';
+import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/app/core/style/themes.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
@@ -15,43 +17,50 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await FirebaseAppCheck.instance.activate();
-  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  PlatformDispatcher.instance.onError = (error, stackTrace) {
-    FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
-    return true;
-  };
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-  await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
+    await FirebaseAppCheck.instance.activate();
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    PlatformDispatcher.instance.onError = (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
+      return true;
+    };
 
-  configureDependencies();
+    await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
-  runApp(
-    MultiProvider(
-      providers: [
-        Provider(
-          create: (context) => ConnectionMobx(),
+    configureDependencies();
+
+    runApp(
+      MultiProvider(
+        providers: [
+          Provider(
+            create: (context) => ConnectionMobx(),
+          ),
+        ],
+        child: MaterialApp(
+          navigatorKey: Session.globalContext,
+          title: "FC sorteador",
+          // theme: Themes.lightTheme,
+          darkTheme: Themes.darkTheme,
+          theme: Themes.darkTheme,
+          onGenerateRoute: Routes.generateRoutes,
+          initialRoute: RoutesNameEnum.splash.name,
+          supportedLocales: supportedLocale,
+          localizationsDelegates: localizationsDelegate,
+          debugShowCheckedModeBanner: false,
         ),
-      ],
-      child: MaterialApp(
-        navigatorKey: Session.globalContext,
-        title: "FC sorteador",
-        // theme: Themes.lightTheme,
-        darkTheme: Themes.darkTheme,
-        theme: Themes.darkTheme,
-        onGenerateRoute: Routes.generateRoutes,
-        initialRoute: RoutesNameEnum.splash.name,
-        supportedLocales: supportedLocale,
-        localizationsDelegates: localizationsDelegate,
-        debugShowCheckedModeBanner: false,
       ),
-    ),
-  );
+    );
+
+  }, (error, stack) async {
+    String message = "${error.toString()} - ${stack.toString()}";
+    SharedServices.logError("error main => ", message: message);
+  });
 }

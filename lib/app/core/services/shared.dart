@@ -31,12 +31,17 @@ class SharedServices {
   }
 
   static void logSuccess( String message ) {
-    print("\x1B[32m\u2714 $message\x1B[0m");
+    _customPrint("\x1B[32m\u2714 $message\x1B[0m");
   }
 
   static void logError( String code, { String? message }) {
     String text = "Error: $code - Error Message: ${message ?? ""}";
-    print("\x1B[31m\u2718 $text\x1B[0m");
+    _customPrint("\x1B[31m\u2718 $text\x1B[0m");
+  }
+
+  static void _customPrint( String message ) {
+    // ignore: avoid_print
+    return print(message);
   }
 
 }

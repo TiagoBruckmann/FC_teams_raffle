@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
 import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 abstract class TeamRemoteDatasource {
 
@@ -11,49 +11,64 @@ abstract class TeamRemoteDatasource {
 }
 
 class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
-  final FirebaseFirestore db;
+  final FirebaseDatabase db;
   TeamRemoteDatasourceImpl( this.db );
 
   @override
   Future<void> getDataSync() async {
-    await db.collection("teams")
-    .get()
-    .then((value) => _syncData(value.docs))
-    .onError((error, stackTrace) {
-      Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-      throw ServerExceptions();
-    })
-    .catchError((onError) {
-      Session.crash.log(onError);
-      throw ServerExceptions();
-    });
+
+    final teamsRef = db.ref("data");
+    db.setLoggingEnabled(true);
+    db.setPersistenceEnabled(true);
+    db.setPersistenceCacheSizeBytes(10000000);
+
+    try {
+
+      final response = await teamsRef.get();
+      _syncData(response.value);
+
+    } catch ( error ) {
+      Session.crash.onError("get_data_sync_firebase", error: error);
+      throw ServerExceptions("get_data_sync_firebase => $error");
+    }
 
     return;
   }
 
   Future<void> _syncData( dynamic json ) async {
 
-    final versionDataSync = await Session.secureStorage.readStorage("version_data_sync") ?? "0";
+    try {
 
-    final localDb = await LocalDb().getFCTeamCollection(versionDataSync);
+      final versionDataSync = int.parse(await Session.secureStorage.readStorage("version_data_sync") ?? "0");
 
-    final fcTeamCollection = FCTeamsCollection.fromJson(json);
+      final localDb = await LocalDb().getFCTeamCollection(versionDataSync);
 
-    if ( localDb?.versionDataSync != fcTeamCollection.versionDataSync ) {
+      final fcTeamCollection = FCTeamsCollection.fromJson(json);
 
-      final isSuccessSyncDataModel = await LocalDb().syncFCTeamDataModel(fcTeamCollection);
+      int localVersion = localDb?.versionDataSync ?? versionDataSync;
 
-      if ( !isSuccessSyncDataModel ) {
-        throw CacheExceptions("Failure on Sync FC Teams data model");
+      if ( localVersion < fcTeamCollection.versionDataSync! ) {
+
+        final isSuccessSyncDataModel = await LocalDb().syncFCTeamDataModel(fcTeamCollection);
+
+        if ( !isSuccessSyncDataModel ) {
+          Session.crash.onError("Failure on Sync FC Teams data model");
+          throw CacheExceptions("Failure on Sync FC Teams data model");
+        }
+
+        Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(fcTeamCollection);
+
+      } else {
+        Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(localDb!);
       }
 
-      Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(fcTeamCollection);
+      return;
 
-    } else {
-      Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(localDb!);
+    } catch ( error ) {
+      Session.crash.onError("get_data_sync_local_db", error: error);
+      throw CacheExceptions("get_data_sync_local_db => $error");
     }
 
-    return;
   }
 
 }

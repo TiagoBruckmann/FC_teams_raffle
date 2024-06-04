@@ -67,10 +67,15 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         Tooltip(
-                          padding: const EdgeInsets.all(4),
                           message: FlutterI18n.translate(context, "pages.home.solo_help"),
-                          textStyle: theme.textTheme.bodySmall,
-                          preferBelow: true,
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
+                            child: Icon(
+                              Icons.info_outline,
+                              color: theme.colorScheme.secondary,
+                            ),
+                          ),
                         ),
 
                       ],
@@ -93,10 +98,15 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         Tooltip(
-                          padding: const EdgeInsets.all(4),
                           message: FlutterI18n.translate(context, "pages.home.x1_help"),
-                          textStyle: theme.textTheme.bodySmall,
-                          preferBelow: true,
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
+                            child: Icon(
+                              Icons.info_outline,
+                              color: theme.colorScheme.secondary,
+                            ),
+                          ),
                         ),
 
                       ],
@@ -104,6 +114,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
+                /*
                 SizedBox(
                   width: double.maxFinite,
                   child: ElevatedButton(
@@ -118,16 +129,22 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         Tooltip(
-                          padding: const EdgeInsets.all(4),
                           message: FlutterI18n.translate(context, "pages.home.tournament_help"),
-                          textStyle: theme.textTheme.bodySmall,
-                          preferBelow: true,
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
+                            child: Icon(
+                              Icons.info_outline,
+                              color: theme.colorScheme.secondary,
+                            ),
+                          ),
                         ),
 
                       ],
                     ),
                   ),
                 ),
+                */
 
               ],
             ),

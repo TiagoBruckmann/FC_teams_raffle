@@ -9,10 +9,10 @@ class FCTeamsCollection {
 
   Id id = Isar.autoIncrement;
 
-  String? versionDataSync;
+  int? versionDataSync;
   List<TeamCollection>? teamCollection;
 
-  factory FCTeamsCollection.fromJson( Map<String, dynamic> json ) {
+  factory FCTeamsCollection.fromJson( dynamic json ) {
 
     final List<TeamCollection> teamCollection = [];
 
@@ -22,9 +22,9 @@ class FCTeamsCollection {
       );
     }
 
-    String? versionDataSync;
-    if ( json.containsKey("config") ) {
-      versionDataSync = json["config"]["version"];
+    int? versionDataSync;
+    if ( json.containsKey("version") ) {
+      versionDataSync = json["version"];
     }
 
     return FCTeamsCollection(
@@ -46,7 +46,7 @@ class FCTeamsCollection {
       }
     }
 
-    String? versionDataSync;
+    int? versionDataSync;
     if ( collection.versionDataSync != null ) {
       versionDataSync = collection.versionDataSync;
     }
@@ -67,7 +67,7 @@ class TeamCollection {
 
   final String? name, league, logo;
 
-  factory TeamCollection.fromJson( Map<String, dynamic> json ) {
+  factory TeamCollection.fromJson( dynamic json ) {
     return TeamCollection(
       name: json["name"],
       league: json["league"],
@@ -82,5 +82,8 @@ class TeamCollection {
       logo: team?.logo,
     );
   }
+
+  @override
+  String toString() => "$name - $league";
 
 }
