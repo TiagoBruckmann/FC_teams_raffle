@@ -1,8 +1,14 @@
-// import dos pacotes
+// import das telas
+import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
+import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+
+// import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+
+// import dos pacotes
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
@@ -64,7 +70,10 @@ abstract class _TournamentMobx with Store {
 
     successOrFailure.fold(
       (failure) => SharedServices.logError("failure_get_tournaments", message: failure.message),
-      (success) => _addTournamentList( list: success ),
+      (success) {
+        Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
+        _addTournamentList(list: success);
+      },
     );
 
   }
@@ -121,9 +130,7 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void goToNewTournament() {
-
-  }
+  void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);
 
   @action
   Future<void> refresh() async {

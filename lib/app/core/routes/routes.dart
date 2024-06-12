@@ -2,8 +2,10 @@
 import 'package:flutter/material.dart';
 
 // import das telas
+import 'package:fc_teams_drawer/app/pages/tournament/create/create_tournament_page.dart';
+import 'package:fc_teams_drawer/app/pages/tournament/home/tournament_page.dart';
+import 'package:fc_teams_drawer/app/pages/tournament/board/board_page.dart';
 import 'package:fc_teams_drawer/app/pages/result_raffle/result_raffle.dart';
-import 'package:fc_teams_drawer/app/pages/tournament/tournament_page.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 import 'package:fc_teams_drawer/app/pages/splash/splash.dart';
 import 'package:fc_teams_drawer/app/pages/home/home.dart';
@@ -42,6 +44,14 @@ class Routes {
       case "/tournament" :
         return MaterialPageRoute(
           builder: (_) => const TournamentPage(),
+        );
+      case "/new-tournament" :
+        return MaterialPageRoute(
+          builder: (_) => const CreateTournamentPage(),
+        );
+      case "/board" :
+        return MaterialPageRoute(
+          builder: (_) => const BoardPage(),
         );
       default:
         return _errorRoute();

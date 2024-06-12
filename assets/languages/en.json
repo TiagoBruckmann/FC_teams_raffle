@@ -1,5 +1,6 @@
 {
   "btn_update": "Update",
+  "btn_generate": "Generate",
   "pages": {
     "home": {
       "app_bar": "Game Type",
@@ -19,10 +20,22 @@
     },
     "tournament": {
       "app_bar": "Tournament {status}",
-      "title": "Enter the number of participants, whether or not you want to draw teams and many other options",
       "date": "Competition day: {date}",
       "active_status": "Set this tournament as finished!",
-      "closed_status": "Set this tournament to Open!"
+      "closed_status": "Set this tournament to Open!",
+      "create": {
+        "event_name": "Tournament name",
+        "qtd_participants": "Quantity of players",
+        "qtd_defeats": "Quantity of defeats",
+        "raffle_teams": "Draw teams?",
+        "player_name": "{position}th player name"
+      },
+      "board": {
+        "octaves": "Octaves",
+        "quarter": "Quarterfinal",
+        "semi": "Semifinals",
+        "final": "Final"
+      }
     },
     "update": {
       "title": "Hello, dear player",

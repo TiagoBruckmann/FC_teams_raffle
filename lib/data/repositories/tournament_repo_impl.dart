@@ -36,4 +36,17 @@ class TournamentRepoImpl implements TournamentRepo {
     }
   }
 
+  @override
+  Future<Either<Failure, void>> createTournament( Map<String, dynamic> json ) async {
+    try {
+      final result = await tournamentRemoteDatasource.createTournament( json );
+      return right(result);
+    } on ServerExceptions {
+      return left(ServerFailure());
+    } catch (e) {
+      Session.crash.onError("upd_status_error", error: e);
+      return left(GeneralFailure());
+    }
+  }
+
 }

@@ -17,9 +17,11 @@ class FCTeamsCollection {
     final List<TeamCollection> teamCollection = [];
 
     for ( final teams in json["teams"] ) {
-      teamCollection.add(
-        TeamCollection.fromJson(teams),
-      );
+      if ( teams != null ) {
+        teamCollection.add(
+          TeamCollection.fromJson(teams),
+        );
+      }
     }
 
     int? versionDataSync;

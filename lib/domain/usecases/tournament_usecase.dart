@@ -18,4 +18,8 @@ class TournamentUseCase {
     return await tournamentRepo.updStatus( json );
   }
 
+  Future<Either<Failure, void>> createTournament( Map<String, dynamic> json ) async {
+    return await tournamentRepo.createTournament( json );
+  }
+
 }

@@ -56,7 +56,7 @@ class VerifyConnection extends StatelessWidget {
               child: Icon(
                 Icons.add,
                 color: theme.colorScheme.background,
-                size: 18,
+                size: 25,
               ),
             ),
           ),

@@ -16,18 +16,14 @@ class SharedServices {
     return false;
   }
 
-  String getRandomString( int length ) {
-    const String chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    final Random rnd = Random();
+  static String convertDate( int value ) {
 
-    return String.fromCharCodes(
-      Iterable.generate(
-        length,
-        (_) => chars.codeUnitAt(
-          rnd.nextInt(chars.length),
-        ),
-      ),
-    );
+    String converted = value.toString();
+    if ( value < 10 ) {
+      converted = "0$value";
+    }
+
+    return converted;
   }
 
   static void logSuccess( String message ) {

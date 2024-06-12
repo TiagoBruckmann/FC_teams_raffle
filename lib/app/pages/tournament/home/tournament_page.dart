@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 // import das telas
-import 'package:fc_teams_drawer/app/pages/tournament/mobx/tournament.dart';
+import 'package:fc_teams_drawer/app/pages/tournament/home/mobx/tournament.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 
 // import dos domain
@@ -52,6 +52,7 @@ class _TournamentPageState extends State<TournamentPage> {
             keyAppBar: "pages.tournament.app_bar",
             appBarParams: {"status": "- ${_mobx.filterStatus}"},
             actionWidgets: [
+
               PopupMenuButton<String>(
                 color: theme.colorScheme.background,
                 icon: Icon(
@@ -73,6 +74,7 @@ class _TournamentPageState extends State<TournamentPage> {
                   }).toList();
                 },
               ),
+
             ],
             page: RefreshIndicator(
               onRefresh: () => _mobx.refresh(),
