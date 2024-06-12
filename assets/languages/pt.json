@@ -7,7 +7,6 @@
       "solo_help": "Sorteie seu time e o time da 'máquina' automaticamente!",
       "x1": "1 V 1",
       "x1_help": "Sorteie seu time e o de seu amigo!",
-      "tournament": "Torneio",
       "tournament_help": "Crie uma liga própria para jogar com seus amigos!"
     },
     "result_raffle": {
@@ -18,6 +17,13 @@
       "machine": "Máquina",
       "league": "Liga: {league}"
     },
+    "tournament": {
+      "app_bar": "Torneio {status}",
+      "title": "Informe a quantidade de participantes, se deseja ou não sortear os times e muitas outras opções",
+      "date": "Dia da competição: {date}",
+      "active_status": "Defina esse torneio como finalizado!",
+      "closed_status": "Defina esse torneio como Aberto!"
+    },
     "update": {
       "title": "Olá, caro jogador",
       "subtitle": "Temos uma nova versão para você! Atualize seu app e confira as novidades!"
@@ -26,6 +32,12 @@
   "routes": {
     "app_bar": "Tela não encontrada",
     "title": "Erro 404",
-    "subtitle": "Ops, parece que essa tela não existe!"
+    "subtitle": "Ops, parece que essa tela não existe!",
+    "btn": "Voltar para a home!"
+  },
+  "status": {
+    "all": "Todos",
+    "active": "Ativos",
+    "closed": "Finalizados"
   }
 }

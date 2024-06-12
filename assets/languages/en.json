@@ -7,7 +7,6 @@
       "solo_help": "Draw your team and the 'machine' team automatically!",
       "x1": "1 v 1",
       "x1_help": "Draw your team and your friend's team!",
-      "tournament": "Tournament",
       "tournament_help": "Create your own league to play with your friends!"
     },
     "result_raffle": {
@@ -18,6 +17,13 @@
       "machine": "Machine",
       "league": "League: {league}"
     },
+    "tournament": {
+      "app_bar": "Tournament {status}",
+      "title": "Enter the number of participants, whether or not you want to draw teams and many other options",
+      "date": "Competition day: {date}",
+      "active_status": "Set this tournament as finished!",
+      "closed_status": "Set this tournament to Open!"
+    },
     "update": {
       "title": "Hello, dear player",
       "subtitle": "We have a new version for you! Update your app and check out the new features!"
@@ -26,6 +32,12 @@
   "routes": {
     "app_bar": "Screen not found",
     "title": "Error 404",
-    "subtitle": "Oops, it looks like this screen doesn't exist!"
+    "subtitle": "Oops, it looks like this screen doesn't exist!",
+    "btn": "Back to home!"
+  },
+  "status": {
+    "all": "All",
+    "active": "Active",
+    "closed": "Closed"
   }
 }

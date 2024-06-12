@@ -1,9 +1,12 @@
+// imports globais
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/session.dart';
+
+// import dos pacotes
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
-import 'package:new_version_plus/new_version_plus.dart';
 
 part 'home.g.dart';
 

@@ -114,7 +114,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                /*
                 SizedBox(
                   width: double.maxFinite,
                   child: ElevatedButton(
@@ -124,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                       children: [
 
                         Text(
-                          FlutterI18n.translate(context, "pages.home.tournament"),
+                          FlutterI18n.translate(context, "pages.tournament.app_bar", translationParams: {"status": ""}),
                           style: theme.textTheme.displaySmall,
                         ),
 
@@ -144,7 +143,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                */
 
               ],
             ),
