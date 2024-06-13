@@ -9,6 +9,22 @@ part of 'create_tournament.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
+  late final _$tournamentAtom =
+      Atom(name: '_CreateTournamentMobx.tournament', context: context);
+
+  @override
+  Map<String, dynamic> get tournament {
+    _$tournamentAtom.reportRead();
+    return super.tournament;
+  }
+
+  @override
+  set tournament(Map<String, dynamic> value) {
+    _$tournamentAtom.reportWrite(value, super.tournament, () {
+      super.tournament = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_CreateTournamentMobx.isLoading', context: context);
 
@@ -79,6 +95,30 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   @override
   Future<void> _saveTournament() {
     return _$_saveTournamentAsyncAction.run(() => super._saveTournament());
+  }
+
+  late final _$_getPlayersAsyncAction =
+      AsyncAction('_CreateTournamentMobx._getPlayers', context: context);
+
+  @override
+  Future<Map<String, dynamic>> _getPlayers() {
+    return _$_getPlayersAsyncAction.run(() => super._getPlayers());
+  }
+
+  late final _$_sortTeamsAsyncAction =
+      AsyncAction('_CreateTournamentMobx._sortTeams', context: context);
+
+  @override
+  Future<String> _sortTeams(List<String> listTeams) {
+    return _$_sortTeamsAsyncAction.run(() => super._sortTeams(listTeams));
+  }
+
+  late final _$_getKeysAsyncAction =
+      AsyncAction('_CreateTournamentMobx._getKeys', context: context);
+
+  @override
+  Future<List<Map<String, dynamic>>> _getKeys(List<PlayerEntity> list) {
+    return _$_getKeysAsyncAction.run(() => super._getKeys(list));
   }
 
   late final _$_CreateTournamentMobxActionController =
@@ -175,6 +215,7 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   @override
   String toString() {
     return '''
+tournament: ${tournament},
 isLoading: ${isLoading},
 qtdPlayers: ${qtdPlayers},
 qtdDefeats: ${qtdDefeats},

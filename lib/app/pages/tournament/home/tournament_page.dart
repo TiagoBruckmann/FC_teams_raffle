@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/app/core/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -48,6 +49,45 @@ class _TournamentPageState extends State<TournamentPage> {
       child: Observer(
         builder: (context) {
 
+          if ( _mobx.tournamentList.isEmpty ) {
+            return VerifyConnection(
+              keyAppBar: "pages.tournament.app_bar",
+              appBarParams: {"status": "- ${_mobx.filterStatus}"},
+              actionWidgets: [
+
+                PopupMenuButton<String>(
+                  color: theme.colorScheme.background,
+                  icon: Icon(
+                    Icons.filter_alt_outlined,
+                    color: theme.colorScheme.secondary,
+                  ),
+                  onSelected: ( String value ) => _mobx.searchStatus(value),
+                  itemBuilder: (context){
+                    return _mobx.itemsMenu.map((String item){
+
+                      return PopupMenuItem<String>(
+                        value: item,
+                        child: Text(
+                          item,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      );
+
+                    }).toList();
+                  },
+                ),
+
+              ],
+              page: Center(
+                child: Text(
+                  "Você ainda não tem nenhum torneio criado, crie agora mesmo!",
+                  style: theme.textTheme.headlineLarge,
+                ),
+              ),
+              floatingFunction: () => _mobx.goToNewTournament(),
+            );
+          }
+
           return VerifyConnection(
             keyAppBar: "pages.tournament.app_bar",
             appBarParams: {"status": "- ${_mobx.filterStatus}"},
@@ -76,49 +116,53 @@ class _TournamentPageState extends State<TournamentPage> {
               ),
 
             ],
-            page: RefreshIndicator(
-              onRefresh: () => _mobx.refresh(),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric( horizontal: 8, vertical: 10 ),
-                itemCount: _mobx.tournamentList.length,
-                itemBuilder: ( builder, index ) {
+            page: LoadingOverlay(
+              isLoading: _mobx.isLoading,
+              message: "Estamos buscando seus torneios, aguarde mais um pouco!",
+              child: RefreshIndicator(
+                onRefresh: () => _mobx.refresh(),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric( horizontal: 8, vertical: 10 ),
+                  itemCount: _mobx.tournamentList.length,
+                  itemBuilder: ( builder, index ) {
 
-                  TournamentEntity entity = _mobx.tournamentList[index];
+                    TournamentEntity entity = _mobx.tournamentList[index];
 
-                  return Card(
-                    child: ListTile(
-                      onTap: () => _mobx.openTournament( entity ),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                    
-                          Text(
-                            entity.name,
-                            style: theme.textTheme.bodyMedium?.apply(
-                              fontWeightDelta: 9,
+                    return Card(
+                      child: ListTile(
+                        onTap: () => _mobx.openTournament( entity ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+
+                            Text(
+                              entity.name,
+                              style: theme.textTheme.bodyMedium?.apply(
+                                fontWeightDelta: 9,
+                              ),
                             ),
-                          ),
 
-                          IconButton(
-                            tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ? "active_status" : "closed_status" }"),
-                            onPressed: () => _mobx.updStatus( entity ),
-                            icon: Icon(
-                              ( entity.isActive )
-                                  ? Icons.block
-                                  : Icons.check_circle_outline,
+                            IconButton(
+                              tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ? "active_status" : "closed_status" }"),
+                              onPressed: () => _mobx.updStatus( entity ),
+                              icon: Icon(
+                                ( entity.isActive )
+                                    ? Icons.block
+                                    : Icons.check_circle_outline,
+                              ),
                             ),
-                          ),
-                    
-                        ],
-                      ),
-                      subtitle: Text(
-                        FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date}),
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-                  );
 
-                },
+                          ],
+                        ),
+                        subtitle: Text(
+                          FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date}),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ),
+                    );
+
+                  },
+                ),
               ),
             ),
             floatingFunction: () => _mobx.goToNewTournament(),

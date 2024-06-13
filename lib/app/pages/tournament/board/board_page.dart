@@ -1,5 +1,4 @@
 // imports nativos
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -14,7 +13,8 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class BoardPage extends StatefulWidget {
-  const BoardPage({super.key});
+  final Map<String, dynamic> json;
+  const BoardPage({ super.key, required this.json });
 
   @override
   State<BoardPage> createState() => _BoardPageState();
@@ -27,6 +27,7 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     Session.appEvents.sendScreen("board_page");
+    _mobx.getKeys(widget.json);
     super.initState();
   }
 

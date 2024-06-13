@@ -1,6 +1,3 @@
-// imports nativos
-import 'dart:math';
-
 // import dos domains
 import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
 

@@ -110,9 +110,7 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void openTournament( TournamentEntity entity ) {
-
-  }
+  void openTournament( TournamentEntity entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity.toMap());
 
   @action
   Future<void> updStatus( TournamentEntity entity ) async {
@@ -143,6 +141,7 @@ abstract class _TournamentMobx with Store {
   void clear() {
     tournamentList.clear();
     tournamentListComplete.clear();
+    itemsMenu.clear();
     getTournaments();
   }
 

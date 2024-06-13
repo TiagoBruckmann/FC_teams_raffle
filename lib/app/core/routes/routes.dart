@@ -51,7 +51,9 @@ class Routes {
         );
       case "/board" :
         return MaterialPageRoute(
-          builder: (_) => const BoardPage(),
+          builder: (_) => BoardPage(
+            json: args as Map<String, dynamic>,
+          ),
         );
       default:
         return _errorRoute();

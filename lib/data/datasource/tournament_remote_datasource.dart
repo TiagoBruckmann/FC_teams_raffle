@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/data/model/key_model.dart';
 import 'package:fc_teams_drawer/data/model/tournament_model.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 abstract class TournamentRemoteDatasource {
 
   Future<List<TournamentModel>> getTournaments();
+  Future<List<KeyModel>> getKeys( Map<String, dynamic> json );
   Future<void> updStatus( Map<String, dynamic> json );
   Future<void> createTournament( Map<String, dynamic> json );
 
@@ -32,8 +34,8 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     }
 
     return {
-      "finger_print": fingerPrint,
-      "model": deviceInfo.model,
+      "finger_print": fingerPrint.replaceAll("/", "_").replaceAll(" ", "_"),
+      "model": deviceInfo.model.replaceAll(" ", "_"),
     };
 
   }
@@ -45,9 +47,6 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
     final deviceInfo = await _getDeviceInfo();
 
-    print("fingerprint => ${deviceInfo["finger_print"]}");
-    print("model => ${deviceInfo["model"]}");
-
     await db.collection("tournament")
       .doc(deviceInfo["finger_print"])
       .collection(deviceInfo["model"])
@@ -58,6 +57,36 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
           list.add(TournamentModel.fromJson(item.data()));
         }
 
+      })
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(stackTrace.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return list;
+  }
+
+  @override
+  Future<List<KeyModel>> getKeys( Map<String, dynamic> json ) async {
+
+    List<KeyModel> list = [];
+
+    final deviceInfo = await _getDeviceInfo();
+
+    await db.collection("tournament")
+      .doc(deviceInfo["finger_print"])
+      .collection(deviceInfo["model"])
+      .doc(json["created_at"])
+      .collection("keys")
+      .doc(json["step"])
+      // .collection(json["position"].toString())
+      .get()
+      .then((value) {
+        print("getKeys => ${value.data()}");
       })
       .onError((error, stackTrace) {
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
@@ -96,27 +125,89 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   @override
   Future<void> createTournament( Map<String, dynamic> json ) async {
 
-    print("json remote => $json");
-
     final deviceInfo = await _getDeviceInfo();
-    print("deviceInfo => $deviceInfo");
+
+    final tournament = json["tournament"];
+    final players = json["players"];
+    final keys = json["keys"];
 
     await db.collection("tournament")
       .doc(deviceInfo["finger_print"])
       .collection(deviceInfo["model"])
-      .doc(json["created_at"])
-      .set(json)
+      .doc(tournament["created_at"])
+      .set(tournament)
       .onError((error, stackTrace) {
-        print("error => ${error.toString()}");
-        print("stackTrace => ${stackTrace.toString()}");
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
         throw ServerExceptions(stackTrace.toString());
       })
       .catchError((onError) {
-      print("onError => ${onError.toString()}");
         Session.crash.log(onError);
         throw ServerExceptions(onError.toString());
       });
+
+    await _setPlayers(players);
+    await _setKeys(keys);
+
+    return;
+  }
+
+  Future<void> _setPlayers( Map<String, dynamic> json ) async {
+
+    final deviceInfo = await _getDeviceInfo();
+
+    final players = json["players"];
+
+    for ( final item in players ) {
+
+      final playerName = item["name"].replaceAll(" ", "_");
+
+      await db.collection("tournament")
+        .doc(deviceInfo["finger_print"])
+        .collection(deviceInfo["model"])
+        .doc(json["created_at"])
+        .collection("players")
+        .doc(playerName)
+        .set(item)
+        .onError((error, stackTrace) {
+          Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+          throw ServerExceptions(stackTrace.toString());
+        })
+        .catchError((onError) {
+          Session.crash.log(onError);
+          throw ServerExceptions(onError.toString());
+        });
+
+    }
+
+    return;
+  }
+
+  Future<void> _setKeys( Map<String, dynamic> json ) async {
+
+    final deviceInfo = await _getDeviceInfo();
+    final keys = json["keys"];
+
+    for ( final item in keys ) {
+
+      await db.collection("tournament")
+        .doc(deviceInfo["finger_print"])
+        .collection(deviceInfo["model"])
+        .doc(json["created_at"])
+        .collection("keys")
+        .doc(json["step"])
+        .collection(item["position"].toString())
+        .doc()
+        .set(item)
+        .onError((error, stackTrace) {
+          Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+          throw ServerExceptions(stackTrace.toString());
+        })
+        .catchError((onError) {
+          Session.crash.log(onError);
+          throw ServerExceptions(onError.toString());
+        });
+
+    }
 
     return;
   }
