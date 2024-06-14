@@ -141,8 +141,9 @@ abstract class _CreateTournamentMobx with Store {
       "is_active": true,
       "defeats": qtdDefeats,
       "draw_teams": raffleTeams,
-      "created_at": createdAt,
       "current_step": step,
+      "quantity_games": sizeKeys,
+      "created_at": createdAt,
     });
 
     final map = {

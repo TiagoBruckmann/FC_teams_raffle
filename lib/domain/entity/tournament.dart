@@ -3,10 +3,10 @@ import 'package:equatable/equatable.dart';
 class TournamentEntity extends Equatable {
 
   final String name, date, currentStep, createdAt;
-  final int defeats;
+  final int defeats, quantityGames;
   final bool isActive, drawTeams;
 
-  const TournamentEntity( this.name, this.date, this.currentStep, this.isActive, this.defeats, this.drawTeams, this.createdAt );
+  const TournamentEntity( this.name, this.date, this.currentStep, this.quantityGames, this.isActive, this.defeats, this.drawTeams, this.createdAt );
 
   Map<String, dynamic> toMap() {
 
@@ -14,6 +14,7 @@ class TournamentEntity extends Equatable {
       "name": name,
       "date": date,
       "current_step": currentStep,
+      "quantity_games": quantityGames,
       "is_active": isActive,
       "defeats": defeats,
       "draw_teams": drawTeams,
@@ -35,10 +36,11 @@ class TournamentEntity extends Equatable {
     return map;
   }
 
-  Map<String, dynamic> updStep( String step ) {
+  Map<String, dynamic> updStep( String step, int qtdGames ) {
 
     Map<String, dynamic> map = {
       "current_step": step,
+      "quantity_games": qtdGames,
       "created_at": createdAt,
     };
 

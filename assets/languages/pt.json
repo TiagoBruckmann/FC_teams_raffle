@@ -31,10 +31,11 @@
         "player_name": "Nome do {position}º jogador"
       },
       "board": {
-        "octaves": "Oitavas",
-        "quarter": "Quartas",
-        "semi": "Semifinais",
-        "final": "Final"
+        "4": "Oitavas",
+        "3": "Quartas",
+        "2": "Semifinais",
+        "1": "Final",
+        "game_position": "{position}º Jogo"
       }
     },
     "update": {

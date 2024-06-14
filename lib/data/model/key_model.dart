@@ -1,10 +1,7 @@
 // import dos domain
 import 'package:fc_teams_drawer/domain/entity/key.dart';
 
-// import dos pacotes
-import 'package:equatable/equatable.dart';
-
-class KeyModel extends KeyEntity with EquatableMixin {
+class KeyModel extends KeyEntity {
 
   KeyModel( super.position, super.player1, super.player2, super.player1Scoreboard, super.player2Scoreboard, super.winner );
 

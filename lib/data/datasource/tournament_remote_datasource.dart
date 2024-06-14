@@ -77,25 +77,35 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
     final deviceInfo = await _getDeviceInfo();
 
-    await db.collection("tournament")
-      .doc(deviceInfo["finger_print"])
-      .collection(deviceInfo["model"])
-      .doc(json["created_at"])
-      .collection("keys")
-      .doc(json["step"])
-      // .collection(json["position"].toString())
-      .get()
-      .then((value) {
-        print("getKeys => ${value.data()}");
-      })
-      .onError((error, stackTrace) {
-        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(stackTrace.toString());
-      })
-      .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
+    int qtdGames = json["quantity_games"];
+    int game = 0;
+
+    while ( game < qtdGames ) {
+
+      await db.collection("tournament")
+        .doc(deviceInfo["finger_print"])
+        .collection(deviceInfo["model"])
+        .doc(json["created_at"])
+        .collection("keys")
+        .doc(json["step"])
+        .collection((game + 1).toString())
+        .get()
+        .then((value) {
+          list.add(
+            KeyModel.fromJson(value.docs[0].data()),
+          );
+          game++;
+        })
+        .onError((error, stackTrace) {
+          Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+          throw ServerExceptions(stackTrace.toString());
+        })
+        .catchError((onError) {
+          Session.crash.log(onError);
+          throw ServerExceptions(onError.toString());
       });
+
+    }
 
     return list;
   }

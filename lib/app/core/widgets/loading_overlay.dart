@@ -1,3 +1,5 @@
+import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
+import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:flutter/material.dart';
 
 class LoadingOverlay extends StatelessWidget {
@@ -15,7 +17,7 @@ class LoadingOverlay extends StatelessWidget {
       canPop: false,
       onPopInvoked: (bool? canPop) {
         if ( !isLoading ) {
-          return Navigator.pop(context);
+          return NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
         }
       },
       child: Stack(

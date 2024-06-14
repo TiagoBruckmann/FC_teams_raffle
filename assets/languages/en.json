@@ -31,10 +31,11 @@
         "player_name": "{position}th player name"
       },
       "board": {
-        "octaves": "Octaves",
-        "quarter": "Quarterfinal",
-        "semi": "Semifinals",
-        "final": "Final"
+        "4": "Octaves",
+        "3": "Quarterfinal",
+        "2": "Semifinals",
+        "1": "Final",
+        "game_position": "{position}º Game"
       }
     },
     "update": {

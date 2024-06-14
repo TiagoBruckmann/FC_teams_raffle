@@ -1,15 +1,32 @@
-import 'package:equatable/equatable.dart';
+class KeyEntity {
 
-class KeyEntity extends Equatable {
-
-  final String winner;
+  String winner;
   final Map<String, dynamic> player1, player2;
-  final int position, player1Scoreboard, player2Scoreboard;
+  final int position;
+  int player1Scoreboard, player2Scoreboard;
 
-  const KeyEntity(
+  KeyEntity(
     this.position, this.player1, this.player2, this.player1Scoreboard,
     this.player2Scoreboard, this.winner,
   );
+
+  void setPlayer1Goals(int goals ) => player1Scoreboard = goals;
+
+  void setPlayer2Goals( int goals ) => player2Scoreboard = goals;
+
+  void setWinner() {
+
+    if ( player1Scoreboard > player2Scoreboard ) {
+      winner = player1["team"].replaceAll("_", " ");
+      final qtdDefeats = player2["defeats"];
+      player2["defeats"] = qtdDefeats + 1;
+    } else {
+      winner = player2["team"].replaceAll("_", " ");
+      final qtdDefeats = player1["defeats"];
+      player1["defeats"] = qtdDefeats + 1;
+    }
+
+  }
 
   Map<String, dynamic> toMap() {
 
@@ -51,8 +68,5 @@ class KeyEntity extends Equatable {
 
     return map;
   }
-
-  @override
-  List<Object?> get props => [position, player1, player2, player1Scoreboard, player2Scoreboard, winner];
 
 }

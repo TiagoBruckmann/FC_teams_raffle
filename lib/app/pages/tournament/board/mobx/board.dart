@@ -1,5 +1,6 @@
 // import dos pacotes
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 
@@ -14,35 +15,69 @@ abstract class _BoardMobx with Store {
 
   final _useCase = TournamentUseCase(getIt());
 
-  @action
-  void selectOctaves() {}
+  ObservableList<KeyEntity> listKeys = ObservableList();
+
+  @observable
+  int qtdSteps = 2;
 
   @action
-  void selectQuarter() {}
-
-  @action
-  void selectSemi() {}
-
-  @action
-  void selectFinal() {}
+  void selectStep( int step ) { }
   
   @action
   Future<void> getKeys( Map<String, dynamic> params ) async {
 
-    print("params board => $params");
+    final step = params["current_step"];
+
     final json = {
       "created_at": params["created_at"],
-      "step": params["current_step"],
+      "quantity_games": params["quantity_games"],
+      "step": step,
     };
-    print("json board => $json");
+
+    _setSteps(step);
 
     final successOrFailure = await _useCase.getKeys(json);
 
     successOrFailure.fold(
       (failure) => SharedServices.logError("failure_getKeys_board", message: failure.message),
-      (success) => SharedServices.logSuccess("success_getKeys_board"),
+      (success) => _setListKeys(success),
     );
 
+  }
+
+  @action
+  void _setSteps( String stepName ) {
+
+    if ( stepName == "quartas" ) {
+      qtdSteps = 3;
+    } else if ( stepName == "oitavas" ) {
+      qtdSteps = 4;
+    }
+
+  }
+
+  @action
+  void _setListKeys( List<KeyEntity> list ) {
+    listKeys.clear();
+    listKeys.addAll(list);
+  }
+
+  @action
+  void setGoals( KeyEntity entity, { int? player1, int? player2 } ) {
+    player1 = player1 ?? entity.player1Scoreboard;
+    player2 = player2 ?? entity.player2Scoreboard;
+
+    entity.setPlayer1Goals(player1);
+    entity.setPlayer2Goals(player2);
+    
+    final elementIndex = listKeys.indexWhere((element) => element.player1 == entity.player1 && element.player2 == entity.player2);
+    listKeys.removeAt(elementIndex);
+
+    entity.setWinner();
+
+    print("toMap => ${entity.toMap()}");
+
+    listKeys.insert(elementIndex, entity);
   }
 
 }
