@@ -1,17 +1,17 @@
 // imports nativos
-import 'package:fc_teams_drawer/app/pages/tournament/board/widgets/body_key_tournament.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
 import 'package:fc_teams_drawer/session.dart';
 
 // import das telas
+import 'package:fc_teams_drawer/app/pages/tournament/board/widgets/body_key_tournament.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/board/mobx/board.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 class BoardPage extends StatefulWidget {
   final Map<String, dynamic> json;

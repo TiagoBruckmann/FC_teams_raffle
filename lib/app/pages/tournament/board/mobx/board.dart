@@ -1,9 +1,11 @@
-// import dos pacotes
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
+// import das telas
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
-import 'package:fc_teams_drawer/domain/entity/key.dart';
+import 'package:fc_teams_drawer/app/core/services/shared.dart';
+
+// import dos domain
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/domain/entity/key.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
