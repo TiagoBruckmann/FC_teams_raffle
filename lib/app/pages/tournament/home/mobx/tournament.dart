@@ -10,6 +10,7 @@ import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/session.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
 
@@ -110,9 +111,6 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void openTournament( TournamentEntity entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity.toMap());
-
-  @action
   Future<void> updStatus( TournamentEntity entity ) async {
     _updIsLoading(true);
 
@@ -126,6 +124,9 @@ abstract class _TournamentMobx with Store {
       (success) => clear(),
     );
   }
+
+  @action
+  void openTournament( TournamentEntity entity ) => Navigator.pushNamed(_currentContext, "/board", arguments: entity.toMap());
 
   @action
   void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);

@@ -25,7 +25,6 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    await FirebaseAppCheck.instance.activate();
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     PlatformDispatcher.instance.onError = (error, stackTrace) {
@@ -34,6 +33,10 @@ void main() async {
     };
 
     await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
+
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity,
+    );
 
     configureDependencies();
 

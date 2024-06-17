@@ -18,9 +18,13 @@ abstract class TournamentRemoteDatasource {
 
 class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   final FirebaseFirestore db;
-  TournamentRemoteDatasourceImpl( this.db );
+  TournamentRemoteDatasourceImpl( this.db ) {
+    _getDeviceInfo();
+  }
 
-  Future<Map<String, dynamic>> _getDeviceInfo() async {
+  static final Map<String, dynamic> _deviceInfo = {};
+
+  static Future<void> _getDeviceInfo() async {
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
     String fingerPrint = "";
@@ -33,10 +37,12 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
       fingerPrint = deviceInfo.fingerprint;
     }
 
-    return {
+    _deviceInfo.addAll({
       "finger_print": fingerPrint.replaceAll("/", "_").replaceAll(" ", "_"),
       "model": deviceInfo.model.replaceAll(" ", "_"),
-    };
+    });
+
+    return;
 
   }
 
@@ -45,11 +51,13 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
     List<TournamentModel> list = [];
 
-    final deviceInfo = await _getDeviceInfo();
+    if ( _deviceInfo.isEmpty ) {
+      await _getDeviceInfo();
+    }
 
-    await db.collection("tournament")
-      .doc(deviceInfo["finger_print"])
-      .collection(deviceInfo["model"])
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
       .get()
       .then((value) {
 
@@ -73,38 +81,52 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   @override
   Future<List<KeyModel>> getKeys( Map<String, dynamic> json ) async {
 
+    print("remote json => $json");
+
+    if ( _deviceInfo.isEmpty ) {
+      await _getDeviceInfo();
+    }
+    print("_deviceInfo => $_deviceInfo");
+
     List<KeyModel> list = [];
-
-    final deviceInfo = await _getDeviceInfo();
-
-    int qtdGames = json["quantity_games"];
-    int game = 0;
+    final qtdGames = json["quantity_games"];
+    print("qtdGames => $qtdGames");
+    int games = 0;
 
     do {
-      await db.collection("tournament")
-        .doc(deviceInfo["finger_print"])
-        .collection(deviceInfo["model"])
+
+      print("games => $games");
+      await db.collection("tournaments")
+        .doc(_deviceInfo["finger_print"])
+        .collection(_deviceInfo["model"])
         .doc(json["created_at"])
         .collection("keys")
         .doc(json["step"])
-        .collection((game + 1).toString())
+        .collection(( games + 1 ).toString())
         .get()
         .then((value) {
+
+          games++;
           list.add(
             KeyModel.fromJson(value.docs[0].data()),
           );
-          game++;
+
+          if ( list.length == qtdGames ) {
+            print("list => $list");
+            return list;
+          }
+
         })
         .onError((error, stackTrace) {
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-          throw ServerExceptions(stackTrace.toString());
+          throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
           Session.crash.log(onError);
-          throw ServerExceptions(onError.toString());
+          throw ServerExceptions("serverException: ${onError.toString()}");
         });
 
-    } while ( game < qtdGames );
+    } while ( games < qtdGames );
 
     return list;
   }
@@ -112,20 +134,18 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   @override
   Future<void> updStatus( Map<String, dynamic> json ) async {
 
-    final deviceInfo = await _getDeviceInfo();
-
-    await db.collection("tournament")
-      .doc(deviceInfo["finger_print"])
-      .collection(deviceInfo["model"])
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
       .doc(json["created_at"])
       .update(json)
       .onError((error, stackTrace) {
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(stackTrace.toString());
+        throw ServerExceptions("serverException: ${stackTrace.toString()}");
       })
-      .catchError((onError) {
+        .catchError((onError) {
         Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
+        throw ServerExceptions("serverException: ${onError.toString()}");
       });
 
     return;
@@ -134,24 +154,22 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   @override
   Future<void> createTournament( Map<String, dynamic> json ) async {
 
-    final deviceInfo = await _getDeviceInfo();
-
-    final tournament = json["tournament"];
+    final tournaments = json["tournaments"];
     final players = json["players"];
     final keys = json["keys"];
 
-    await db.collection("tournament")
-      .doc(deviceInfo["finger_print"])
-      .collection(deviceInfo["model"])
-      .doc(tournament["created_at"])
-      .set(tournament)
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
+      .doc(tournaments["created_at"])
+      .set(tournaments)
       .onError((error, stackTrace) {
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(stackTrace.toString());
+        throw ServerExceptions("serverException: ${stackTrace.toString()}");
       })
       .catchError((onError) {
         Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
+        throw ServerExceptions("serverException: ${onError.toString()}");
       });
 
     await _setPlayers(players);
@@ -162,28 +180,26 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
   Future<void> _setPlayers( Map<String, dynamic> json ) async {
 
-    final deviceInfo = await _getDeviceInfo();
-
     final players = json["players"];
 
     for ( final item in players ) {
 
       final playerName = item["name"].replaceAll(" ", "_");
 
-      await db.collection("tournament")
-        .doc(deviceInfo["finger_print"])
-        .collection(deviceInfo["model"])
+      await db.collection("tournaments")
+        .doc(_deviceInfo["finger_print"])
+        .collection(_deviceInfo["model"])
         .doc(json["created_at"])
         .collection("players")
         .doc(playerName)
         .set(item)
         .onError((error, stackTrace) {
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-          throw ServerExceptions(stackTrace.toString());
+          throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
           Session.crash.log(onError);
-          throw ServerExceptions(onError.toString());
+          throw ServerExceptions("serverException: ${onError.toString()}");
         });
 
     }
@@ -193,14 +209,13 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
   Future<void> _setKeys( Map<String, dynamic> json ) async {
 
-    final deviceInfo = await _getDeviceInfo();
     final keys = json["keys"];
 
     for ( final item in keys ) {
 
-      await db.collection("tournament")
-        .doc(deviceInfo["finger_print"])
-        .collection(deviceInfo["model"])
+      await db.collection("tournaments")
+        .doc(_deviceInfo["finger_print"])
+        .collection(_deviceInfo["model"])
         .doc(json["created_at"])
         .collection("keys")
         .doc(json["step"])
@@ -209,11 +224,11 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .set(item)
         .onError((error, stackTrace) {
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-          throw ServerExceptions(stackTrace.toString());
+          throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
-          Session.crash.log(onError);
-          throw ServerExceptions(onError.toString());
+        Session.crash.log(onError);
+        throw ServerExceptions("serverException: ${onError.toString()}");
         });
 
     }

@@ -27,9 +27,9 @@ class _BoardPageState extends State<BoardPage> {
 
   @override
   void initState() {
+    super.initState();
     Session.appEvents.sendScreen("board_page");
     _mobx.getKeys(widget.json);
-    super.initState();
   }
 
   @override

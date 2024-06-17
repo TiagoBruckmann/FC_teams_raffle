@@ -151,7 +151,7 @@ abstract class _CreateTournamentMobx with Store {
     });
 
     final map = {
-      "tournament": tournament,
+      "tournaments": tournament,
       "players": {
         "created_at": createdAt,
         "players": response["list_players"],
