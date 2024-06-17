@@ -1,5 +1,4 @@
 // imports nativos
-import 'package:fc_teams_drawer/app/core/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 
 // imports globais

@@ -28,14 +28,17 @@
         "qtd_participants": "Quantity of players",
         "qtd_defeats": "Quantity of defeats",
         "raffle_teams": "Draw teams?",
-        "player_name": "{position}th player name"
+        "player_name": "{position}th player name",
+        "invalid_name": "Fill in the tournament name correctly!",
+        "invalid_players_name": "One or more players have invalid fields, correct them to continue!"
       },
       "board": {
         "4": "Octaves",
         "3": "Quarterfinal",
         "2": "Semifinals",
         "1": "Final",
-        "game_position": "{position}º Game"
+        "game_position": "{position}º Game",
+        "invalid_score": "Select a score for the game!"
       }
     },
     "update": {

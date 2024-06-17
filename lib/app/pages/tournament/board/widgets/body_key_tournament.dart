@@ -1,15 +1,14 @@
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BodyKeyTournamentWidget extends StatelessWidget {
   final String playerName;
   final String teamLogo;
   final Function( int ) function;
-  final int score;
+  final int? score;
   final bool hasWinner;
-  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, required this.score, required this.hasWinner, required this.function });
+  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,7 @@ class BodyKeyTournamentWidget extends StatelessWidget {
           // enabled: !hasWinner,
           color: theme.colorScheme.secondary,
           icon: Text(
-            score.toString(),
+            ( score != null) ? score.toString() : " ",
             style: theme.textTheme.bodySmall,
           ),
           onSelected: ( int value ) => function( value ),

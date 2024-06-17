@@ -80,8 +80,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     int qtdGames = json["quantity_games"];
     int game = 0;
 
-    while ( game < qtdGames ) {
-
+    do {
       await db.collection("tournament")
         .doc(deviceInfo["finger_print"])
         .collection(deviceInfo["model"])
@@ -103,9 +102,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .catchError((onError) {
           Session.crash.log(onError);
           throw ServerExceptions(onError.toString());
-      });
+        });
 
-    }
+    } while ( game < qtdGames );
 
     return list;
   }

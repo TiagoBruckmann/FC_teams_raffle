@@ -3,7 +3,7 @@ class KeyEntity {
   String winner;
   final Map<String, dynamic> player1, player2;
   final int position;
-  int player1Scoreboard, player2Scoreboard;
+  int? player1Scoreboard, player2Scoreboard;
 
   KeyEntity(
     this.position, this.player1, this.player2, this.player1Scoreboard,
@@ -16,7 +16,11 @@ class KeyEntity {
 
   void setWinner() {
 
-    if ( player1Scoreboard > player2Scoreboard ) {
+    if ( player1Scoreboard == null || player2Scoreboard == null ) {
+      return;
+    }
+
+    if ( player1Scoreboard! > player2Scoreboard! ) {
       winner = player1["team"].replaceAll("_", " ");
       final qtdDefeats = player2["defeats"];
       player2["defeats"] = qtdDefeats + 1;

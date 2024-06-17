@@ -28,14 +28,17 @@
         "qtd_participants": "Quantidade de jogadores",
         "qtd_defeats": "Quantidade de derrotas",
         "raffle_teams": "Sortear times?",
-        "player_name": "Nome do {position}º jogador"
+        "player_name": "Nome do {position}º jogador",
+        "invalid_name": "Preencha o nome do torneio corretamente!",
+        "invalid_players_name": "Um ou mais jogadores estão com campos inválidos, corrija-os para continuar!"
       },
       "board": {
         "4": "Oitavas",
         "3": "Quartas",
         "2": "Semifinais",
         "1": "Final",
-        "game_position": "{position}º Jogo"
+        "game_position": "{position}º Jogo",
+        "invalid_score": "Selecione um placar para o jogo!"
       }
     },
     "update": {

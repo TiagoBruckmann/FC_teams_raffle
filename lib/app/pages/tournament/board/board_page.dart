@@ -1,6 +1,5 @@
 // imports nativos
 import 'package:fc_teams_drawer/app/pages/tournament/board/widgets/body_key_tournament.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -13,7 +12,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BoardPage extends StatefulWidget {
   final Map<String, dynamic> json;

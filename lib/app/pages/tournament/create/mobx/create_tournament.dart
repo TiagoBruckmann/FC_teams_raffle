@@ -5,6 +5,7 @@ import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 
@@ -88,7 +89,7 @@ abstract class _CreateTournamentMobx with Store {
     updIsLoading(true);
 
     if ( eventNameController.text.trim().isEmpty || eventNameController.text.trim().length < 3 ) {
-      print("Nome inválido!");
+      CustomSnackBar(messageKey: "pages.tournament.create.invalid_name");
       updIsLoading(false);
       return;
     }
@@ -103,7 +104,7 @@ abstract class _CreateTournamentMobx with Store {
     }
 
     if ( !isValidText ) {
-      print("um ou mais campos estão inválidos!");
+      CustomSnackBar(messageKey: "pages.tournament.create.invalid_players_name");
       updIsLoading(false);
       return;
     }

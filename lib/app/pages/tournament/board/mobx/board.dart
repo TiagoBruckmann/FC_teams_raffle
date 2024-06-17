@@ -1,5 +1,6 @@
 // import dos pacotes
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
@@ -64,11 +65,22 @@ abstract class _BoardMobx with Store {
 
   @action
   void setGoals( KeyEntity entity, { int? player1, int? player2 } ) {
+
+    if ( player1 == null && player2 == null ) {
+      CustomSnackBar(messageKey: "pages.tournament.board.invalid_score");
+      return;
+    }
+
     player1 = player1 ?? entity.player1Scoreboard;
     player2 = player2 ?? entity.player2Scoreboard;
 
-    entity.setPlayer1Goals(player1);
-    entity.setPlayer2Goals(player2);
+    if ( player1 != null ) {
+      entity.setPlayer1Goals(player1);
+    }
+
+    if ( player2 != null ) {
+      entity.setPlayer2Goals(player2);
+    }
     
     final elementIndex = listKeys.indexWhere((element) => element.player1 == entity.player1 && element.player2 == entity.player2);
     listKeys.removeAt(elementIndex);
