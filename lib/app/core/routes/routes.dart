@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:flutter/material.dart';
 
 // import das telas
@@ -52,7 +53,7 @@ class Routes {
       case "/board" :
         return MaterialPageRoute(
           builder: (_) => BoardPage(
-            json: args as Map<String, dynamic>,
+            tournament: args as TournamentEntity,
           ),
         );
       default:

@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -35,7 +36,7 @@ abstract class _CreateTournamentMobx with Store {
   ObservableList<TextEditingController> playersController = ObservableList();
 
   @observable
-  Map<String, dynamic> tournament = {};
+  late TournamentEntity tournament;
 
   @observable
   bool isLoading = true;
@@ -128,6 +129,7 @@ abstract class _CreateTournamentMobx with Store {
 
     final response = await _getPlayers();
 
+    final listPlayers = response["list_players"] as List<Map<String, dynamic>>;
     final listKeys = response["list_keys"] as List<Map<String, dynamic>>;
 
     final int sizeKeys = listKeys.length;
@@ -139,7 +141,7 @@ abstract class _CreateTournamentMobx with Store {
       step = "oitavas";
     }
 
-    tournament.addAll({
+    final mapTournament = {
       "name": eventNameController.text.trim(),
       "date": date,
       "is_active": true,
@@ -147,14 +149,22 @@ abstract class _CreateTournamentMobx with Store {
       "draw_teams": raffleTeams,
       "current_step": step,
       "quantity_games": sizeKeys,
+      "quantity_players": listPlayers.length,
       "created_at": createdAt,
-    });
+    };
+
+    final List<KeyEntity> keys = [];
+    for ( final item in listKeys ) {
+      keys.add(KeyEntity.fromJson(item));
+    }
+
+    tournament = TournamentEntity.fromJson(mapTournament, keys);
 
     final map = {
-      "tournaments": tournament,
+      "tournaments": mapTournament,
       "players": {
         "created_at": createdAt,
-        "players": response["list_players"],
+        "players": listPlayers,
       },
       "keys": {
         "step": step,
@@ -265,7 +275,7 @@ abstract class _CreateTournamentMobx with Store {
     }
 
     for ( final item in listKeys ) {
-      convertedList.add(item.toMap());
+      convertedList.add(item.toMap({}));
     }
 
     return convertedList;

@@ -13,15 +13,19 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       Atom(name: '_CreateTournamentMobx.tournament', context: context);
 
   @override
-  Map<String, dynamic> get tournament {
+  TournamentEntity get tournament {
     _$tournamentAtom.reportRead();
     return super.tournament;
   }
 
+  bool _tournamentIsInitialized = false;
+
   @override
-  set tournament(Map<String, dynamic> value) {
-    _$tournamentAtom.reportWrite(value, super.tournament, () {
+  set tournament(TournamentEntity value) {
+    _$tournamentAtom.reportWrite(
+        value, _tournamentIsInitialized ? super.tournament : null, () {
       super.tournament = value;
+      _tournamentIsInitialized = true;
     });
   }
 

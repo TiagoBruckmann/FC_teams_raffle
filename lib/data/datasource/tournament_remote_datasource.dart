@@ -11,9 +11,9 @@ import 'package:firebase_performance/firebase_performance.dart';
 abstract class TournamentRemoteDatasource {
 
   Future<List<TournamentModel>> getTournaments();
-  Future<List<KeyModel>> getKeys( Map<String, dynamic> json );
   Future<void> updStatus( Map<String, dynamic> json );
   Future<void> createTournament( Map<String, dynamic> json );
+  Future<void> updKey( Map<String, dynamic> json );
 
 }
 
@@ -68,7 +68,8 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         metric.stop();
 
         for ( final item in value.docs ) {
-          list.add(TournamentModel.fromJson(item.data()));
+          final listKeys = await _getKeys(item.data());
+          list.add(TournamentModel.fromJson(item.data(), listKeys));
         }
 
       })
@@ -86,24 +87,18 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     return list;
   }
 
-  @override
-  Future<List<KeyModel>> getKeys( Map<String, dynamic> json ) async {
-
-    print("remote json => $json");
+  Future<List<KeyModel>> _getKeys( Map<String, dynamic> json ) async {
 
     if ( _deviceInfo.isEmpty ) {
       await _getDeviceInfo();
     }
-    print("_deviceInfo => $_deviceInfo");
 
     List<KeyModel> list = [];
     final qtdGames = json["quantity_games"];
-    print("qtdGames => $qtdGames");
     int games = 0;
 
     do {
 
-      print("games => $games");
       final metric = Session.performance.newHttpMetric("get_keys", HttpMethod.Get);
       await metric.start();
 
@@ -112,7 +107,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .collection(_deviceInfo["model"])
         .doc(json["created_at"])
         .collection("keys")
-        .doc(json["step"])
+        .doc(json["current_step"])
         .collection(( games + 1 ).toString())
         .get()
         .then((value) async {
@@ -120,12 +115,13 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
           await metric.stop();
 
           games++;
-          list.add(
-            KeyModel.fromJson(value.docs[0].data()),
-          );
+          if ( value.docs.isNotEmpty ) {
+            list.add(
+              KeyModel.fromJson(value.docs[0].data()),
+            );
+          }
 
           if ( list.length == qtdGames ) {
-            print("list => $list");
             return list;
           }
 
@@ -259,7 +255,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .collection("keys")
         .doc(json["step"])
         .collection(item["position"].toString())
-        .doc()
+        .doc(item["position"].toString())
         .set(item)
         .onError((error, stackTrace) {
           metric.stop();
@@ -277,6 +273,108 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     }
 
     return;
+  }
+
+  @override
+  Future<void> updKey( Map<String, dynamic> json ) async {
+
+    final metric = Session.performance.newHttpMetric("update_key", HttpMethod.Put);
+    await metric.start();
+
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
+      .doc(json["created_at"])
+      .collection("keys")
+      .doc(json["step"])
+      .collection(json["position"].toString())
+      .doc(json["position"].toString())
+      .update(json)
+      .onError((error, stackTrace) {
+        metric.stop();
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions("serverException: ${stackTrace.toString()}");
+      })
+      .catchError((onError) {
+        metric.stop();
+        Session.crash.log(onError);
+        throw ServerExceptions("serverException: ${onError.toString()}");
+      });
+
+    await metric.stop();
+
+    return;
+  }
+
+  Future<void> _createNewKey( Map<String, dynamic> json ) async {
+
+    int position = json["position"] + 1;
+
+    final map = {
+      "position": position,
+      "player1": json["player1"],
+      "player2": {},
+      "player1_scoreboard": null,
+      "player2_scoreboard": null,
+      "winner": "",
+    };
+
+    final metric = Session.performance.newHttpMetric("create_new_key", HttpMethod.Post);
+    await metric.start();
+
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
+      .doc(json["created_at"])
+      .collection("keys")
+      .doc(json["step"])
+      .collection(position.toString())
+      .doc(position.toString())
+      .set(map)
+      .onError((error, stackTrace) {
+        metric.stop();
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions("serverException: ${stackTrace.toString()}");
+      })
+      .catchError((onError) {
+        metric.stop();
+        Session.crash.log(onError);
+        throw ServerExceptions("serverException: ${onError.toString()}");
+      });
+
+    await metric.stop();
+  }
+
+  Future<KeyModel> _updSecondPlayer( Map<String, dynamic> json ) async {
+    final metric = Session.performance.newHttpMetric("update_second_player", HttpMethod.Put);
+    await metric.start();
+
+    await db.collection("tournaments")
+      .doc(_deviceInfo["finger_print"])
+      .collection(_deviceInfo["model"])
+      .doc(json["created_at"])
+      .collection("keys")
+      .doc(json["step"])
+      .collection(json["position"].toString())
+      .doc(json["position"].toString())
+      .update(json)
+      .then((onValue) async {
+
+        await metric.stop();
+
+      })
+      .onError((error, stackTrace) {
+        metric.stop();
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions("serverException: ${stackTrace.toString()}");
+      })
+      .catchError((onError) {
+        metric.stop();
+        Session.crash.log(onError);
+        throw ServerExceptions("serverException: ${onError.toString()}");
+      });
+
+    throw CacheExceptions("CacheExceptions: Não faço nem ideia!");
   }
 
 }

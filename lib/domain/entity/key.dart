@@ -10,6 +10,20 @@ class KeyEntity {
     this.player2Scoreboard, this.winner,
   );
 
+  factory KeyEntity.fromJson( Map<String, dynamic> json ) {
+
+    final hasNotWinner = json["winner"].toString().trim().isEmpty;
+
+    return KeyEntity(
+      json["position"],
+      json["player1"],
+      json["player2"],
+      hasNotWinner ? null : json["player1_scoreboard"],
+      hasNotWinner ? null : json["player2_scoreboard"],
+      json["winner"],
+    );
+  }
+
   void setPlayer1Goals(int goals ) => player1Scoreboard = goals;
 
   void setPlayer2Goals( int goals ) => player2Scoreboard = goals;
@@ -32,18 +46,18 @@ class KeyEntity {
 
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap( Map<String, dynamic> json ) {
 
-    Map<String, dynamic> map = {
+    json.addAll({
       "position": position,
       "player1": player1,
       "player2": player2,
       "player1_scoreboard": player1Scoreboard,
       "player2_scoreboard": player2Scoreboard,
       "winner": winner,
-    };
+    });
 
-    return map;
+    return json;
   }
 
   Map<String, dynamic> updateMug( Map<String, dynamic> secondPlayer ) {
@@ -72,5 +86,8 @@ class KeyEntity {
 
     return map;
   }
+
+  @override
+  String toString() => "KeyEntity($player1, $player1Scoreboard, $player2, $player2Scoreboard, $position, $winner)";
 
 }

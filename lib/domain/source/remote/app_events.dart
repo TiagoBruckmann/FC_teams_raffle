@@ -10,10 +10,12 @@ class AppEvents {
 
   final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
 
-  Future<void> sendScreen( String screenName, { Map<String, dynamic>? params } ) async {
+  Future<void> sendScreen( String screenName, { String? params } ) async {
     await _analytics.logScreenView(
       screenName: screenName,
-      parameters: params,
+      parameters: {
+        "params": params,
+      },
     );
   }
 

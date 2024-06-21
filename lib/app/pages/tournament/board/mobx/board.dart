@@ -2,9 +2,10 @@
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 
 // import dos domain
+import 'package:fc_teams_drawer/domain/entity/key.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
@@ -21,32 +22,16 @@ abstract class _BoardMobx with Store {
   ObservableList<KeyEntity> listKeys = ObservableList();
 
   @observable
+  late TournamentEntity _tournament;
+
+  @observable
+  int selectedStep = 2;
+
+  @observable
   int qtdSteps = 2;
 
   @action
-  void selectStep( int step ) { }
-  
-  @action
-  Future<void> getKeys( Map<String, dynamic> params ) async {
-
-    final step = params["current_step"];
-
-    final json = {
-      "created_at": params["created_at"],
-      "quantity_games": params["quantity_games"],
-      "step": step,
-    };
-
-    _setSteps(step);
-
-    final successOrFailure = await _useCase.getKeys(json);
-
-    successOrFailure.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (success) => _setListKeys(success),
-    );
-
-  }
+  void selectStep( int step ) => selectedStep = step;
 
   @action
   void _setSteps( String stepName ) {
@@ -60,13 +45,21 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  void _setListKeys( List<KeyEntity> list ) {
-    listKeys.clear();
-    listKeys.addAll(list);
+  Future<void> setListKeys( TournamentEntity tournament ) async {
+    _tournament = tournament;
+    _setSteps(tournament.currentStep);
+
+    if ( tournament.listKeys.isEmpty ) {
+      return;
+    }
+
+    listKeys.addAll(tournament.listKeys);
+
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   @action
-  void setGoals( KeyEntity entity, { int? player1, int? player2 } ) {
+  Future<void> setGoals( KeyEntity entity, Map<String, dynamic> map, { int? player1, int? player2 } ) async {
 
     if ( player1 == null && player2 == null ) {
       CustomSnackBar(messageKey: "pages.tournament.board.invalid_score");
@@ -89,9 +82,35 @@ abstract class _BoardMobx with Store {
 
     entity.setWinner();
 
-    print("toMap => ${entity.toMap()}");
-
     listKeys.insert(elementIndex, entity);
+
+    if ( entity.player1Scoreboard != null && entity.player2Scoreboard != null ) {
+      await _updGame(entity.toMap(map));
+    }
+
+  }
+
+  Future<void> _updGame( Map<String, dynamic> json ) async {
+
+    final successOrFailure = await _useCase.updKey( json );
+
+    successOrFailure.fold(
+      (failure) => CustomSnackBar(messageKey: failure.message),
+      (success) => Session.logs.successLog("key_winner_${json["winner"]}"),
+    );
+
+  }
+
+  void _validateKey() {
+
+    if ( _tournament.quantityPlayers == 3 ) {
+
+    }
+
+  }
+
+  Future<void> _updKey() async {
+
   }
 
 }

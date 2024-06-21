@@ -48,7 +48,7 @@ class BodyKeyTournamentWidget extends StatelessWidget {
       ),
       subtitle: Card(
         child: PopupMenuButton<int>(
-          // enabled: !hasWinner,
+          enabled: !hasWinner,
           color: theme.colorScheme.secondary,
           icon: Text(
             ( score != null) ? score.toString() : " ",
@@ -58,7 +58,7 @@ class BodyKeyTournamentWidget extends StatelessWidget {
           itemBuilder: (context) {
         
             final List<int> goals = [];
-            for ( int i = 1; i < 16; i++ ) {
+            for ( int i = 0; i < 16; i++ ) {
               goals.add(i);
             }
         
@@ -77,43 +77,6 @@ class BodyKeyTournamentWidget extends StatelessWidget {
           },
         ),
       ),
-      /*
-      subtitle: Card(
-        child: DropdownButton(
-          padding: const EdgeInsets.symmetric( horizontal: 8 ),
-          underline: const Padding(padding: EdgeInsets.zero),
-          borderRadius: BorderRadius.circular(5),
-          dropdownColor: theme.colorScheme.secondary,
-          onChanged: ( int? value ) => function( value! ),
-          value: score,
-          isExpanded: false,
-          menuMaxHeight: 250,
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            color: theme.colorScheme.secondary,
-            size: 24,
-          ),
-          hint: Text(
-            FlutterI18n.translate(context, "Placar"),
-            style: theme.textTheme.bodySmall,
-          ),
-          items: ( hasWinner )
-          ? null
-          : [
-
-            for ( int i = 1; i < 16; i++ )
-              DropdownMenuItem(
-                value: i,
-                child: Text(
-                  "$i",
-                  style: theme.textTheme.bodySmall,
-                ),
-              ),
-
-          ],
-        ),
-      ),
-       */
     );
   }
 }
