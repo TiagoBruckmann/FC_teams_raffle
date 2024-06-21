@@ -1,7 +1,6 @@
 // import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -70,7 +69,7 @@ abstract class _TournamentMobx with Store {
     final successOrFailure = await _useCase.getTournaments();
 
     successOrFailure.fold(
-      (failure) => SharedServices.logError("failure_get_tournaments", message: failure.message),
+      (failure) => Session.logs.errorLog(failure.message),
       (success) {
         Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
         _addTournamentList(list: success);
@@ -118,7 +117,7 @@ abstract class _TournamentMobx with Store {
 
     response.fold(
       (failure) {
-        SharedServices.logError("failure_upd_status_tournament", message: failure.message);
+        Session.logs.errorLog(failure.message);
         _updIsLoading(false);
       },
       (success) => clear(),

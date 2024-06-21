@@ -3,7 +3,7 @@ import 'dart:io';
 
 // import dos pacotes
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class AppEvents {
@@ -47,7 +47,15 @@ class AppEvents {
 
   Future<void> _logEvent(String eventName, Map<String, String> params) async {
 
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    NewVersionPlus versionPlus = NewVersionPlus();
+    final version = await versionPlus.getVersionStatus();
+
+    if ( version != null ) {
+      params.addAll({
+        'app_version': version.localVersion,
+      });
+    }
+
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
     String platform = "Android";
@@ -63,7 +71,6 @@ class AppEvents {
       'platform': platform,
       'device': deviceInfo.model,
       'device_version': ( Platform.isIOS ) ? deviceInfo.systemVersion : deviceInfo.version.release,
-      'app_version': packageInfo.version,
     });
 
     await _analytics.logEvent(

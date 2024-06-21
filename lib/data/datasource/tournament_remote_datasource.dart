@@ -6,6 +6,7 @@ import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/data/model/key_model.dart';
 import 'package:fc_teams_drawer/data/model/tournament_model.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 
 abstract class TournamentRemoteDatasource {
 
@@ -55,11 +56,16 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
       await _getDeviceInfo();
     }
 
+    final metric = Session.performance.newHttpMetric("get_tournaments", HttpMethod.Get);
+    await metric.start();
+
     await db.collection("tournaments")
       .doc(_deviceInfo["finger_print"])
       .collection(_deviceInfo["model"])
       .get()
-      .then((value) {
+      .then((value) async {
+
+        metric.stop();
 
         for ( final item in value.docs ) {
           list.add(TournamentModel.fromJson(item.data()));
@@ -67,10 +73,12 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
       })
       .onError((error, stackTrace) {
+        metric.stop();
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
         throw ServerExceptions(stackTrace.toString());
       })
       .catchError((onError) {
+        metric.stop();
         Session.crash.log(onError);
         throw ServerExceptions(onError.toString());
       });
@@ -96,6 +104,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     do {
 
       print("games => $games");
+      final metric = Session.performance.newHttpMetric("get_keys", HttpMethod.Get);
+      await metric.start();
+
       await db.collection("tournaments")
         .doc(_deviceInfo["finger_print"])
         .collection(_deviceInfo["model"])
@@ -104,7 +115,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .doc(json["step"])
         .collection(( games + 1 ).toString())
         .get()
-        .then((value) {
+        .then((value) async {
+
+          await metric.stop();
 
           games++;
           list.add(
@@ -118,10 +131,12 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
         })
         .onError((error, stackTrace) {
+          metric.stop();
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
           throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
+          metric.stop();
           Session.crash.log(onError);
           throw ServerExceptions("serverException: ${onError.toString()}");
         });
@@ -134,19 +149,26 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   @override
   Future<void> updStatus( Map<String, dynamic> json ) async {
 
+    final metric = Session.performance.newHttpMetric("update_status", HttpMethod.Put);
+    await metric.start();
+
     await db.collection("tournaments")
       .doc(_deviceInfo["finger_print"])
       .collection(_deviceInfo["model"])
       .doc(json["created_at"])
       .update(json)
       .onError((error, stackTrace) {
+        metric.stop();
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
         throw ServerExceptions("serverException: ${stackTrace.toString()}");
       })
-        .catchError((onError) {
+      .catchError((onError) {
+        metric.stop();
         Session.crash.log(onError);
         throw ServerExceptions("serverException: ${onError.toString()}");
       });
+
+    await metric.stop();
 
     return;
   }
@@ -158,19 +180,26 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     final players = json["players"];
     final keys = json["keys"];
 
+    final metric = Session.performance.newHttpMetric("create_tournament", HttpMethod.Post);
+    await metric.start();
+
     await db.collection("tournaments")
       .doc(_deviceInfo["finger_print"])
       .collection(_deviceInfo["model"])
       .doc(tournaments["created_at"])
       .set(tournaments)
       .onError((error, stackTrace) {
+        metric.stop();
         Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
         throw ServerExceptions("serverException: ${stackTrace.toString()}");
       })
       .catchError((onError) {
+        metric.stop();
         Session.crash.log(onError);
         throw ServerExceptions("serverException: ${onError.toString()}");
       });
+
+    await metric.stop();
 
     await _setPlayers(players);
     await _setKeys(keys);
@@ -186,6 +215,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
       final playerName = item["name"].replaceAll(" ", "_");
 
+      final metric = Session.performance.newHttpMetric("create_players", HttpMethod.Post);
+      await metric.start();
+
       await db.collection("tournaments")
         .doc(_deviceInfo["finger_print"])
         .collection(_deviceInfo["model"])
@@ -194,13 +226,17 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .doc(playerName)
         .set(item)
         .onError((error, stackTrace) {
+          metric.stop();
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
           throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
+          metric.stop();
           Session.crash.log(onError);
           throw ServerExceptions("serverException: ${onError.toString()}");
         });
+
+      await metric.stop();
 
     }
 
@@ -213,6 +249,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
     for ( final item in keys ) {
 
+      final metric = Session.performance.newHttpMetric("create_keys", HttpMethod.Post);
+      await metric.start();
+
       await db.collection("tournaments")
         .doc(_deviceInfo["finger_print"])
         .collection(_deviceInfo["model"])
@@ -223,13 +262,17 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .doc()
         .set(item)
         .onError((error, stackTrace) {
+          metric.stop();
           Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
           throw ServerExceptions("serverException: ${stackTrace.toString()}");
         })
         .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions("serverException: ${onError.toString()}");
+          metric.stop();
+          Session.crash.log(onError);
+          throw ServerExceptions("serverException: ${onError.toString()}");
         });
+
+      await metric.stop();
 
     }
 

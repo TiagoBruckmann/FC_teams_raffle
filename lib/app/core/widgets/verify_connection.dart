@@ -55,7 +55,7 @@ class VerifyConnection extends StatelessWidget {
               onPressed: () => floatingFunction!.call(),
               child: Icon(
                 Icons.add,
-                color: theme.colorScheme.background,
+                color: theme.colorScheme.surface,
                 size: 25,
               ),
             ),

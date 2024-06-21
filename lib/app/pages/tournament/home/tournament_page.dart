@@ -55,7 +55,7 @@ class _TournamentPageState extends State<TournamentPage> {
               actionWidgets: [
 
                 PopupMenuButton<String>(
-                  color: theme.colorScheme.background,
+                  color: theme.colorScheme.surface,
                   icon: Icon(
                     Icons.filter_alt_outlined,
                     color: theme.colorScheme.secondary,
@@ -93,7 +93,7 @@ class _TournamentPageState extends State<TournamentPage> {
             actionWidgets: [
 
               PopupMenuButton<String>(
-                color: theme.colorScheme.background,
+                color: theme.colorScheme.surface,
                 icon: Icon(
                   Icons.filter_alt_outlined,
                   color: theme.colorScheme.secondary,

@@ -3,7 +3,6 @@ import 'package:fc_teams_drawer/app/core/routes/routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/firebase_options.dart';
 import 'package:fc_teams_drawer/app/core/services/languages.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/app/core/style/themes.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
@@ -64,6 +63,6 @@ void main() async {
 
   }, (error, stack) async {
     String message = "${error.toString()} - ${stack.toString()}";
-    SharedServices.logError("error main => ", message: message);
+    Session.logs.errorLog("error main => $message");
   });
 }

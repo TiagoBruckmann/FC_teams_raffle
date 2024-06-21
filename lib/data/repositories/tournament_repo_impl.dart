@@ -16,11 +16,12 @@ class TournamentRepoImpl implements TournamentRepo {
     try {
       final result = await tournamentRemoteDatasource.getTournaments();
       return right(result);
-    } on ServerExceptions {
-      return left(ServerFailure());
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("get_tournaments_server_error", error: error.message);
+      return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("get_tournaments_error", error: e);
-      return left(GeneralFailure());
+      return left(GeneralFailure(e.toString()));
     }
   }
 
@@ -29,11 +30,12 @@ class TournamentRepoImpl implements TournamentRepo {
     try {
       final result = await tournamentRemoteDatasource.getKeys( json );
       return right(result);
-    } on ServerExceptions {
-      return left(ServerFailure());
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("get_keys_server_error", error: error.message);
+      return left(ServerFailure(error.message));
     } catch (e) {
-      Session.crash.onError("get_tournaments_error", error: e);
-      return left(GeneralFailure());
+      Session.crash.onError("get_keys_error", error: e);
+      return left(GeneralFailure(e.toString()));
     }
   }
 
@@ -42,11 +44,12 @@ class TournamentRepoImpl implements TournamentRepo {
     try {
       final result = await tournamentRemoteDatasource.updStatus( json );
       return right(result);
-    } on ServerExceptions {
-      return left(ServerFailure());
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("upd_status_server_error", error: error.message);
+      return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("upd_status_error", error: e);
-      return left(GeneralFailure());
+      return left(GeneralFailure(e.toString()));
     }
   }
 
@@ -55,11 +58,12 @@ class TournamentRepoImpl implements TournamentRepo {
     try {
       final result = await tournamentRemoteDatasource.createTournament( json );
       return right(result);
-    } on ServerExceptions {
-      return left(ServerFailure());
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("create_tournament_server_error", error: error.message);
+      return left(ServerFailure(error.message));
     } catch (e) {
-      Session.crash.onError("upd_status_error", error: e);
-      return left(GeneralFailure());
+      Session.crash.onError("create_tournament_error", error: e);
+      return left(GeneralFailure(e.toString()));
     }
   }
 

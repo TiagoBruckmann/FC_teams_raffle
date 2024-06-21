@@ -154,7 +154,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                       activeTrackColor: theme.colorScheme.secondary,
                       inactiveThumbColor: theme.colorScheme.primary,
                       inactiveTrackColor: theme.colorScheme.error,
-                      trackOutlineColor: MaterialStateColor.resolveWith((states) => theme.colorScheme.primary),
+                      trackOutlineColor: WidgetStateColor.resolveWith((states) => theme.colorScheme.primary),
                       title: Text(
                         FlutterI18n.translate(context, "pages.tournament.create.raffle_teams"),
                         style: theme.textTheme.bodySmall,
@@ -189,7 +189,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                           FlutterI18n.translate(context, "btn_generate"),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.displayMedium!.apply(
-                            color: theme.colorScheme.background,
+                            color: theme.colorScheme.surface,
                           ),
                         ),
                       ),

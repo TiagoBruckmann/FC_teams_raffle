@@ -114,7 +114,7 @@ class Routes {
                         FlutterI18n.translate(context, "routes.btn"),
                         textAlign: TextAlign.center,
                         style: theme.textTheme.displayMedium!.apply(
-                          color: theme.colorScheme.background,
+                          color: theme.colorScheme.surface,
                         ),
                       ),
                     ),

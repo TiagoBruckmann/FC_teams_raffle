@@ -1,5 +1,4 @@
 import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:isar/isar.dart';
@@ -20,7 +19,7 @@ class LocalDb {
       return Future.value(Isar.getInstance());
 
     } catch (ex) {
-      SharedServices.logError("Failed to open database");
+      Session.logs.errorLog("Failed to open database");
       throw Exception('Failed to open database: $ex');
     }
 
@@ -28,7 +27,7 @@ class LocalDb {
 
   Future<bool> syncFCTeamDataModel( FCTeamsCollection dataModel ) async {
     try {
-      SharedServices.logSuccess("Inserting data sync in FCTeams database");
+      Session.logs.successLog("Inserting data sync in FCTeams database");
 
       final response = await _openDb();
 
@@ -44,10 +43,10 @@ class LocalDb {
 
       await _insert(object: dataModel);
 
-      SharedServices.logSuccess("Data sync inserted in FCTeams database");
+      Session.logs.successLog("Data sync inserted in FCTeams database");
       return true;
     } catch (ex) {
-      SharedServices.logError(ex.toString(), message: "No controls were found in the FCTeams database.");
+      Session.logs.errorLog(ex.toString());
       throw Exception('No controls were found in the FCTeams database. ${ex.toString()}');
     }
   }
@@ -67,12 +66,13 @@ class LocalDb {
         return null;
       }
 
-      SharedServices.logSuccess("Data Sync gotten with success in FCTeamsCollection");
+      Session.logs.successLog("Data Sync gotten with success in FCTeamsCollection");
 
       return dataSync;
 
     } catch (e, s) {
-      SharedServices.logError(e.toString(), message: s.toString());
+      String message = "${e.toString()} - ${s.toString()}";
+      Session.logs.errorLog(message);
       throw Exception("${e.toString()} - ${s.toString()}");
     }
 
@@ -99,11 +99,11 @@ class LocalDb {
     }
 
     if ( response < 0 ) {
-      SharedServices.logError("Data Sync inserted with error");
+      Session.logs.errorLog("Data Sync inserted with error");
       return false;
     }
 
-    SharedServices.logSuccess("Data Sync inserted with success");
+    Session.logs.successLog("Data Sync inserted with success");
     return true;
 
   }

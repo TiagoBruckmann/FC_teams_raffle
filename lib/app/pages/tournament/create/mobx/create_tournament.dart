@@ -168,7 +168,7 @@ abstract class _CreateTournamentMobx with Store {
     successOrFailure.fold(
       (failure) {
         updIsLoading(false);
-        SharedServices.logError("failure_save_tournaments", message: failure.message);
+        Session.logs.errorLog(failure.message);
       },
       (success) => _goToBoard(),
     );
