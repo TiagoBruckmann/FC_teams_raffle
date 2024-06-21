@@ -24,3 +24,24 @@ Versão publicada no dia 05/06/2024.
 </ul>
 
 ---
+
+### :gear: Versão 1.1.0
+
+Está é a versão adiciona a criação de torneios, sorteando os jogos e também os times da competição.
+
+Versão publicada no dia ?/?/2024.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Criação de torneios.</li>
+</ul>
+
+### :star2: Melhorias
+
+<ul>
+    <li>Melhoria do sistema de logs.</li>
+    <li>Analise de performance.</li>
+</ul>
+
+---
