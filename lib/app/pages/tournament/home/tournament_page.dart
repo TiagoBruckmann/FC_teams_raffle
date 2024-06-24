@@ -28,8 +28,8 @@ class _TournamentPageState extends State<TournamentPage> {
 
   @override
   void initState() {
-    Session.appEvents.sendScreen("tournament_page");
     super.initState();
+    Session.appEvents.sendScreen("tournament_page");
     _mobx.getTournaments();
   }
 

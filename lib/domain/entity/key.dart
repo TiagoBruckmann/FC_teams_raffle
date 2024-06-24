@@ -60,16 +60,6 @@ class KeyEntity {
     return json;
   }
 
-  Map<String, dynamic> updateMug( Map<String, dynamic> secondPlayer ) {
-
-    Map<String, dynamic> map = {
-      "position": position,
-      "player2": secondPlayer,
-    };
-
-    return map;
-  }
-
   Map<String, dynamic> updScoreBoard( int player1Goals, int player2Goals ) {
 
     String winner = player1["team"];

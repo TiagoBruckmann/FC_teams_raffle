@@ -7,6 +7,6 @@ abstract class TournamentRepo {
   Future<Either<Failure, List<TournamentEntity>>> getTournaments();
   Future<Either<Failure, void>> updStatus( Map<String, dynamic> json );
   Future<Either<Failure, void>> createTournament( Map<String, dynamic> json );
-  Future<Either<Failure, void>> updKey( Map<String, dynamic> json );
+  Future<Either<Failure, void>> updWinner( Map<String, dynamic> json );
 
 }

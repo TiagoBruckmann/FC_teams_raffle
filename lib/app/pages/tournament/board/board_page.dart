@@ -31,7 +31,7 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     super.initState();
-    Session.appEvents.sendScreen("board_page", params: widget.tournament.toString());
+    Session.appEvents.sendScreen("board_page", params: widget.tournament.toMap().toString());
     _mobx.setListKeys(widget.tournament);
   }
 
@@ -103,7 +103,7 @@ class _BoardPageState extends State<BoardPage> {
                               teamLogo: entity.player1["team"],
                               score: entity.player1Scoreboard,
                               hasWinner: entity.winner.trim().isNotEmpty,
-                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player1: value),
+                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player1ScoreBoard: value),
                             ),
                           ),
 
@@ -113,7 +113,7 @@ class _BoardPageState extends State<BoardPage> {
                               teamLogo: entity.player2["team"] ?? "",
                               score: entity.player2Scoreboard,
                               hasWinner: entity.winner.trim().isNotEmpty,
-                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player2: value),
+                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player2ScoreBoard: value),
                             ),
                           ),
 

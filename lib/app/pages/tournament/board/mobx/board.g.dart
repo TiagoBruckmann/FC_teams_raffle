@@ -74,9 +74,26 @@ mixin _$BoardMobx on _BoardMobx, Store {
 
   @override
   Future<void> setGoals(KeyEntity entity, Map<String, dynamic> map,
-      {int? player1, int? player2}) {
-    return _$setGoalsAsyncAction.run(
-        () => super.setGoals(entity, map, player1: player1, player2: player2));
+      {int? player1ScoreBoard, int? player2ScoreBoard}) {
+    return _$setGoalsAsyncAction.run(() => super.setGoals(entity, map,
+        player1ScoreBoard: player1ScoreBoard,
+        player2ScoreBoard: player2ScoreBoard));
+  }
+
+  late final _$_updWinnerAsyncAction =
+      AsyncAction('_BoardMobx._updWinner', context: context);
+
+  @override
+  Future<void> _updWinner(Map<String, dynamic> json) {
+    return _$_updWinnerAsyncAction.run(() => super._updWinner(json));
+  }
+
+  late final _$_updKeyAsyncAction =
+      AsyncAction('_BoardMobx._updKey', context: context);
+
+  @override
+  Future<void> _updKey() {
+    return _$_updKeyAsyncAction.run(() => super._updKey());
   }
 
   late final _$_BoardMobxActionController =
@@ -99,6 +116,17 @@ mixin _$BoardMobx on _BoardMobx, Store {
         _$_BoardMobxActionController.startAction(name: '_BoardMobx._setSteps');
     try {
       return super._setSteps(stepName);
+    } finally {
+      _$_BoardMobxActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void _validateKey(Map<String, dynamic> json) {
+    final _$actionInfo = _$_BoardMobxActionController.startAction(
+        name: '_BoardMobx._validateKey');
+    try {
+      return super._validateKey(json);
     } finally {
       _$_BoardMobxActionController.endAction(_$actionInfo);
     }

@@ -13,7 +13,7 @@ abstract class TournamentRemoteDatasource {
   Future<List<TournamentModel>> getTournaments();
   Future<void> updStatus( Map<String, dynamic> json );
   Future<void> createTournament( Map<String, dynamic> json );
-  Future<void> updKey( Map<String, dynamic> json );
+  Future<void> updWinner( Map<String, dynamic> json );
 
 }
 
@@ -276,7 +276,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<void> updKey( Map<String, dynamic> json ) async {
+  Future<void> updWinner( Map<String, dynamic> json ) async {
 
     final metric = Session.performance.newHttpMetric("update_key", HttpMethod.Put);
     await metric.start();

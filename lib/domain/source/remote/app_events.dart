@@ -14,7 +14,7 @@ class AppEvents {
     await _analytics.logScreenView(
       screenName: screenName,
       parameters: {
-        "params": params,
+        "params": params ?? "",
       },
     );
   }

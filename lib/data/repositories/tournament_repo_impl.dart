@@ -53,9 +53,9 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, void>> updKey( Map<String, dynamic> json ) async {
+  Future<Either<Failure, void>> updWinner( Map<String, dynamic> json ) async {
     try {
-      final result = await tournamentRemoteDatasource.updKey( json );
+      final result = await tournamentRemoteDatasource.updWinner( json );
       return right(result);
     } on ServerExceptions catch ( error ) {
       Session.crash.onError("upd_key_server_error", error: error.message);

@@ -22,8 +22,8 @@ class TournamentUseCase {
     return await tournamentRepo.createTournament( json );
   }
 
-  Future<Either<Failure, void>> updKey( Map<String, dynamic> json ) async {
-    return await tournamentRepo.updKey( json );
+  Future<Either<Failure, void>> updWinner( Map<String, dynamic> json ) async {
+    return await tournamentRepo.updWinner( json );
   }
 
 }

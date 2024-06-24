@@ -48,7 +48,7 @@ class BodyKeyTournamentWidget extends StatelessWidget {
       ),
       subtitle: Card(
         child: PopupMenuButton<int>(
-          enabled: !hasWinner,
+          enabled: !hasWinner && teamLogo.trim().isNotEmpty,
           color: theme.colorScheme.secondary,
           icon: Text(
             ( score != null) ? score.toString() : " ",

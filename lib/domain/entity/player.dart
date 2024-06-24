@@ -7,6 +7,14 @@ class PlayerEntity extends Equatable {
 
   const PlayerEntity( this.name, this.team, this.defeats );
 
+  factory PlayerEntity.fromJson( Map<String, dynamic> json ) {
+    return PlayerEntity(
+      json["name"],
+      json["team"],
+      json["defeats"],
+    );
+  }
+
   Map<String, dynamic> toMap() {
 
     Map<String, dynamic> map = {
