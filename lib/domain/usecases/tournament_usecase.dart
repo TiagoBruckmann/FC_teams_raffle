@@ -26,4 +26,8 @@ class TournamentUseCase {
     return await tournamentRepo.updWinner( json );
   }
 
+  Future<Either<Failure, void>> updSecondPLayer( Map<String, dynamic> json ) async {
+    return await tournamentRepo.updSecondPLayer( json );
+  }
+
 }

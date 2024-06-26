@@ -66,4 +66,18 @@ class TournamentRepoImpl implements TournamentRepo {
     }
   }
 
+  @override
+  Future<Either<Failure, void>> updSecondPLayer( Map<String, dynamic> json ) async {
+    try {
+      final result = await tournamentRemoteDatasource.updSecondPLayer( json );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("upd_second_player_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("upd_second_player_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
 }

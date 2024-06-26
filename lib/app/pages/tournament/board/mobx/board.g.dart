@@ -88,12 +88,21 @@ mixin _$BoardMobx on _BoardMobx, Store {
     return _$_updWinnerAsyncAction.run(() => super._updWinner(json));
   }
 
-  late final _$_updKeyAsyncAction =
-      AsyncAction('_BoardMobx._updKey', context: context);
+  late final _$_validateRoundAsyncAction =
+      AsyncAction('_BoardMobx._validateRound', context: context);
 
   @override
-  Future<void> _updKey() {
-    return _$_updKeyAsyncAction.run(() => super._updKey());
+  Future<void> _validateRound(Map<String, dynamic> json) {
+    return _$_validateRoundAsyncAction.run(() => super._validateRound(json));
+  }
+
+  late final _$_updSecondPLayerAsyncAction =
+      AsyncAction('_BoardMobx._updSecondPLayer', context: context);
+
+  @override
+  Future<void> _updSecondPLayer(Map<String, dynamic> player) {
+    return _$_updSecondPLayerAsyncAction
+        .run(() => super._updSecondPLayer(player));
   }
 
   late final _$_BoardMobxActionController =
@@ -116,17 +125,6 @@ mixin _$BoardMobx on _BoardMobx, Store {
         _$_BoardMobxActionController.startAction(name: '_BoardMobx._setSteps');
     try {
       return super._setSteps(stepName);
-    } finally {
-      _$_BoardMobxActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void _validateKey(Map<String, dynamic> json) {
-    final _$actionInfo = _$_BoardMobxActionController.startAction(
-        name: '_BoardMobx._validateKey');
-    try {
-      return super._validateKey(json);
     } finally {
       _$_BoardMobxActionController.endAction(_$actionInfo);
     }

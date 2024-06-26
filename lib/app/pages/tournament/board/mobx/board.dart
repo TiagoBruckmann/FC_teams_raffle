@@ -1,5 +1,6 @@
 // import das telas
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
+import 'package:fc_teams_drawer/session.dart';
 
 // import dos domain
 import 'package:fc_teams_drawer/domain/entity/key.dart';
@@ -7,7 +8,6 @@ import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -116,6 +116,8 @@ abstract class _BoardMobx with Store {
       listPlayers.removeAt(loserIndex);
 
       listPlayers.insert(loserIndex, PlayerEntity.fromJson(player));
+      listPlayers.removeWhere((element) => element.defeats >= _tournament.defeats);
+
       await _updWinner(entity.toMap(map));
     }
 
@@ -130,40 +132,64 @@ abstract class _BoardMobx with Store {
       (failure) => CustomSnackBar(messageKey: failure.message),
       (success) {
         Session.logs.successLog("key_winner_${json["winner"]}");
-        _validateKey( json );
+        _validateRound(json);
       },
     );
 
   }
 
   @action
-  void _validateKey( Map<String, dynamic> json ) {
-
-    print("antes jogadores => ${listPlayers.length}");
-    listPlayers.removeWhere((element) => element.defeats >= 2);
-    print("restam jogadores => ${listPlayers.length}");
-
-    listPlayers.forEach((p) => print("${p.name} => ${p.defeats} derrotas"));
+  Future<void> _validateRound( Map<String, dynamic> json ) async {
 
     String step = "final";
-    if ( listPlayers.length > 2 && listPlayers.length <= 4 ) {
+    if ( listPlayers.length > 2 && listPlayers.length < 5 ) {
       step = "semi";
-    } else if ( listPlayers.length > 4 && listPlayers.length <= 8 ) {
+    } else if ( listPlayers.length > 4 && listPlayers.length < 9 ) {
       step = "quartas";
-    } else {
+    } else if ( listPlayers.length > 8 ) {
       step = "oitavas";
     }
 
-    final map = {
-      "step": step,
-    };
+    final mugPLayer = listKeys.last;
+    Map<String, dynamic> loser = json["player1"];
+    if ( json["player2_scoreboard"] < json["player1_scoreboard"] ) {
+      loser = json["player2"];
+    }
 
-    // _updKey();
+    if ( listPlayers.length % 2 != 0 ) {
+
+      final map = {
+        "created_at": json["created_at"],
+        "step": step,
+        "position": mugPLayer.position,
+        "player1": mugPLayer.player1,
+        "player2": loser,
+        "player1_scoreboard": 0,
+        "player2_scoreboard": 0,
+        "winner": "",
+      };
+
+      return await _updSecondPLayer(map);
+    }
 
   }
 
   @action
-  Future<void> _updKey() async {
+  Future<void> _updSecondPLayer( Map<String, dynamic> player ) async {
+
+    final successOrFailure = await _useCase.updSecondPLayer( player );
+
+    successOrFailure.fold(
+      (failure) => CustomSnackBar(messageKey: failure.message),
+      (success) {
+        Session.logs.successLog("second_player_updated");
+        final gamePosition = listKeys.indexWhere((element) => element.position == player["position"]);
+        listKeys.removeAt(gamePosition);
+
+        listKeys.insert(gamePosition, KeyEntity.fromJson(player));
+
+      },
+    );
 
   }
 

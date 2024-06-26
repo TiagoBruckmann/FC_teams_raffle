@@ -109,7 +109,7 @@ class _BoardPageState extends State<BoardPage> {
 
                           Expanded(
                             child: BodyKeyTournamentWidget(
-                              playerName: entity.player2["name"] ?? "Ganhador do primeiro jogo",
+                              playerName: entity.player2["name"] ?? "Perdedor do primeiro jogo",
                               teamLogo: entity.player2["team"] ?? "",
                               score: entity.player2Scoreboard,
                               hasWinner: entity.winner.trim().isNotEmpty,

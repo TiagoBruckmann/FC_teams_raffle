@@ -4,19 +4,19 @@ import 'package:fc_teams_drawer/domain/entity/key.dart';
 class TournamentEntity extends Equatable {
 
   final String name, date, currentStep, createdAt;
-  final int defeats, quantityGames, quantityPlayers;
+  final int defeats, quantityPlayers, quantityGames;
   final bool isActive, drawTeams;
   final List<KeyEntity> listKeys;
 
-  const TournamentEntity( this.name, this.date, this.currentStep, this.quantityGames, this.quantityPlayers, this.isActive, this.defeats, this.drawTeams, this.createdAt, this.listKeys );
+  const TournamentEntity( this.name, this.date, this.currentStep, this.quantityPlayers, this.quantityGames, this.isActive, this.defeats, this.drawTeams, this.createdAt, this.listKeys );
 
   factory TournamentEntity.fromJson( Map<String, dynamic> json, List<KeyEntity> listKeys ) {
     return TournamentEntity(
       json["name"],
       json["date"],
       json["current_step"],
-      json["quantity_games"],
       json["quantity_players"],
+      json["quantity_games"],
       json["is_active"],
       json["defeats"],
       json["draw_teams"],
@@ -31,8 +31,8 @@ class TournamentEntity extends Equatable {
       "name": name,
       "date": date,
       "current_step": currentStep,
-      "quantity_games": quantityGames,
       "quantity_players": quantityPlayers,
+      "quantity_games": quantityGames,
       "is_active": isActive,
       "defeats": defeats,
       "draw_teams": drawTeams,
@@ -77,6 +77,6 @@ class TournamentEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [name, date, currentStep, quantityGames, quantityPlayers, isActive, defeats, drawTeams, createdAt, listKeys];
+  List<Object?> get props => [name, date, currentStep, quantityPlayers, quantityGames, isActive, defeats, drawTeams, createdAt, listKeys];
 
 }

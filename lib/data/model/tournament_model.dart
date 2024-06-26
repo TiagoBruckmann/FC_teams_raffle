@@ -7,15 +7,15 @@ import 'package:equatable/equatable.dart';
 
 class TournamentModel extends TournamentEntity with EquatableMixin {
 
-  TournamentModel( super.name, super.date, super.currentStep, super.quantityGames, super.quantityPlayers, super.isActive, super.defeats, super.drawTeams, super.createdAt, super.listKeys );
+  TournamentModel( super.name, super.date, super.currentStep, super.quantityPlayers, super.quantityGames, super.isActive, super.defeats, super.drawTeams, super.createdAt, super.listKeys );
 
   factory TournamentModel.fromJson( Map<String, dynamic> json, List<KeyModel> listKeys ) {
     return TournamentModel(
       json["name"],
       json["date"],
       json["current_step"],
-      json["quantity_games"],
       json["quantity_players"],
+      json["quantity_games"],
       json["is_active"],
       json["defeats"],
       json["draw_teams"],
