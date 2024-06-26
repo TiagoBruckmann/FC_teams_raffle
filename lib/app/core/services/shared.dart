@@ -1,4 +1,6 @@
 // import dos domains
+import 'dart:math';
+
 import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
 
 // import dos pacotes
@@ -21,6 +23,20 @@ class SharedServices {
     }
 
     return converted;
+  }
+
+  static String getRandomString( int length ) {
+    const chars = '1234567890';
+    final Random rnd = Random();
+
+    return String.fromCharCodes(
+      Iterable.generate(
+        length,
+          (_) => chars.codeUnitAt(
+          rnd.nextInt(chars.length),
+        ),
+      ),
+    );
   }
 
 }
