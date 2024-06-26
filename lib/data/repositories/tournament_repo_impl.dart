@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:fc_teams_drawer/data/datasource/tournament_remote_datasource.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
 import 'package:fc_teams_drawer/domain/repositories/tournament_repo.dart';
@@ -76,6 +77,20 @@ class TournamentRepoImpl implements TournamentRepo {
       return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("upd_second_player_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, KeyEntity>> createNewKey( Map<String, dynamic> json ) async {
+    try {
+      final result = await tournamentRemoteDatasource.createNewKey( json );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("create_key_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("create_key_error", error: e);
       return left(GeneralFailure(e.toString()));
     }
   }

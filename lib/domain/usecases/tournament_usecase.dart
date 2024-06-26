@@ -1,4 +1,5 @@
 // import dos domain
+import 'package:fc_teams_drawer/domain/entity/key.dart';
 import 'package:fc_teams_drawer/domain/repositories/tournament_repo.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
@@ -28,6 +29,10 @@ class TournamentUseCase {
 
   Future<Either<Failure, void>> updSecondPLayer( Map<String, dynamic> json ) async {
     return await tournamentRepo.updSecondPLayer( json );
+  }
+
+  Future<Either<Failure, KeyEntity>> createNewKey( Map<String, dynamic> json ) async {
+    return await tournamentRepo.createNewKey( json );
   }
 
 }

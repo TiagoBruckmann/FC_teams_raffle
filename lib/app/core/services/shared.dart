@@ -25,18 +25,18 @@ class SharedServices {
     return converted;
   }
 
-  static String getRandomString( int length ) {
+  static int getRandomString( int length ) {
     const chars = '1234567890';
     final Random rnd = Random();
 
-    return String.fromCharCodes(
+    return int.parse(String.fromCharCodes(
       Iterable.generate(
         length,
           (_) => chars.codeUnitAt(
           rnd.nextInt(chars.length),
         ),
       ),
-    );
+    ));
   }
 
 }

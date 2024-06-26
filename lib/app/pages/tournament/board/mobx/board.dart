@@ -1,4 +1,5 @@
 // import das telas
+import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/session.dart';
 
@@ -25,6 +26,9 @@ abstract class _BoardMobx with Store {
   ObservableList<PlayerEntity> listPlayers = ObservableList();
 
   @observable
+  bool isLoading = true;
+
+  @observable
   late TournamentEntity _tournament;
 
   @observable
@@ -32,6 +36,9 @@ abstract class _BoardMobx with Store {
 
   @observable
   int qtdSteps = 2;
+
+  @action
+  void updIsLoading( bool value ) => isLoading = value;
 
   @action
   void selectStep( int step ) => selectedStep = step;
@@ -77,6 +84,8 @@ abstract class _BoardMobx with Store {
 
     }
 
+    updIsLoading(false);
+
   }
 
   @action
@@ -86,6 +95,8 @@ abstract class _BoardMobx with Store {
       CustomSnackBar(messageKey: "pages.tournament.board.invalid_score");
       return;
     }
+
+    updIsLoading(true);
 
     player1ScoreBoard = player1ScoreBoard ?? entity.player1Scoreboard;
     player2ScoreBoard = player2ScoreBoard ?? entity.player2Scoreboard;
@@ -118,9 +129,10 @@ abstract class _BoardMobx with Store {
       listPlayers.insert(loserIndex, PlayerEntity.fromJson(player));
       listPlayers.removeWhere((element) => element.defeats >= _tournament.defeats);
 
-      await _updWinner(entity.toMap(map));
+      return await _updWinner(entity.toMap(map));
     }
 
+    updIsLoading(false);
   }
 
   @action
@@ -129,7 +141,10 @@ abstract class _BoardMobx with Store {
     final successOrFailure = await _useCase.updWinner( json );
 
     successOrFailure.fold(
-      (failure) => CustomSnackBar(messageKey: failure.message),
+      (failure) {
+        updIsLoading(false);
+        CustomSnackBar(messageKey: failure.message);
+      },
       (success) {
         Session.logs.successLog("key_winner_${json["winner"]}");
         _validateRound(json);
@@ -151,26 +166,60 @@ abstract class _BoardMobx with Store {
     }
 
     final mugPLayer = listKeys.last;
-    Map<String, dynamic> loser = json["player1"];
-    if ( json["player2_scoreboard"] < json["player1_scoreboard"] ) {
-      loser = json["player2"];
+
+    Map<String, dynamic> winner = json["player1"];
+    if ( json["player2_scoreboard"] > json["player1_scoreboard"] ) {
+      winner = json["player2"];
     }
 
-    if ( listPlayers.length % 2 != 0 ) {
+    final Map<String, dynamic> emptyPlayer = {};
+
+    if ( mugPLayer.player2.isEmpty ) {
 
       final map = {
         "created_at": json["created_at"],
         "step": step,
         "position": mugPLayer.position,
         "player1": mugPLayer.player1,
-        "player2": loser,
+        "player2": winner,
         "player1_scoreboard": 0,
         "player2_scoreboard": 0,
         "winner": "",
       };
 
-      return await _updSecondPLayer(map);
+      await _updSecondPLayer(map);
+
+      Map<String, dynamic> loser = json["player1"];
+      if ( json["player2_scoreboard"] < json["player1_scoreboard"] ) {
+        winner = json["player2"];
+      }
+
+      final loserMap = {
+        "created_at": json["created_at"],
+        "step": step,
+        "position": listKeys.length + 1,
+        "player1": loser,
+        "player2": emptyPlayer,
+        "player1_scoreboard": 0,
+        "player2_scoreboard": 0,
+        "winner": "",
+      };
+
+      return await _createNewKey(loserMap);
     }
+
+    final winnerMap = {
+      "created_at": json["created_at"],
+      "step": step,
+      "position": listKeys.length + 1,
+      "player1": winner,
+      "player2": emptyPlayer,
+      "player1_scoreboard": 0,
+      "player2_scoreboard": 0,
+      "winner": "",
+    };
+
+    return await _createNewKey(winnerMap);
 
   }
 
@@ -180,14 +229,36 @@ abstract class _BoardMobx with Store {
     final successOrFailure = await _useCase.updSecondPLayer( player );
 
     successOrFailure.fold(
-      (failure) => CustomSnackBar(messageKey: failure.message),
+      (failure) {
+        updIsLoading(false);
+        CustomSnackBar(messageKey: failure.message);
+      },
       (success) {
         Session.logs.successLog("second_player_updated");
         final gamePosition = listKeys.indexWhere((element) => element.position == player["position"]);
         listKeys.removeAt(gamePosition);
-
         listKeys.insert(gamePosition, KeyEntity.fromJson(player));
 
+        updIsLoading(false);
+      },
+    );
+
+  }
+
+  @action
+  Future<void> _createNewKey( Map<String, dynamic> player ) async {
+
+    final successOrFailure = await _useCase.createNewKey( player );
+
+    successOrFailure.fold(
+      (failure) {
+        updIsLoading(false);
+        CustomSnackBar(messageKey: failure.message);
+      },
+      (success) {
+        Session.logs.successLog("create_new_key");
+        listKeys.add(success);
+        updIsLoading(false);
       },
     );
 

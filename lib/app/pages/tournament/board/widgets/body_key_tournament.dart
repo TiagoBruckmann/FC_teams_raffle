@@ -8,7 +8,8 @@ class BodyKeyTournamentWidget extends StatelessWidget {
   final Function( int ) function;
   final int? score;
   final bool hasWinner;
-  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function });
+  final bool isLoser;
+  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function, this.isLoser = false });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,9 @@ class BodyKeyTournamentWidget extends StatelessWidget {
         },
       ),
       title: Text(
-        playerName,
+        ( isLoser && playerName.trim().isEmpty )
+        ? "Próximo perdedor"
+        : playerName,
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall,
       ),

@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/app/core/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -46,89 +47,91 @@ class _BoardPageState extends State<BoardPage> {
       page: Observer(
         builder: (context) {
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric( horizontal: 5, vertical: 10 ),
-            child: Column(
-              children: [
+          return LoadingOverlay(
+            isLoading: _mobx.isLoading,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric( horizontal: 5, vertical: 10 ),
+              child: Column(
+                children: [
 
-                const Text(""),
+                  /*
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only( top: 10, bottom: 5 ),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
 
-                /*
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only( top: 10, bottom: 5 ),
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
+                        for ( int i = _mobx.qtdSteps; i > 0; i++ )
+                          Padding(
+                            padding: const EdgeInsets.symmetric( horizontal: 4 ),
+                            child: RawChip(
+                              labelPadding: const EdgeInsets.symmetric( horizontal: 3, vertical: 2 ),
+                              onPressed: () => _mobx.selectStep( i ),
+                              elevation: 3,
+                              label: Text(
+                                FlutterI18n.translate(context, "pages.tournament.board.${ i + 1 }"),
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                          ),
 
-                      for ( int i = _mobx.qtdSteps; i > 0; i++ )
+                      ],
+                    ),
+                  ),
+                   */
+
+                  for ( final entity in _mobx.listKeys )
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
                         Padding(
-                          padding: const EdgeInsets.symmetric( horizontal: 4 ),
-                          child: RawChip(
-                            labelPadding: const EdgeInsets.symmetric( horizontal: 3, vertical: 2 ),
-                            onPressed: () => _mobx.selectStep( i ),
-                            elevation: 3,
-                            label: Text(
-                              FlutterI18n.translate(context, "pages.tournament.board.${ i + 1 }"),
-                              style: theme.textTheme.bodySmall,
-                            ),
+                          padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 20 ),
+                          child: Text(
+                            FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.position.toString()}),
+                            style: theme.textTheme.bodyMedium,
                           ),
                         ),
 
-                    ],
-                  ),
-                ),
-                */
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
 
-                for ( final entity in _mobx.listKeys )
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                            Expanded(
+                              child: BodyKeyTournamentWidget(
+                                playerName: entity.player1["name"],
+                                teamLogo: entity.player1["team"],
+                                score: entity.player1Scoreboard,
+                                hasWinner: entity.winner.trim().isNotEmpty,
+                                function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player1ScoreBoard: value),
+                              ),
+                            ),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 20 ),
-                        child: Text(
-                          FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.position.toString()}),
-                          style: theme.textTheme.bodyMedium,
+                            Expanded(
+                              child: BodyKeyTournamentWidget(
+                                playerName: entity.player2["name"] ?? "Próximo ganhador",
+                                teamLogo: entity.player2["team"] ?? "",
+                                score: entity.player2Scoreboard,
+                                hasWinner: entity.winner.trim().isNotEmpty,
+                                function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player2ScoreBoard: value),
+                                // isLoser: entity.player2["defeats"] > 0,
+                              ),
+                            ),
+
+                          ],
                         ),
-                      ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        const Divider(
+                          height: 30,
+                          thickness: 2,
+                        ),
 
-                          Expanded(
-                            child: BodyKeyTournamentWidget(
-                              playerName: entity.player1["name"],
-                              teamLogo: entity.player1["team"],
-                              score: entity.player1Scoreboard,
-                              hasWinner: entity.winner.trim().isNotEmpty,
-                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player1ScoreBoard: value),
-                            ),
-                          ),
+                      ],
+                    ),
 
-                          Expanded(
-                            child: BodyKeyTournamentWidget(
-                              playerName: entity.player2["name"] ?? "Perdedor do primeiro jogo",
-                              teamLogo: entity.player2["team"] ?? "",
-                              score: entity.player2Scoreboard,
-                              hasWinner: entity.winner.trim().isNotEmpty,
-                              function: ( int value ) => _mobx.setGoals(entity, widget.tournament.customMap(), player2ScoreBoard: value),
-                            ),
-                          ),
-
-                        ],
-                      ),
-
-                      const Divider(
-                        height: 30,
-                        thickness: 2,
-                      ),
-
-                    ],
-                  ),
-
-              ],
+                ],
+              ),
             ),
           );
 

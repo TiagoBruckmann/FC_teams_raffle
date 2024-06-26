@@ -15,6 +15,7 @@ abstract class TournamentRemoteDatasource {
   Future<void> createTournament( Map<String, dynamic> json );
   Future<void> updWinner( Map<String, dynamic> json );
   Future<void> updSecondPLayer( Map<String, dynamic> json );
+  Future<KeyModel> createNewKey( Map<String, dynamic> json );
 
 }
 
@@ -336,43 +337,42 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     return;
   }
 
-  Future<void> _createNewKey( Map<String, dynamic> json ) async {
-
-    int position = json["position"] + 1;
-
-    final map = {
-      "position": position,
-      "player1": json["player1"],
-      "player2": {},
-      "player1_scoreboard": null,
-      "player2_scoreboard": null,
-      "winner": "",
-    };
+  @override
+  Future<KeyModel> createNewKey( Map<String, dynamic> json ) async {
 
     final metric = Session.performance.newHttpMetric("create_new_key", HttpMethod.Post);
     await metric.start();
 
+    late KeyModel keyModel;
     await db.collection("tournaments")
-        .doc(_deviceInfo["finger_print"])
-        .collection(_deviceInfo["model"])
-        .doc(json["created_at"])
-        .collection("keys")
-        .doc(json["step"])
-        .collection(position.toString())
-        .doc(position.toString())
-        .set(map)
-        .onError((error, stackTrace) {
+    .doc(_deviceInfo["finger_print"])
+    .collection(_deviceInfo["model"])
+    .doc(json["created_at"])
+    .collection("keys")
+    .doc(json["step"])
+    .collection(json["position"].toString())
+    .doc(json["position"].toString())
+    .set(json)
+    .then((value) async {
+
+      await metric.stop();
+      keyModel = KeyModel.fromJson(json);
+      return keyModel;
+
+    })
+    .onError((error, stackTrace) {
       metric.stop();
       Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
       throw ServerExceptions("serverException: ${stackTrace.toString()}");
     })
-        .catchError((onError) {
+    .catchError((onError) {
       metric.stop();
       Session.crash.log(onError);
       throw ServerExceptions("serverException: ${onError.toString()}");
     });
 
-    await metric.stop();
+    return keyModel;
+
   }
 
 }
