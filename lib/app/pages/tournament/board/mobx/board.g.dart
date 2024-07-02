@@ -29,7 +29,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       Atom(name: '_BoardMobx._tournament', context: context);
 
   @override
-  TournamentEntity get _tournament {
+  TournamentCollection get _tournament {
     _$_tournamentAtom.reportRead();
     return super._tournament;
   }
@@ -37,7 +37,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
   bool __tournamentIsInitialized = false;
 
   @override
-  set _tournament(TournamentEntity value) {
+  set _tournament(TournamentCollection value) {
     _$_tournamentAtom.reportWrite(
         value, __tournamentIsInitialized ? super._tournament : null, () {
       super._tournament = value;
@@ -81,7 +81,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.setListKeys', context: context);
 
   @override
-  Future<void> setListKeys(TournamentEntity tournament) {
+  Future<void> setListKeys(TournamentCollection tournament) {
     return _$setListKeysAsyncAction.run(() => super.setListKeys(tournament));
   }
 
@@ -89,9 +89,9 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.setGoals', context: context);
 
   @override
-  Future<void> setGoals(KeyEntity entity, Map<String, dynamic> map,
+  Future<void> setGoals(KeyCollection keyCollection,
       {int? player1ScoreBoard, int? player2ScoreBoard}) {
-    return _$setGoalsAsyncAction.run(() => super.setGoals(entity, map,
+    return _$setGoalsAsyncAction.run(() => super.setGoals(keyCollection,
         player1ScoreBoard: player1ScoreBoard,
         player2ScoreBoard: player2ScoreBoard));
   }
@@ -100,33 +100,33 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx._updWinner', context: context);
 
   @override
-  Future<void> _updWinner(Map<String, dynamic> json) {
-    return _$_updWinnerAsyncAction.run(() => super._updWinner(json));
+  Future<void> _updWinner(KeyCollection keyCollection) {
+    return _$_updWinnerAsyncAction.run(() => super._updWinner(keyCollection));
   }
 
   late final _$_validateRoundAsyncAction =
       AsyncAction('_BoardMobx._validateRound', context: context);
 
   @override
-  Future<void> _validateRound(Map<String, dynamic> json) {
-    return _$_validateRoundAsyncAction.run(() => super._validateRound(json));
+  Future<void> _validateRound(KeyCollection keyCollection) {
+    return _$_validateRoundAsyncAction
+        .run(() => super._validateRound(keyCollection));
   }
 
   late final _$_updSecondPLayerAsyncAction =
       AsyncAction('_BoardMobx._updSecondPLayer', context: context);
 
   @override
-  Future<void> _updSecondPLayer(Map<String, dynamic> player) {
-    return _$_updSecondPLayerAsyncAction
-        .run(() => super._updSecondPLayer(player));
+  Future<void> _updSecondPLayer(KeyCollection key) {
+    return _$_updSecondPLayerAsyncAction.run(() => super._updSecondPLayer(key));
   }
 
   late final _$_createNewKeyAsyncAction =
       AsyncAction('_BoardMobx._createNewKey', context: context);
 
   @override
-  Future<void> _createNewKey(Map<String, dynamic> player) {
-    return _$_createNewKeyAsyncAction.run(() => super._createNewKey(player));
+  Future<void> _createNewKey(KeyCollection key) {
+    return _$_createNewKeyAsyncAction.run(() => super._createNewKey(key));
   }
 
   late final _$_BoardMobxActionController =

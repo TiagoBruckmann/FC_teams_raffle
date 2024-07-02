@@ -8,9 +8,6 @@ import 'package:fc_teams_drawer/session.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/home/mobx/tournament.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 
-// import dos domain
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-
 // import dos pacotes
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -122,7 +119,7 @@ class _TournamentPageState extends State<TournamentPage> {
                 itemCount: _mobx.tournamentList.length,
                 itemBuilder: ( builder, index ) {
 
-                  TournamentEntity entity = _mobx.tournamentList[index];
+                  final entity = _mobx.tournamentList[index];
 
                   return Card(
                     child: ListTile(
@@ -132,17 +129,17 @@ class _TournamentPageState extends State<TournamentPage> {
                         children: [
 
                           Text(
-                            entity.name,
+                            entity.name ?? "",
                             style: theme.textTheme.bodyMedium?.apply(
                               fontWeightDelta: 9,
                             ),
                           ),
 
                           IconButton(
-                            tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ? "active_status" : "closed_status" }"),
+                            tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ?? false ? "active_status" : "closed_status" }"),
                             onPressed: () => _mobx.updStatus( entity ),
                             icon: Icon(
-                              ( entity.isActive )
+                              ( entity.isActive ?? false )
                                   ? Icons.block
                                   : Icons.check_circle_outline,
                             ),
@@ -151,7 +148,7 @@ class _TournamentPageState extends State<TournamentPage> {
                         ],
                       ),
                       subtitle: Text(
-                        FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date}),
+                        FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date ?? ""}),
                         style: theme.textTheme.bodySmall,
                       ),
                     ),

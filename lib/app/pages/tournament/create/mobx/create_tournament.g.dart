@@ -13,7 +13,7 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       Atom(name: '_CreateTournamentMobx.tournament', context: context);
 
   @override
-  TournamentEntity get tournament {
+  TournamentCollection get tournament {
     _$tournamentAtom.reportRead();
     return super.tournament;
   }
@@ -21,7 +21,7 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   bool _tournamentIsInitialized = false;
 
   @override
-  set tournament(TournamentEntity value) {
+  set tournament(TournamentCollection value) {
     _$tournamentAtom.reportWrite(
         value, _tournamentIsInitialized ? super.tournament : null, () {
       super.tournament = value;
@@ -121,8 +121,16 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       AsyncAction('_CreateTournamentMobx._getKeys', context: context);
 
   @override
-  Future<List<Map<String, dynamic>>> _getKeys(List<PlayerEntity> list) {
+  Future<List<Map<String, dynamic>>> _getKeys(List<PlayerCollection> list) {
     return _$_getKeysAsyncAction.run(() => super._getKeys(list));
+  }
+
+  late final _$_getTournamentsAsyncAction =
+      AsyncAction('_CreateTournamentMobx._getTournaments', context: context);
+
+  @override
+  Future<void> _getTournaments() {
+    return _$_getTournamentsAsyncAction.run(() => super._getTournaments());
   }
 
   late final _$_CreateTournamentMobxActionController =

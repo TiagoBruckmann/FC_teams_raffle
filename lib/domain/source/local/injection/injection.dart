@@ -7,7 +7,6 @@ import 'package:fc_teams_drawer/data/datasource/team_remote_datasource.dart';
 import 'package:fc_teams_drawer/data/repositories/team_repo_impl.dart';
 import 'package:fc_teams_drawer/domain/repositories/team_repo.dart';
 import 'package:fc_teams_drawer/domain/usecases/team_usecase.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -21,13 +20,12 @@ void configureDependencies() {
   getIt.registerFactory(() => TeamUseCase(getIt()));
 
   // data
-  getIt.registerFactory<TournamentRemoteDatasource>(() => TournamentRemoteDatasourceImpl(getIt()));
+  getIt.registerFactory<TournamentRemoteDatasource>(() => TournamentRemoteDatasourceImpl());
   getIt.registerFactory<TeamRemoteDatasource>(() => TeamRemoteDatasourceImpl(getIt()));
   getIt.registerFactory<TournamentRepo>(() => TournamentRepoImpl(getIt()));
   getIt.registerFactory<TeamRepo>(() => TeamRepoImpl(getIt()));
 
   // extern
-  getIt.registerFactory(() => FirebaseFirestore.instance);
   getIt.registerFactory(() => FirebaseDatabase.instance);
 
 }

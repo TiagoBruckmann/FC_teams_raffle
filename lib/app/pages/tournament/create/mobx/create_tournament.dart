@@ -1,5 +1,4 @@
 // imports nativos
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -7,13 +6,12 @@ import 'dart:math';
 import 'package:fc_teams_drawer/session.dart';
 
 // import das telas
-import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
-import 'package:fc_teams_drawer/domain/entity/player.dart';
-import 'package:fc_teams_drawer/domain/entity/key.dart';
 
 // import dos domain
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -36,7 +34,7 @@ abstract class _CreateTournamentMobx with Store {
   ObservableList<TextEditingController> playersController = ObservableList();
 
   @observable
-  late TournamentEntity tournament;
+  late TournamentCollection tournament;
 
   @observable
   bool isLoading = true;
@@ -153,19 +151,15 @@ abstract class _CreateTournamentMobx with Store {
       "created_at": createdAt,
     };
 
-    final List<KeyEntity> keys = [];
+    final List<KeyCollection> keys = [];
     for ( final item in listKeys ) {
-      keys.add(KeyEntity.fromJson(item));
+      keys.add(KeyCollection.fromJson(item));
     }
 
-    tournament = TournamentEntity.fromJson(mapTournament, keys);
+    tournament = TournamentCollection.fromJson(mapTournament, keys);
 
     final map = {
       "tournaments": mapTournament,
-      "players": {
-        "created_at": createdAt,
-        "players": listPlayers,
-      },
       "keys": {
         "step": step,
         "created_at": createdAt,
@@ -180,7 +174,7 @@ abstract class _CreateTournamentMobx with Store {
         updIsLoading(false);
         Session.logs.errorLog(failure.message);
       },
-      (success) => _goToBoard(),
+      (success) => _getTournaments(),
     );
 
   }
@@ -190,7 +184,7 @@ abstract class _CreateTournamentMobx with Store {
 
     final List<String> listTeams = [];
     final List<Map<String, dynamic>> listPlayersMap = [];
-    final List<PlayerEntity> listPlayers = [];
+    final List<PlayerCollection> listPlayers = [];
 
     for ( final item in playersController ) {
 
@@ -201,14 +195,14 @@ abstract class _CreateTournamentMobx with Store {
         listTeams.add(logo);
       }
 
-      final player = PlayerEntity(
-        item.text.trim(),
-        logo,
-        0,
+      final player = PlayerCollection(
+        name: item.text.trim(),
+        team: logo,
+        defeats: 0,
       );
 
       listPlayers.add(player);
-      listPlayersMap.add(player.toMap());
+      listPlayersMap.add(player.toMap({}));
     }
 
     listTeams.clear();
@@ -239,9 +233,9 @@ abstract class _CreateTournamentMobx with Store {
   }
 
   @action
-  Future<List<Map<String, dynamic>>> _getKeys( List<PlayerEntity> list ) async {
+  Future<List<Map<String, dynamic>>> _getKeys( List<PlayerCollection> list ) async {
 
-    final List<KeyEntity> listKeys = [];
+    final List<KeyCollection> listKeys = [];
     final List<Map<String, dynamic>> convertedList = [];
 
     final random = Random();
@@ -253,21 +247,21 @@ abstract class _CreateTournamentMobx with Store {
       list.removeWhere((element) => element.isEqual(player1) );
       final totalPlayers = list.length;
 
-      Map<String, dynamic> player2 = {};
+      PlayerCollection player2 = PlayerCollection.empty();
       if ( totalPlayers > 0 ) {
         final secondPlayer = list[random.nextInt(list.length)];
         list.removeWhere((element) => element.isEqual(secondPlayer) );
-        player2.addAll(secondPlayer.toMap());
+        player2 = secondPlayer;
       }
 
       listKeys.add(
-        KeyEntity(
-          position,
-          player1.toMap(),
-          player2,
-          0,
-          0,
-          "",
+        KeyCollection(
+          position: position,
+          player1: player1,
+          player2: player2,
+          player1Scoreboard: 0,
+          player2Scoreboard: 0,
+          winner: "",
         ),
       );
 
@@ -279,6 +273,21 @@ abstract class _CreateTournamentMobx with Store {
     }
 
     return convertedList;
+  }
+
+  @action
+  Future<void> _getTournaments() async {
+
+    final successOrFailure = await _useCase.getTournaments();
+
+    successOrFailure.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (success) {
+        Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
+        _goToBoard();
+      },
+    );
+
   }
 
   @action

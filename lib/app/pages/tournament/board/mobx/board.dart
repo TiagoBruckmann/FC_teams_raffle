@@ -1,12 +1,9 @@
 // import das telas
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 // import dos domain
-import 'package:fc_teams_drawer/domain/entity/key.dart';
-import 'package:fc_teams_drawer/domain/entity/player.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 
@@ -21,15 +18,15 @@ abstract class _BoardMobx with Store {
 
   final _useCase = TournamentUseCase(getIt());
 
-  ObservableList<KeyEntity> listKeys = ObservableList();
+  ObservableList<KeyCollection> listKeys = ObservableList();
 
-  ObservableList<PlayerEntity> listPlayers = ObservableList();
+  ObservableList<PlayerCollection> listPlayers = ObservableList();
 
   @observable
   bool isLoading = true;
 
   @observable
-  late TournamentEntity _tournament;
+  late TournamentCollection _tournament;
 
   @observable
   int selectedStep = 2;
@@ -55,28 +52,28 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> setListKeys( TournamentEntity tournament ) async {
+  Future<void> setListKeys( TournamentCollection tournament ) async {
     _tournament = tournament;
-    _setSteps(tournament.currentStep);
+    _setSteps(tournament.currentStep!);
 
-    if ( tournament.listKeys.isEmpty ) {
+    if ( tournament.listKeys != null && tournament.listKeys!.isEmpty ) {
       return;
     }
 
-    listKeys.addAll(tournament.listKeys);
+    listKeys.addAll(tournament.listKeys!);
 
     int position = 0;
-    while ( listPlayers.length < _tournament.quantityPlayers ) {
+    while ( listPlayers.length < _tournament.quantityPlayers! ) {
 
-      if ( !listPlayers.contains(listKeys[position].player1["team"]) ) {
+      if ( !listPlayers.contains(listKeys[position].player1!) ) {
         listPlayers.add(
-          PlayerEntity.fromJson(listKeys[position].player1),
+          PlayerCollection.fromJson(listKeys[position].player1!.toMap({})),
         );
       }
 
-      if ( listKeys[position].player2["team"] != null && !listPlayers.contains(listKeys[position].player2["team"]) ) {
+      if ( listKeys[position].player2?.team != null && !listPlayers.contains(listKeys[position].player2!) ) {
         listPlayers.add(
-          PlayerEntity.fromJson(listKeys[position].player2),
+          PlayerCollection.fromJson(listKeys[position].player2!.toMap({})),
         );
       }
 
@@ -89,7 +86,7 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> setGoals( KeyEntity entity, Map<String, dynamic> map, { int? player1ScoreBoard, int? player2ScoreBoard } ) async {
+  Future<void> setGoals( KeyCollection keyCollection, { int? player1ScoreBoard, int? player2ScoreBoard } ) async {
 
     if ( player1ScoreBoard == null && player2ScoreBoard == null ) {
       CustomSnackBar(messageKey: "pages.tournament.board.invalid_score");
@@ -98,47 +95,58 @@ abstract class _BoardMobx with Store {
 
     updIsLoading(true);
 
-    player1ScoreBoard = player1ScoreBoard ?? entity.player1Scoreboard;
-    player2ScoreBoard = player2ScoreBoard ?? entity.player2Scoreboard;
+    player1ScoreBoard = player1ScoreBoard ?? keyCollection.player1Scoreboard;
+    player2ScoreBoard = player2ScoreBoard ?? keyCollection.player2Scoreboard;
 
     if ( player1ScoreBoard != null ) {
-      entity.setPlayer1Goals(player1ScoreBoard);
+      keyCollection.setPlayer1Goals(player1ScoreBoard);
     }
 
     if ( player2ScoreBoard != null ) {
-      entity.setPlayer2Goals(player2ScoreBoard);
+      keyCollection.setPlayer2Goals(player2ScoreBoard);
     }
     
-    final elementIndex = listKeys.indexWhere((element) => element.player1 == entity.player1 && element.player2 == entity.player2 && element.player1Scoreboard == player1ScoreBoard && element.player2Scoreboard == player2ScoreBoard);
+    final elementIndex = listKeys.indexWhere((element) => element.player1 == keyCollection.player1 && element.player2 == keyCollection.player2 && element.player1Scoreboard == player1ScoreBoard && element.player2Scoreboard == player2ScoreBoard);
     listKeys.removeAt(elementIndex);
 
-    entity.setWinner();
+    keyCollection.setWinner();
 
-    listKeys.insert(elementIndex, entity);
+    listKeys.insert(elementIndex, keyCollection);
 
-    if ( entity.player1Scoreboard != null && entity.player2Scoreboard != null ) {
+    if ( keyCollection.player1Scoreboard != null && keyCollection.player2Scoreboard != null ) {
 
-      Map<String, dynamic> player = entity.player1;
-      if ( entity.player2Scoreboard! < entity.player1Scoreboard! ) {
-        player = entity.player2;
+      PlayerCollection player = keyCollection.player1!;
+      if ( keyCollection.player2Scoreboard! < keyCollection.player1Scoreboard! ) {
+        player = keyCollection.player2!;
       }
 
-      final loserIndex = listPlayers.indexWhere((element) => element.team.contains(player["team"]));
+      final loserIndex = listPlayers.indexWhere((element) => element.isEqual(player));
       listPlayers.removeAt(loserIndex);
 
-      listPlayers.insert(loserIndex, PlayerEntity.fromJson(player));
-      listPlayers.removeWhere((element) => element.defeats >= _tournament.defeats);
+      listPlayers.insert(loserIndex, player);
+      listPlayers.removeWhere((element) => element.defeats! >= _tournament.defeats!);
 
-      return await _updWinner(entity.toMap(map));
+      if ( _tournament.listKeys != null && _tournament.listKeys!.isNotEmpty ) {
+        _tournament.listKeys?.clear();
+      }
+
+      _tournament.listKeys?.addAll(listKeys);
+
+      return await _updWinner(keyCollection);
     }
 
     updIsLoading(false);
   }
 
   @action
-  Future<void> _updWinner( Map<String, dynamic> json ) async {
+  Future<void> _updWinner( KeyCollection keyCollection ) async {
 
-    final successOrFailure = await _useCase.updWinner( json );
+    final index = Session.gamesCollection.listTournaments?.indexWhere((element) => element.listKeys!.contains(keyCollection)) ?? 0;
+    Session.gamesCollection.listTournaments?.removeAt(index);
+
+    Session.gamesCollection.listTournaments?.insert(index, _tournament);
+
+    final successOrFailure = await _useCase.updAllKey( Session.gamesCollection );
 
     successOrFailure.fold(
       (failure) {
@@ -146,15 +154,15 @@ abstract class _BoardMobx with Store {
         CustomSnackBar(messageKey: failure.message);
       },
       (success) {
-        Session.logs.successLog("key_winner_${json["winner"]}");
-        _validateRound(json);
+        Session.logs.successLog("key_winner_${keyCollection.winner}");
+        _validateRound(keyCollection);
       },
     );
 
   }
 
   @action
-  Future<void> _validateRound( Map<String, dynamic> json ) async {
+  Future<void> _validateRound( KeyCollection keyCollection ) async {
 
     String step = "final";
     if ( listPlayers.length > 2 && listPlayers.length < 5 ) {
@@ -167,18 +175,16 @@ abstract class _BoardMobx with Store {
 
     final mugPLayer = listKeys.last;
 
-    Map<String, dynamic> winner = json["player1"];
-    if ( json["player2_scoreboard"] > json["player1_scoreboard"] ) {
-      winner = json["player2"];
+    PlayerCollection winner = keyCollection.player1!;
+    if ( keyCollection.player2Scoreboard! > keyCollection.player1Scoreboard! ) {
+      winner = keyCollection.player2!;
     }
 
-    final Map<String, dynamic> emptyPlayer = {};
+    PlayerCollection? emptyPlayer;
 
-    if ( mugPLayer.player2.isEmpty ) {
+    if ( mugPLayer.player2 != null ) {
 
       final map = {
-        "created_at": json["created_at"],
-        "step": step,
         "position": mugPLayer.position,
         "player1": mugPLayer.player1,
         "player2": winner,
@@ -187,15 +193,17 @@ abstract class _BoardMobx with Store {
         "winner": "",
       };
 
-      await _updSecondPLayer(map);
+      KeyCollection key = KeyCollection.fromJson(map);
 
-      Map<String, dynamic> loser = json["player1"];
-      if ( json["player2_scoreboard"] < json["player1_scoreboard"] ) {
-        winner = json["player2"];
+      await _updSecondPLayer(key);
+
+      PlayerCollection loser = keyCollection.player1!;
+      if ( keyCollection.player2Scoreboard! < keyCollection.player1Scoreboard! ) {
+        loser = keyCollection.player2!;
       }
 
       final loserMap = {
-        "created_at": json["created_at"],
+        "created_at": _tournament.createdAt,
         "step": step,
         "position": listKeys.length + 1,
         "player1": loser,
@@ -205,11 +213,13 @@ abstract class _BoardMobx with Store {
         "winner": "",
       };
 
-      return await _createNewKey(loserMap);
+      KeyCollection loserKey = KeyCollection.fromJson(loserMap);
+
+      return await _createNewKey(loserKey);
     }
 
     final winnerMap = {
-      "created_at": json["created_at"],
+      "created_at": _tournament.createdAt,
       "step": step,
       "position": listKeys.length + 1,
       "player1": winner,
@@ -218,15 +228,24 @@ abstract class _BoardMobx with Store {
       "player2_scoreboard": 0,
       "winner": "",
     };
+    KeyCollection winnerKey = KeyCollection.fromJson(winnerMap);
 
-    return await _createNewKey(winnerMap);
+    return await _createNewKey(winnerKey);
 
   }
 
   @action
-  Future<void> _updSecondPLayer( Map<String, dynamic> player ) async {
+  Future<void> _updSecondPLayer( KeyCollection key ) async {
 
-    final successOrFailure = await _useCase.updSecondPLayer( player );
+    for ( final tournaments in Session.gamesCollection.listTournaments! ) {
+      for ( final key in tournaments.listKeys! ) {
+        if ( key.isEqual(key) ) {
+          key.setPlayer2( key.player2! );
+        }
+      }
+    }
+
+    final successOrFailure = await _useCase.updAllKey( Session.gamesCollection );
 
     successOrFailure.fold(
       (failure) {
@@ -235,9 +254,9 @@ abstract class _BoardMobx with Store {
       },
       (success) {
         Session.logs.successLog("second_player_updated");
-        final gamePosition = listKeys.indexWhere((element) => element.position == player["position"]);
+        final gamePosition = listKeys.indexWhere((element) => element.position == key.position);
         listKeys.removeAt(gamePosition);
-        listKeys.insert(gamePosition, KeyEntity.fromJson(player));
+        listKeys.insert(gamePosition, key);
 
         updIsLoading(false);
       },
@@ -246,9 +265,16 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> _createNewKey( Map<String, dynamic> player ) async {
+  Future<void> _createNewKey( KeyCollection key ) async {
 
-    final successOrFailure = await _useCase.createNewKey( player );
+    final index = Session.gamesCollection.listTournaments!.indexWhere((element) => element.createdAt == _tournament.createdAt);
+    Session.gamesCollection.listTournaments!.removeAt(index);
+
+    _tournament.listKeys!.add(key);
+
+    Session.gamesCollection.listTournaments!.insert(index, _tournament);
+
+    final successOrFailure = await _useCase.updAllKey( Session.gamesCollection );
 
     successOrFailure.fold(
       (failure) {
@@ -257,7 +283,6 @@ abstract class _BoardMobx with Store {
       },
       (success) {
         Session.logs.successLog("create_new_key");
-        listKeys.add(success);
         updIsLoading(false);
       },
     );

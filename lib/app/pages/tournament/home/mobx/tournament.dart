@@ -1,11 +1,11 @@
 // import das telas
+import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 
 // import dos pacotes
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -33,8 +33,8 @@ abstract class _TournamentMobx with Store {
   final _currentContext = Session.globalContext.currentContext!;
   final _useCase = TournamentUseCase(getIt());
 
-  ObservableList<TournamentEntity> tournamentListComplete = ObservableList();
-  ObservableList<TournamentEntity> tournamentList = ObservableList();
+  ObservableList<TournamentCollection> tournamentListComplete = ObservableList();
+  ObservableList<TournamentCollection> tournamentList = ObservableList();
 
   ObservableList<String> itemsMenu = ObservableList();
 
@@ -72,19 +72,21 @@ abstract class _TournamentMobx with Store {
       (success) {
         Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
         _addTournamentList(list: success);
+        searchStatus("Ativos");
       },
     );
 
   }
 
   @action
-  void _addTournamentList({ List<TournamentEntity>? list }) {
+  void _addTournamentList({ List<TournamentCollection>? list }) {
 
     if ( tournamentListComplete.isEmpty && list != null && list.isNotEmpty ) {
       tournamentListComplete.addAll(list);
     }
 
     tournamentList.addAll(tournamentListComplete);
+
     _updIsLoading(false);
   }
 
@@ -98,21 +100,29 @@ abstract class _TournamentMobx with Store {
       return _updIsLoading(false);
     }
 
-    bool filter = true;
+    bool isActiveStatus = true;
     if ( status == TournamentStatusEnum.closedPt.name || status == TournamentStatusEnum.closedEn.name ) {
-      filter = false;
+      isActiveStatus = false;
     }
 
-    tournamentList.retainWhere((element) => element.isActive == filter );
+    tournamentList.retainWhere((element) => element.isActive == isActiveStatus );
     return _updIsLoading(false);
 
   }
 
   @action
-  Future<void> updStatus( TournamentEntity entity ) async {
+  Future<void> updStatus( TournamentCollection entity ) async {
     _updIsLoading(true);
 
-    final response = await _useCase.updStatus(entity.updStatus( !entity.isActive ));
+    final index = tournamentList.indexWhere((element) => element.isEqual(entity));
+    tournamentList.removeAt(index);
+
+    entity.updStatus();
+    tournamentList.insert(index, entity);
+
+    GamesCollection games = GamesCollection.collectionToEntity(GamesCollection(listTournaments: tournamentList));
+
+    final response = await _useCase.updAllKey(games);
 
     response.fold(
       (failure) {
@@ -124,7 +134,7 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void openTournament( TournamentEntity entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
+  void openTournament( TournamentCollection entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
 
   @action
   void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);
