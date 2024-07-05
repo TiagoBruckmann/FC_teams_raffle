@@ -129,17 +129,17 @@ class _TournamentPageState extends State<TournamentPage> {
                         children: [
 
                           Text(
-                            entity.name ?? "",
+                            entity.name,
                             style: theme.textTheme.bodyMedium?.apply(
                               fontWeightDelta: 9,
                             ),
                           ),
 
                           IconButton(
-                            tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ?? false ? "active_status" : "closed_status" }"),
+                            tooltip: FlutterI18n.translate(context, "pages.tournament.${ entity.isActive ? "active_status" : "closed_status" }"),
                             onPressed: () => _mobx.updStatus( entity ),
                             icon: Icon(
-                              ( entity.isActive ?? false )
+                              ( entity.isActive )
                                   ? Icons.block
                                   : Icons.check_circle_outline,
                             ),
@@ -148,7 +148,7 @@ class _TournamentPageState extends State<TournamentPage> {
                         ],
                       ),
                       subtitle: Text(
-                        FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date ?? ""}),
+                        FlutterI18n.translate(context, "pages.tournament.date", translationParams: {"date": entity.date}),
                         style: theme.textTheme.bodySmall,
                       ),
                     ),

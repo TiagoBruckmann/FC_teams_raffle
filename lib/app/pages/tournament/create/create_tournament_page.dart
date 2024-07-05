@@ -25,12 +25,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   }
 
   @override
-  void dispose() {
-    _mobx.clear();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
 
     final theme = Theme.of(context);

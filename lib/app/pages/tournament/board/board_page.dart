@@ -8,7 +8,7 @@ import 'package:fc_teams_drawer/session.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/board/widgets/body_key_tournament.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/board/mobx/board.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -29,7 +29,7 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     super.initState();
-    Session.appEvents.sendScreen("board_page", params: widget.tournament.toMap().toString());
+    Session.appEvents.sendScreen("board_page", params: widget.tournament.toString());
     _mobx.setListKeys(widget.tournament);
   }
 
@@ -127,7 +127,7 @@ class _BoardPageState extends State<BoardPage> {
                   ),
                 ),
 
-                for ( final entity in _mobx.listKeys )
+                for ( final entity in _mobx.listMatches )
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -135,7 +135,7 @@ class _BoardPageState extends State<BoardPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 20 ),
                         child: Text(
-                          FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.position.toString()}),
+                          FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.round.toString()}),
                           style: theme.textTheme.bodyMedium,
                         ),
                       ),
@@ -146,21 +146,21 @@ class _BoardPageState extends State<BoardPage> {
 
                           Expanded(
                             child: BodyKeyTournamentWidget(
-                              playerName: entity.player1?.name ?? "",
-                              teamLogo: entity.player1?.team ?? "",
-                              score: entity.player1Scoreboard,
-                              hasWinner: ( entity.winner != null && entity.winner!.trim().isNotEmpty ),
-                              function: ( int value ) => _mobx.setGoals(entity, player1ScoreBoard: value),
+                              playerName: entity.player1,
+                              teamLogo: entity.player1,
+                              score: entity.score1,
+                              hasWinner: ( entity.winner.trim().isNotEmpty ),
+                              function: ( int value ) => _mobx.setGoals(entity, score1: value),
                             ),
                           ),
 
                           Expanded(
                             child: BodyKeyTournamentWidget(
-                              playerName: entity.player2?.name ?? "Próximo ganhador",
-                              teamLogo: entity.player2?.team ?? "",
-                              score: entity.player2Scoreboard,
-                              hasWinner: ( entity.winner != null && entity.winner!.trim().isNotEmpty ),
-                              function: ( int value ) => _mobx.setGoals(entity, player2ScoreBoard: value),
+                              playerName: entity.player2,
+                              teamLogo: entity.player2,
+                              score: entity.score2,
+                              hasWinner: ( entity.winner.trim().isNotEmpty ),
+                              function: ( int value ) => _mobx.setGoals(entity, score2: value),
                               // isLoser: entity.player2["defeats"] > 0,
                             ),
                           ),
