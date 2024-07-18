@@ -2,7 +2,7 @@ name: fc_teams_drawer
 description: "An app for all FIFA players or any other soccer game."
 publish_to: 'none'
 
-version: 1.0.0+9
+version: 1.0.1+10
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
