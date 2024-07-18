@@ -29,7 +29,7 @@ Versão publicada no dia 05/06/2024.
 
 Está é a versão inclui ajustes de segurança do Google.
 
-Versão publicada no dia ?/?/2024.
+Versão publicada no dia 18/07/2024.
 
 **:bulb: Novas funcionalidades**
 
