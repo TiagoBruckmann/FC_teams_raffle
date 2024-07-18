@@ -17,7 +17,7 @@ An app for all FIFA players or any other soccer game.
 ### :star: Compilação Bundle release da loja android
 
 ```sh
-    flutter build appbundle
+    flutter build appbundle --release
 ```
 
 ---

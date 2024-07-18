@@ -24,3 +24,17 @@ Versão publicada no dia 05/06/2024.
 </ul>
 
 ---
+
+### :gear: Versão 1.0.1
+
+Está é a versão inclui ajustes de segurança do Google.
+
+Versão publicada no dia 18/07/2024.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Aplicando novas seguranças do Google.</li>
+</ul>
+
+---
