@@ -27,7 +27,7 @@ class _ResultRaffleState extends State<ResultRaffle> {
       "result_raffle_page",
       params: {
         "is_solo": widget.isSolo.toString(),
-      },
+      }.toString(),
     );
 
   }

@@ -31,10 +31,31 @@ Está é a versão inclui ajustes de segurança do Google.
 
 Versão publicada no dia 18/07/2024.
 
-**:bulb: Novas funcionalidades**
+---
+
+**:star2: Melhorias**
 
 <ul>
     <li>Aplicando novas seguranças do Google.</li>
+</ul>
+
+### :gear: Versão 1.1.0
+
+Está é a versão adiciona a criação de torneios, sorteando os jogos e também os times da competição.
+
+Versão publicada no dia ?/?/2024.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Criação de torneios.</li>
+</ul>
+
+**:star2: Melhorias**
+
+<ul>
+    <li>Melhoria do sistema de logs.</li>
+    <li>Analise de performance.</li>
 </ul>
 
 ---

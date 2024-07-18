@@ -21,8 +21,8 @@ class VerifyConnection extends StatelessWidget {
   final Map<String, String>? appBarParams;
   final List<Widget>? actionWidgets;
   final Widget page;
-  final Function? function;
-  const VerifyConnection({ super.key, required this.keyAppBar, this.appBarParams, this.actionWidgets, required this.page, this.function });
+  final Function? floatingFunction;
+  const VerifyConnection({ super.key, required this.keyAppBar, this.appBarParams, this.actionWidgets, required this.page, this.floatingFunction });
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +49,14 @@ class VerifyConnection extends StatelessWidget {
             body: ( !Session.sharedServices.validateConnection(connectionMobx) )
             ? const LoadingConnection()
             : page,
-            floatingActionButton: ( function == null )
+            floatingActionButton: ( floatingFunction == null )
             ? null
             : FloatingActionButton(
-              onPressed: () => function!.call(),
+              onPressed: () => floatingFunction!.call(),
               child: Icon(
                 Icons.add,
-                color: theme.colorScheme.background,
-                size: 18,
+                color: theme.colorScheme.surface,
+                size: 25,
               ),
             ),
           ),

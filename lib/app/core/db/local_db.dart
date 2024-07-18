@@ -1,5 +1,5 @@
 import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:isar/isar.dart';
@@ -13,14 +13,14 @@ class LocalDb {
       if (Isar.instanceNames.isEmpty) {
 
         final dir = await getApplicationDocumentsDirectory();
-        final schema = [FCTeamsCollectionSchema];
+        final schema = [FCTeamsCollectionSchema, GamesCollectionSchema];
         return await Isar.open(schema, directory: dir.path);
 
       }
       return Future.value(Isar.getInstance());
 
     } catch (ex) {
-      SharedServices.logError("Failed to open database");
+      Session.logs.errorLog("Failed to open database: $ex");
       throw Exception('Failed to open database: $ex');
     }
 
@@ -28,7 +28,7 @@ class LocalDb {
 
   Future<bool> syncFCTeamDataModel( FCTeamsCollection dataModel ) async {
     try {
-      SharedServices.logSuccess("Inserting data sync in FCTeams database");
+      Session.logs.successLog("Inserting data sync in FCTeams database");
 
       final response = await _openDb();
 
@@ -44,10 +44,10 @@ class LocalDb {
 
       await _insert(object: dataModel);
 
-      SharedServices.logSuccess("Data sync inserted in FCTeams database");
+      Session.logs.successLog("Data sync inserted in FCTeams database");
       return true;
     } catch (ex) {
-      SharedServices.logError(ex.toString(), message: "No controls were found in the FCTeams database.");
+      Session.logs.errorLog(ex.toString());
       throw Exception('No controls were found in the FCTeams database. ${ex.toString()}');
     }
   }
@@ -67,12 +67,64 @@ class LocalDb {
         return null;
       }
 
-      SharedServices.logSuccess("Data Sync gotten with success in FCTeamsCollection");
+      Session.logs.successLog("Data Sync gotten with success in FCTeamsCollection");
 
       return dataSync;
 
     } catch (e, s) {
-      SharedServices.logError(e.toString(), message: s.toString());
+      String message = "${e.toString()} - ${s.toString()}";
+      Session.logs.errorLog(message);
+      throw Exception("${e.toString()} - ${s.toString()}");
+    }
+
+  }
+
+  Future<bool> syncTournamentDataModel( GamesCollection dataModel ) async {
+    try {
+      Session.logs.successLog("Inserting data sync in Games database");
+
+      final response = await _openDb();
+
+      final totalDocuments = await response.gamesCollections
+          .where()
+          .filter()
+          .idEqualTo(dataModel.id)
+          .count();
+
+      if ( totalDocuments > 1 ) {
+        await _delete(collection: GamesCollection);
+      }
+
+      await _insert(object: dataModel);
+
+      Session.logs.successLog("Data sync inserted in Games database");
+      return true;
+    } catch (ex) {
+      Session.logs.errorLog(ex.toString());
+      throw Exception('No controls were found in the Games database. ${ex.toString()}');
+    }
+  }
+
+  Future<GamesCollection?> getGamesCollection() async {
+    try {
+
+      final response = await _openDb();
+
+      final dataSync = await response.gamesCollections
+          .where()
+          .findFirst();
+
+      if ( dataSync == null ) {
+        return null;
+      }
+
+      Session.logs.successLog("Data Sync gotten with success in GamesCollection");
+
+      return dataSync;
+
+    } catch (e, s) {
+      String message = "${e.toString()} - ${s.toString()}";
+      Session.logs.errorLog(message);
       throw Exception("${e.toString()} - ${s.toString()}");
     }
 
@@ -83,6 +135,8 @@ class LocalDb {
 
     if ( collection is FCTeamsCollection ) {
       isar.writeTxn(() async => await isar.fCTeamsCollections.clear());
+    } else {
+      isar.writeTxn(() async => await isar.gamesCollections.clear());
     }
 
     return;
@@ -93,17 +147,18 @@ class LocalDb {
 
     int response = -1;
     if ( object is FCTeamsCollection ) {
-
       await Session.secureStorage.writeStorage("version_data_sync", object.versionDataSync.toString());
       response = await isar.writeTxn(() async => await isar.fCTeamsCollections.put(object));
+    } else {
+      response = await isar.writeTxn(() async => await isar.gamesCollections.put(object));
     }
 
     if ( response < 0 ) {
-      SharedServices.logError("Data Sync inserted with error");
+      Session.logs.errorLog("Data Sync inserted with error");
       return false;
     }
 
-    SharedServices.logSuccess("Data Sync inserted with success");
+    Session.logs.successLog("Data Sync inserted with success");
     return true;
 
   }

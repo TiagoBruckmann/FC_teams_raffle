@@ -1,4 +1,6 @@
 import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/domain/source/local/fc_drawer_logs.dart';
 import 'package:fc_teams_drawer/domain/source/local/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
@@ -12,7 +14,9 @@ class Session {
   static final SecureStorageWrapper secureStorage = SecureStorageWrapper();
   static FCTeamsCollection fcTeamCollection = FCTeamsCollection();
   static final SharedServices sharedServices = SharedServices();
+  static GamesCollection gamesCollection = GamesCollection();
   static final Performance performance = Performance();
+  static final FcDrawerLogs logs = FcDrawerLogs();
   static final AppEvents appEvents = AppEvents();
   static final Crash crash = Crash();
 

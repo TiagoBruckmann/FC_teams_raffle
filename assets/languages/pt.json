@@ -1,5 +1,6 @@
 {
   "btn_update": "Atualizar",
+  "btn_generate": "Gerar",
   "pages": {
     "home": {
       "app_bar": "Tipo de jogo",
@@ -7,7 +8,6 @@
       "solo_help": "Sorteie seu time e o time da 'máquina' automaticamente!",
       "x1": "1 V 1",
       "x1_help": "Sorteie seu time e o de seu amigo!",
-      "tournament": "Torneio",
       "tournament_help": "Crie uma liga própria para jogar com seus amigos!"
     },
     "result_raffle": {
@@ -18,6 +18,29 @@
       "machine": "Máquina",
       "league": "Liga: {league}"
     },
+    "tournament": {
+      "app_bar": "Torneio {status}",
+      "date": "Dia da competição: {date}",
+      "active_status": "Defina esse torneio como finalizado!",
+      "closed_status": "Defina esse torneio como Aberto!",
+      "create": {
+        "event_name": "Nome do torneio",
+        "qtd_participants": "Quantidade de jogadores",
+        "qtd_defeats": "Quantidade de derrotas",
+        "raffle_teams": "Sortear times?",
+        "player_name": "Nome do {position}º jogador",
+        "invalid_name": "Preencha o nome do torneio corretamente!",
+        "invalid_players_name": "Um ou mais jogadores estão com campos inválidos, corrija-os para continuar!"
+      },
+      "board": {
+        "4": "Oitavas",
+        "3": "Quartas",
+        "2": "Semifinais",
+        "1": "Final",
+        "game_position": "{position}º Jogo",
+        "invalid_score": "Selecione um placar para o jogo!"
+      }
+    },
     "update": {
       "title": "Olá, caro jogador",
       "subtitle": "Temos uma nova versão para você! Atualize seu app e confira as novidades!"
@@ -26,6 +49,12 @@
   "routes": {
     "app_bar": "Tela não encontrada",
     "title": "Erro 404",
-    "subtitle": "Ops, parece que essa tela não existe!"
+    "subtitle": "Ops, parece que essa tela não existe!",
+    "btn": "Voltar para a home!"
+  },
+  "status": {
+    "all": "Todos",
+    "active": "Ativos",
+    "closed": "Finalizados"
   }
 }

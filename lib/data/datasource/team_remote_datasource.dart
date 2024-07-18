@@ -3,6 +3,7 @@ import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 
 abstract class TeamRemoteDatasource {
 
@@ -24,7 +25,13 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
     try {
 
+      final metric = Session.performance.newHttpMetric("get_teams", HttpMethod.Get);
+      await metric.start();
+
       final response = await teamsRef.get();
+
+      await metric.stop();
+
       _syncData(response.value);
 
     } catch ( error ) {
