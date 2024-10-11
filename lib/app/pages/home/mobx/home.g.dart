@@ -17,6 +17,14 @@ mixin _$HomeMobx on _HomeMobx, Store {
     return _$verifyVersionAsyncAction.run(() => super.verifyVersion());
   }
 
+  late final _$goToTermsAsyncAction =
+      AsyncAction('_HomeMobx.goToTerms', context: context);
+
+  @override
+  Future<void> goToTerms() {
+    return _$goToTermsAsyncAction.run(() => super.goToTerms());
+  }
+
   late final _$_HomeMobxActionController =
       ActionController(name: '_HomeMobx', context: context);
 

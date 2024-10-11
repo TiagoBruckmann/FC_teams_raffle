@@ -6,6 +6,7 @@ import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.d
 
 // import dos pacotes
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:fc_teams_drawer/session.dart';
 
 class SharedServices {
 
@@ -36,6 +37,7 @@ class SharedServices {
 
   static void logError( String code, { String? message }) {
     String text = "Error: $code - Error Message: ${message ?? ""}";
+    Session.crash.onError(code, error: text);
     _customPrint("\x1B[31m\u2718 $text\x1B[0m");
   }
 

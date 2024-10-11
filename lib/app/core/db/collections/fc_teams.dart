@@ -71,7 +71,7 @@ class TeamCollection {
     return TeamCollection(
       name: json["name"],
       league: json["league"],
-      logo: json["logo"],
+      logo: json["logo"].toString().toLowerCase(),
     );
   }
 
@@ -79,7 +79,7 @@ class TeamCollection {
     return TeamCollection(
       name: team?.name,
       league: team?.league,
-      logo: team?.logo,
+      logo: team?.logo.toString().toLowerCase(),
     );
   }
 

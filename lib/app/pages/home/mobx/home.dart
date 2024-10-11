@@ -1,9 +1,11 @@
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
+import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
 import 'package:new_version_plus/new_version_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'home.g.dart';
 
@@ -34,6 +36,25 @@ abstract class _HomeMobx with Store {
 
       }
     }
+  }
+
+  @action
+  Future<void> goToTerms() async {
+    final url = Uri.https("tiagobruckmann.dev", "security/privacy_policy_fc_raffle.html");
+
+    try {
+      if ( await canLaunchUrl(url) ) {
+        Session.appEvents.sharedEvent("opening_terms");
+
+        launchUrl(url);
+
+        return;
+      }
+    } catch ( error ) {
+      SharedServices.logError("open_terms", message: error.toString());
+      return;
+    }
+
   }
 
   @action

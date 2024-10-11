@@ -150,6 +150,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+        bottomNavigationBar: TextButton(
+          onPressed: () => _mobx.goToTerms(),
+          child: Text(
+            FlutterI18n.translate(context, "pages.home.access_terms"),
+            style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }
