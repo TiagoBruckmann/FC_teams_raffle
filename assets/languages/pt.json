@@ -8,7 +8,8 @@
       "x1": "1 V 1",
       "x1_help": "Sorteie seu time e o de seu amigo!",
       "tournament": "Torneio",
-      "tournament_help": "Crie uma liga própria para jogar com seus amigos!"
+      "tournament_help": "Crie uma liga própria para jogar com seus amigos!",
+      "access_terms": "Acesse nossa política de privacidade"
     },
     "result_raffle": {
       "app_bar": "Resultado do Sorteio",

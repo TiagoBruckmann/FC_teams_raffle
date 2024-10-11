@@ -88,7 +88,7 @@ class Themes {
       ),
     ),
     popupMenuTheme: PopupMenuThemeData(
-      labelTextStyle: MaterialStateProperty.resolveWith((states) => _displayMediumTextDark),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) => _displayMediumTextDark),
       color: _primaryColorDark,
       elevation: 8,
     ),
@@ -105,7 +105,7 @@ class Themes {
     ),
     textTheme: _textThemeDark,
     colorScheme: const ColorScheme.dark(
-      background: _backgroundColorDark,
+      surface: _backgroundColorDark,
       primary: _primaryColorDark,
       onPrimary: _onPrimaryColorDark,
       inversePrimary: _textPrimaryDark,

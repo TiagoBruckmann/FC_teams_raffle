@@ -88,7 +88,7 @@ class Routes {
                       FlutterI18n.translate(context, "pages.dashboard.main.financial_balance.back_dash"),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.displayMedium!.apply(
-                        color: theme.colorScheme.background,
+                        color: theme.colorScheme.surface,
                       ),
                     ),
                   ),

@@ -38,3 +38,25 @@ Versão publicada no dia 18/07/2024.
 </ul>
 
 ---
+
+### :gear: Versão 1.0.2
+
+Está versão ajusta detalhes de segurança e privacidade solicitados pelo Google.
+
+Versão publicada no dia 11/10/2024.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Abertura dos termos e politica de privacidade.</li>
+</ul>
+
+**:bug: Correções de funcionalidades já existentes**
+
+<ul>
+    <li>Exibindo a imagem de todos os times que temos cadastrados.</li>
+    <li>habilitando Google Analytics.</li>
+    <li>Melhor controle de erros.</li>
+</ul>
+
+---

@@ -25,14 +25,12 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
     try {
 
       final response = await teamsRef.get();
-      _syncData(response.value);
+      return await _syncData(response.value);
 
     } catch ( error ) {
       Session.crash.onError("get_data_sync_firebase", error: error);
       throw ServerExceptions("get_data_sync_firebase => $error");
     }
-
-    return;
   }
 
   Future<void> _syncData( dynamic json ) async {
@@ -57,11 +55,11 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
         }
 
         Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(fcTeamCollection);
+        return;
 
-      } else {
-        Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(localDb!);
       }
 
+      Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(localDb!);
       return;
 
     } catch ( error ) {

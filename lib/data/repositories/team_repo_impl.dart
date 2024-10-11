@@ -14,11 +14,12 @@ class TeamRepoImpl implements TeamRepo {
     try {
       final result = await remoteDatasource.getDataSync();
       return right(result);
-    } on ServerExceptions {
-      return left(ServerFailure());
+    } on ServerExceptions catch (e) {
+      Session.crash.onError("get_data_sync_server_error", error: e.message);
+      return left(ServerFailure(e.message));
     } catch (e) {
       Session.crash.onError("get_data_sync_error", error: e);
-      return left(GeneralFailure());
+      return left(GeneralFailure(e.toString()));
     }
   }
 
