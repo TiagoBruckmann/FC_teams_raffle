@@ -1,4 +1,4 @@
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/session.dart';
@@ -6,8 +6,7 @@ import 'package:fc_teams_drawer/session.dart';
 abstract class TournamentRemoteDatasource {
 
   Future<List<TournamentCollection>> getTournaments();
-  Future<void> createTournament( Map<String, dynamic> json );
-  Future<void> updAllKey( GamesCollection game );
+  Future<void> createTournament( TournamentCollection tournament );
 
 }
 
@@ -18,50 +17,27 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   Future<List<TournamentCollection>> getTournaments() async {
     final response = await LocalDb().getGamesCollection();
 
-    if ( response?.listTournaments == null ) {
+    print("response => $response");
+    print("response.listTournaments => ${response?.matches}");
+    if ( response?.matches == null ) {
       return [];
     }
 
-    Session.gamesCollection = response!;
-    return response.listTournaments!;
+    return [response!];
   }
 
   @override
-  Future<void> createTournament( Map<String, dynamic> json ) async {
+  Future<void> createTournament( TournamentCollection tournament ) async {
 
-    final game = GamesCollection.fromJson(json);
-    Session.gamesCollection.listTournaments?.addAll(game.listTournaments!);
-
-    if ( game.listTournaments == null  ) {
+    if ( tournament.matches.isEmpty ) {
       Session.crash.onError("Failure on CreateTournament: Null ListTournament");
       throw CacheExceptions("Failure on CreateTournament: Null ListTournament");
     }
 
-    final isSuccessSyncDataModel = await LocalDb().syncTournamentDataModel(Session.gamesCollection);
-
-    if ( !isSuccessSyncDataModel ) {
-      Session.crash.onError("Failure on Sync Games data model");
-      throw CacheExceptions("Failure on Sync Games data model");
-    }
-
-    print("Session.gamesCollection => ${Session.gamesCollection}");
-    print("Session.gamesCollection.listTournaments => ${Session.gamesCollection.listTournaments}");
-    Session.gamesCollection.listTournaments?.addAll(game.listTournaments!);
-    return;
-
-  }
-
-  @override
-  Future<void> updAllKey( GamesCollection game ) async {
-
-    final isSuccessSyncDataModel = await LocalDb().syncTournamentDataModel(game);
-
-    if ( !isSuccessSyncDataModel ) {
-      Session.crash.onError("Failure on Sync Games data model");
-      throw CacheExceptions("Failure on Sync Games data model");
-    }
+    await LocalDb().insertDb(object: tournament);
 
     return;
+
   }
 
 }

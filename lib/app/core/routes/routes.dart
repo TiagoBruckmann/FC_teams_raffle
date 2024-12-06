@@ -7,7 +7,7 @@ import 'package:fc_teams_drawer/app/pages/tournament/create/create_tournament_pa
 import 'package:fc_teams_drawer/app/pages/tournament/home/tournament_page.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/board/board_page.dart';
 import 'package:fc_teams_drawer/app/pages/result_raffle/result_raffle.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 import 'package:fc_teams_drawer/app/pages/splash/splash.dart';
 import 'package:fc_teams_drawer/app/pages/home/home.dart';

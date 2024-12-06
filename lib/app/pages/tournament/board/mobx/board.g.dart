@@ -89,44 +89,9 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.setGoals', context: context);
 
   @override
-  Future<void> setGoals(KeyCollection keyCollection,
-      {int? player1ScoreBoard, int? player2ScoreBoard}) {
-    return _$setGoalsAsyncAction.run(() => super.setGoals(keyCollection,
-        player1ScoreBoard: player1ScoreBoard,
-        player2ScoreBoard: player2ScoreBoard));
-  }
-
-  late final _$_updWinnerAsyncAction =
-      AsyncAction('_BoardMobx._updWinner', context: context);
-
-  @override
-  Future<void> _updWinner(KeyCollection keyCollection) {
-    return _$_updWinnerAsyncAction.run(() => super._updWinner(keyCollection));
-  }
-
-  late final _$_validateRoundAsyncAction =
-      AsyncAction('_BoardMobx._validateRound', context: context);
-
-  @override
-  Future<void> _validateRound(KeyCollection keyCollection) {
-    return _$_validateRoundAsyncAction
-        .run(() => super._validateRound(keyCollection));
-  }
-
-  late final _$_updSecondPLayerAsyncAction =
-      AsyncAction('_BoardMobx._updSecondPLayer', context: context);
-
-  @override
-  Future<void> _updSecondPLayer(KeyCollection key) {
-    return _$_updSecondPLayerAsyncAction.run(() => super._updSecondPLayer(key));
-  }
-
-  late final _$_createNewKeyAsyncAction =
-      AsyncAction('_BoardMobx._createNewKey', context: context);
-
-  @override
-  Future<void> _createNewKey(KeyCollection key) {
-    return _$_createNewKeyAsyncAction.run(() => super._createNewKey(key));
+  Future<void> setGoals(MatchCollection match, {int? score1, int? score2}) {
+    return _$setGoalsAsyncAction
+        .run(() => super.setGoals(match, score1: score1, score2: score2));
   }
 
   late final _$_BoardMobxActionController =
@@ -155,11 +120,11 @@ mixin _$BoardMobx on _BoardMobx, Store {
   }
 
   @override
-  void _setSteps(String stepName) {
+  void _setSteps() {
     final _$actionInfo =
         _$_BoardMobxActionController.startAction(name: '_BoardMobx._setSteps');
     try {
-      return super._setSteps(stepName);
+      return super._setSteps();
     } finally {
       _$_BoardMobxActionController.endAction(_$actionInfo);
     }

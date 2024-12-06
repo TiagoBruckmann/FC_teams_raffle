@@ -1,5 +1,5 @@
 import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:isar/isar.dart';
@@ -13,7 +13,7 @@ class LocalDb {
       if (Isar.instanceNames.isEmpty) {
 
         final dir = await getApplicationDocumentsDirectory();
-        final schema = [FCTeamsCollectionSchema, GamesCollectionSchema];
+        final schema = [FCTeamsCollectionSchema, PlayerCollectionSchema, TournamentCollectionSchema, MatchCollectionSchema];
         return await Isar.open(schema, directory: dir.path);
 
       }
@@ -42,7 +42,7 @@ class LocalDb {
         await _delete(collection: FCTeamsCollection);
       }
 
-      await _insert(object: dataModel);
+      await insertDb(object: dataModel);
 
       Session.logs.successLog("Data sync inserted in FCTeams database");
       return true;
@@ -79,38 +79,12 @@ class LocalDb {
 
   }
 
-  Future<bool> syncTournamentDataModel( GamesCollection dataModel ) async {
-    try {
-      Session.logs.successLog("Inserting data sync in Games database");
-
-      final response = await _openDb();
-
-      final totalDocuments = await response.gamesCollections
-          .where()
-          .filter()
-          .idEqualTo(dataModel.id)
-          .count();
-
-      if ( totalDocuments > 1 ) {
-        await _delete(collection: GamesCollection);
-      }
-
-      await _insert(object: dataModel);
-
-      Session.logs.successLog("Data sync inserted in Games database");
-      return true;
-    } catch (ex) {
-      Session.logs.errorLog(ex.toString());
-      throw Exception('No controls were found in the Games database. ${ex.toString()}');
-    }
-  }
-
-  Future<GamesCollection?> getGamesCollection() async {
+  Future<TournamentCollection?> getGamesCollection() async {
     try {
 
       final response = await _openDb();
 
-      final dataSync = await response.gamesCollections
+      final dataSync = await response.tournamentCollections
           .where()
           .findFirst();
 
@@ -136,21 +110,25 @@ class LocalDb {
     if ( collection is FCTeamsCollection ) {
       isar.writeTxn(() async => await isar.fCTeamsCollections.clear());
     } else {
-      isar.writeTxn(() async => await isar.gamesCollections.clear());
+      isar.writeTxn(() async => await isar.tournamentCollections.clear());
     }
 
     return;
   }
 
-  Future<bool> _insert<Model>({required object}) async {
+  Future<bool> insertDb<Model>({required object}) async {
     final isar = await _openDb();
 
     int response = -1;
     if ( object is FCTeamsCollection ) {
       await Session.secureStorage.writeStorage("version_data_sync", object.versionDataSync.toString());
       response = await isar.writeTxn(() async => await isar.fCTeamsCollections.put(object));
+    } else if ( object is PlayerCollection ) {
+      response = await isar.writeTxn(() async => await isar.playerCollections.put(object));
+    } else if ( object is MatchCollection ) {
+      response = await isar.writeTxn(() async => await isar.matchCollections.put(object));
     } else {
-      response = await isar.writeTxn(() async => await isar.gamesCollections.put(object));
+      response = await isar.writeTxn(() async => await isar.tournamentCollections.put(object));
     }
 
     if ( response < 0 ) {

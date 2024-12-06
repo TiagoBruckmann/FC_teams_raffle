@@ -1,5 +1,5 @@
 // import dos domain
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/domain/repositories/tournament_repo.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
 
@@ -14,12 +14,8 @@ class TournamentUseCase {
     return await tournamentRepo.getTournaments();
   }
 
-  Future<Either<Failure, void>> createTournament( Map<String, dynamic> json ) async {
-    return await tournamentRepo.createTournament( json );
-  }
-
-  Future<Either<Failure, void>> updAllKey( GamesCollection game ) async {
-    return await tournamentRepo.updAllKey( game );
+  Future<Either<Failure, void>> createTournament( TournamentCollection tournament ) async {
+    return await tournamentRepo.createTournament( tournament );
   }
 
 }

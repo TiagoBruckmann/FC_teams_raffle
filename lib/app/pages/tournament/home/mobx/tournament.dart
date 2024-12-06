@@ -1,5 +1,6 @@
 // import das telas
-import 'package:fc_teams_drawer/app/core/db/collections/tournament.dart';
+import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
+import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 
@@ -120,17 +121,9 @@ abstract class _TournamentMobx with Store {
     entity.updStatus();
     tournamentList.insert(index, entity);
 
-    GamesCollection games = GamesCollection.collectionToEntity(GamesCollection(listTournaments: tournamentList));
+    await LocalDb().insertDb(object: entity);
+    clear();
 
-    final response = await _useCase.updAllKey(games);
-
-    response.fold(
-      (failure) {
-        Session.logs.errorLog(failure.message);
-        _updIsLoading(false);
-      },
-      (success) => clear(),
-    );
   }
 
   @action

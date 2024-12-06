@@ -105,7 +105,7 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       AsyncAction('_CreateTournamentMobx._getPlayers', context: context);
 
   @override
-  Future<Map<String, dynamic>> _getPlayers() {
+  Future<List<PlayerCollection>> _getPlayers() {
     return _$_getPlayersAsyncAction.run(() => super._getPlayers());
   }
 
@@ -117,20 +117,12 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
     return _$_sortTeamsAsyncAction.run(() => super._sortTeams(listTeams));
   }
 
-  late final _$_getKeysAsyncAction =
-      AsyncAction('_CreateTournamentMobx._getKeys', context: context);
+  late final _$_getMatchesAsyncAction =
+      AsyncAction('_CreateTournamentMobx._getMatches', context: context);
 
   @override
-  Future<List<Map<String, dynamic>>> _getKeys(List<PlayerCollection> list) {
-    return _$_getKeysAsyncAction.run(() => super._getKeys(list));
-  }
-
-  late final _$_getTournamentsAsyncAction =
-      AsyncAction('_CreateTournamentMobx._getTournaments', context: context);
-
-  @override
-  Future<void> _getTournaments() {
-    return _$_getTournamentsAsyncAction.run(() => super._getTournaments());
+  Future<List<MatchCollection>> _getMatches(List<PlayerCollection> players) {
+    return _$_getMatchesAsyncAction.run(() => super._getMatches(players));
   }
 
   late final _$_CreateTournamentMobxActionController =
@@ -186,17 +178,6 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
         name: '_CreateTournamentMobx.updRaffleTeams');
     try {
       return super.updRaffleTeams();
-    } finally {
-      _$_CreateTournamentMobxActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void clear() {
-    final _$actionInfo = _$_CreateTournamentMobxActionController.startAction(
-        name: '_CreateTournamentMobx.clear');
-    try {
-      return super.clear();
     } finally {
       _$_CreateTournamentMobxActionController.endAction(_$actionInfo);
     }
