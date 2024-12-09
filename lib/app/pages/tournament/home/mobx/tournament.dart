@@ -1,12 +1,11 @@
 // import das telas
-import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
-import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 
 // import dos pacotes
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -32,10 +31,10 @@ class TournamentMobx extends _TournamentMobx with _$TournamentMobx {}
 abstract class _TournamentMobx with Store {
 
   final _currentContext = Session.globalContext.currentContext!;
-  final _useCase = TournamentUseCase(getIt());
+  final _tournamentUseCase = TournamentUseCase(getIt());
 
-  ObservableList<TournamentCollection> tournamentListComplete = ObservableList();
-  ObservableList<TournamentCollection> tournamentList = ObservableList();
+  ObservableList<TournamentEntity> tournamentListComplete = ObservableList();
+  ObservableList<TournamentEntity> tournamentList = ObservableList();
 
   ObservableList<String> itemsMenu = ObservableList();
 
@@ -66,7 +65,7 @@ abstract class _TournamentMobx with Store {
   Future<void> getTournaments() async {
 
     _setItemsMenu();
-    final successOrFailure = await _useCase.getTournaments();
+    final successOrFailure = await _tournamentUseCase.getTournaments();
 
     successOrFailure.fold(
       (failure) => Session.logs.errorLog(failure.message),
@@ -80,7 +79,7 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void _addTournamentList({ List<TournamentCollection>? list }) {
+  void _addTournamentList({ List<TournamentEntity>? list }) {
 
     if ( tournamentListComplete.isEmpty && list != null && list.isNotEmpty ) {
       tournamentListComplete.addAll(list);
@@ -112,22 +111,22 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  Future<void> updStatus( TournamentCollection entity ) async {
+  Future<void> updStatus( TournamentEntity entity ) async {
     _updIsLoading(true);
 
     final index = tournamentList.indexWhere((element) => element.isEqual(entity));
     tournamentList.removeAt(index);
 
-    entity.updStatus();
+    entity = entity.updStatus();
     tournamentList.insert(index, entity);
 
-    await LocalDb().insertDb(object: entity);
+    await _tournamentUseCase.updateTournament(entity);
     clear();
 
   }
 
   @action
-  void openTournament( TournamentCollection entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
+  void openTournament( TournamentEntity entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
 
   @action
   void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);

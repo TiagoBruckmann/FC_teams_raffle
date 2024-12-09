@@ -1,6 +1,11 @@
 // import das telas
-import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
+import 'package:fc_teams_drawer/domain/entity/match.dart';
+import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
+import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -11,15 +16,17 @@ class BoardMobx extends _BoardMobx with _$BoardMobx {}
 
 abstract class _BoardMobx with Store {
 
-  ObservableList<MatchCollection> listMatches = ObservableList();
+  final _tournamentUseCase = TournamentUseCase(getIt());
 
-  ObservableList<PlayerCollection> listPlayers = ObservableList();
+  ObservableList<MatchEntity> listMatches = ObservableList();
+
+  ObservableList<PlayerEntity> listPlayers = ObservableList();
 
   @observable
   bool isLoading = true;
 
   @observable
-  late TournamentCollection _tournament;
+  late TournamentEntity _tournament;
 
   @observable
   int selectedStep = 2;
@@ -36,32 +43,64 @@ abstract class _BoardMobx with Store {
   @action
   void _setSteps() {
 
-    if ( _tournament.players.toList().length > 4 || _tournament.players.toList().length < 8 ) {
+    if ( _tournament.playerId.length > 4 || _tournament.playerId.length < 8 ) {
       qtdSteps = 3;
-    } if ( _tournament.players.length > 8 ) {
+    } if ( _tournament.playerId.length > 8 ) {
       qtdSteps = 4;
     }
 
   }
 
   @action
-  Future<void> setListKeys( TournamentCollection tournament ) async {
+  Future<void> setListKeys( TournamentEntity tournament ) async {
     _tournament = tournament;
     _setSteps();
 
-    if ( tournament.matches.toList().isEmpty ) {
+    if ( tournament.matchId.isEmpty ) {
       return;
     }
 
-    listMatches.addAll(tournament.matches.toList());
-    listPlayers.addAll(tournament.players.toList());
+    await _getPlayers();
+    await _getMatches();
 
     updIsLoading(false);
 
   }
 
+  Future<void> _getPlayers() async {
+    final response = await _tournamentUseCase.getPlayers();
+
+    final List<PlayerEntity> players = [];
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (player) => players.addAll(player),
+    );
+
+    players.retainWhere((player) => _tournament.playerId.contains(player.id.toString()));
+
+    listPlayers.addAll(players);
+    return;
+  }
+
+  Future<void> _getMatches() async {
+    final response = await _tournamentUseCase.getMatches();
+
+    final List<MatchEntity> matches = [];
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (match) => matches.addAll(match),
+    );
+
+    matches.retainWhere((match) => _tournament.matchId.contains(match.id.toString()));
+
+    listMatches.addAll(matches);
+    return;
+  }
+
   @action
-  Future<void> setGoals( MatchCollection match, { int? score1, int? score2 } ) async {
+  Future<void> setGoals( MatchEntity match, { int? score1, int? score2 } ) async {
 
     if ( score1 == null && score2 == null ) {
       CustomSnackBar(messageKey: "pages.tournament.board.invalid_score");
@@ -73,12 +112,12 @@ abstract class _BoardMobx with Store {
     score1 = score1 ?? match.score1;
     score2 = score2 ?? match.score2;
 
-    if ( score1 != null ) {
-      match.setPlayer1Goals(score1);
+    if ( score1 > 0 ) {
+      match.setPlayer1Score(score1);
     }
 
-    if ( score2 != null ) {
-      match.setPlayer2Goals(score2);
+    if ( score2 > 0 ) {
+      match.setPlayer2Score(score2);
     }
     
     final elementIndex = listMatches.indexWhere((element) => element.player1 == match.player1 && element.player2 == match.player2 && element.score1 == score1 && element.score2 == score2);
@@ -88,27 +127,31 @@ abstract class _BoardMobx with Store {
 
     listMatches.insert(elementIndex, match);
 
-    if ( match.score1 != null && match.score2 != null ) {
+    if ( match.score1 != 0 && match.score2 != 0 ) {
 
-      String player = match.player1;
-      if ( match.score2! < match.score1! ) {
-        player = match.player2;
+      String playerLoser = match.player1;
+      if ( match.score2 < match.score1 ) {
+        playerLoser = match.player2;
       }
 
-      final loserIndex = listPlayers.indexWhere((element) => element.name.contains(player));
+      final loserIndex = listPlayers.indexWhere((element) => element.name.contains(playerLoser));
       listPlayers.removeAt(loserIndex);
 
-      final entity = listPlayers[loserIndex];
-      entity.updDefeats();
+      final loserEntity = listPlayers[loserIndex].setLoser();
 
-      listPlayers.insert(loserIndex, entity);
+      listPlayers.insert(loserIndex, loserEntity);
       listPlayers.removeWhere((element) => element.losses >= _tournament.defeats );
 
-      if ( _tournament.matches.toList().isNotEmpty ) {
-        _tournament.matches.toList().clear();
+      if ( _tournament.matchId.isNotEmpty ) {
+        _tournament.matchId.clear();
       }
 
-      _tournament.matches.toList().addAll(listMatches);
+      final List<String> matchesId = [];
+      for ( final match in listMatches ) {
+        matchesId.add((match.id ?? 1).toString());
+      }
+
+      _tournament.matchId.addAll(matchesId);
 
     }
 

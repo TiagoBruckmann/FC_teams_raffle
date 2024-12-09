@@ -1,4 +1,10 @@
 // imports nativos
+import 'package:fc_teams_drawer/domain/entity/match.dart';
+import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/domain/entity/team.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
+import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -8,11 +14,8 @@ import 'package:fc_teams_drawer/session.dart';
 // import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
-import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -24,12 +27,14 @@ class CreateTournamentMobx extends _CreateTournamentMobx with _$CreateTournament
 
 abstract class _CreateTournamentMobx with Store {
 
+  final _tournamentUseCase = TournamentUseCase(getIt());
+
   TextEditingController eventNameController = TextEditingController();
 
   ObservableList<TextEditingController> playersController = ObservableList();
 
   @observable
-  late TournamentCollection tournament;
+  late TournamentEntity tournament;
 
   @observable
   bool isLoading = true;
@@ -116,29 +121,45 @@ abstract class _CreateTournamentMobx with Store {
     final createdAt = DateFormat("yyyyMMddkkmmss").format(dateNow);
 
     final players = await _getPlayers();
+
+    final List<String> playersIds = [];
+
+    for ( final player in players ) {
+      if ( player.id != null ) {
+        playersIds.add(player.id!.toString());
+      }
+    }
+
     final matches = await _getMatches(players);
 
-    tournament = TournamentCollection(
+    final List<String> matchesIds = [];
+
+    for ( final match in matches ) {
+      if ( match.id != null ) {
+        matchesIds.add(match.id!.toString());
+      }
+    }
+
+    tournament = TournamentEntity(
       eventNameController.text.trim(),
       date,
-      qtdDefeats,
-      true,
+      playersIds,
+      matchesIds,
       raffleTeams,
+      true,
+      qtdDefeats,
       createdAt,
     );
 
-    tournament.players.toList().addAll(players);
-    tournament.matches.toList().addAll(matches);
-
-    await LocalDb().insertDb(object: tournament);
+    await _tournamentUseCase.createTournament(tournament);
 
     _goToBoard();
   }
 
   @action
-  Future<List<PlayerCollection>> _getPlayers() async {
+  Future<List<PlayerEntity>> _getPlayers() async {
 
-    final List<PlayerCollection> listPlayers = [];
+    final List<PlayerEntity> listPlayers = [];
     final List<String> listTeams = [];
 
     for ( final item in playersController ) {
@@ -151,7 +172,7 @@ abstract class _CreateTournamentMobx with Store {
       }
 
       listPlayers.add(
-        PlayerCollection(
+        PlayerEntity(
           item.text.trim(),
           logo,
           0,
@@ -162,9 +183,7 @@ abstract class _CreateTournamentMobx with Store {
 
     listTeams.clear();
 
-    for ( final item in listPlayers ) {
-      await LocalDb().insertDb(object: item);
-    }
+    await _tournamentUseCase.createPlayers(listPlayers);
 
     return listPlayers;
 
@@ -175,21 +194,21 @@ abstract class _CreateTournamentMobx with Store {
 
     final random = Random();
 
-    int totalTeams = Session.fcTeamCollection.teamCollection!.length;
+    int totalTeams = Session.teams.length;
 
-    TeamCollection team = Session.fcTeamCollection.teamCollection![random.nextInt(totalTeams)];
+    TeamEntity team = Session.teams[random.nextInt(totalTeams)];
 
     while ( listTeams.contains(team.logo) ) {
-      team = Session.fcTeamCollection.teamCollection![random.nextInt(totalTeams)];
+      team = Session.teams[random.nextInt(totalTeams)];
     }
 
-    return team.logo!;
+    return team.logo;
   }
 
   @action
-  Future<List<MatchCollection>> _getMatches( List<PlayerCollection> players ) async {
+  Future<List<MatchEntity>> _getMatches( List<PlayerEntity> players ) async {
 
-    final List<MatchCollection> listMatches = [];
+    final List<MatchEntity> listMatches = [];
 
     final random = Random();
     int round = 1;
@@ -200,7 +219,7 @@ abstract class _CreateTournamentMobx with Store {
       players.removeWhere((element) => element.isEqual(player1) );
       final totalPlayers = players.length;
 
-      PlayerCollection player2 = PlayerCollection.empty();
+      PlayerEntity player2 = PlayerEntity.empty();
       if ( totalPlayers > 0 ) {
         final secondPlayer = players[random.nextInt(players.length)];
         players.removeWhere((element) => element.isEqual(secondPlayer) );
@@ -208,13 +227,13 @@ abstract class _CreateTournamentMobx with Store {
       }
 
       listMatches.add(
-        MatchCollection(
+        MatchEntity(
           player1.name,
           player2.name,
-          0,
-          0,
-          round,
           "",
+          round,
+          0,
+          0,
         ),
       );
 
@@ -222,9 +241,7 @@ abstract class _CreateTournamentMobx with Store {
 
     }
 
-    for ( final item in listMatches ) {
-      await LocalDb().insertDb(object: item);
-    }
+    await _tournamentUseCase.createMatches(listMatches);
 
     return listMatches;
   }

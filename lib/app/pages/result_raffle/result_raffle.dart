@@ -113,13 +113,13 @@ class _ResultRaffleState extends State<ResultRaffle> {
                               Padding(
                                 padding: const EdgeInsets.symmetric( vertical: 5 ),
                                 child: Text(
-                                  _mobx.teamsList[i].name!,
+                                  _mobx.teamsList[i].name,
                                   style: theme.textTheme.bodySmall,
                                 ),
                               ),
 
                               Text(
-                                FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": _mobx.teamsList[i].league!}),
+                                FlutterI18n.translate(context, "pages.result_raffle.league", translationParams: {"league": _mobx.teamsList[i].league}),
                                 style: theme.textTheme.bodySmall,
                               ),
 

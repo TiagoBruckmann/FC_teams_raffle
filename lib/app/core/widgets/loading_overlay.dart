@@ -15,7 +15,7 @@ class LoadingOverlay extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool? canPop) {
+      onPopInvokedWithResult: ( canPop, object ) {
         if ( !isLoading ) {
           return NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
         }

@@ -37,7 +37,7 @@ void main() async {
       androidProvider: AndroidProvider.playIntegrity,
     );
 
-    configureDependencies();
+    await configureDependencies();
 
     runApp(
       MultiProvider(

@@ -61,7 +61,7 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
       AsyncAction('_TournamentMobx.updStatus', context: context);
 
   @override
-  Future<void> updStatus(TournamentCollection entity) {
+  Future<void> updStatus(TournamentEntity entity) {
     return _$updStatusAsyncAction.run(() => super.updStatus(entity));
   }
 
@@ -99,7 +99,7 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
   }
 
   @override
-  void _addTournamentList({List<TournamentCollection>? list}) {
+  void _addTournamentList({List<TournamentEntity>? list}) {
     final _$actionInfo = _$_TournamentMobxActionController.startAction(
         name: '_TournamentMobx._addTournamentList');
     try {
@@ -110,7 +110,7 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
   }
 
   @override
-  void openTournament(TournamentCollection entity) {
+  void openTournament(TournamentEntity entity) {
     final _$actionInfo = _$_TournamentMobxActionController.startAction(
         name: '_TournamentMobx.openTournament');
     try {

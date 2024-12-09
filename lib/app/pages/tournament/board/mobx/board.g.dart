@@ -29,7 +29,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       Atom(name: '_BoardMobx._tournament', context: context);
 
   @override
-  TournamentCollection get _tournament {
+  TournamentEntity get _tournament {
     _$_tournamentAtom.reportRead();
     return super._tournament;
   }
@@ -37,7 +37,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
   bool __tournamentIsInitialized = false;
 
   @override
-  set _tournament(TournamentCollection value) {
+  set _tournament(TournamentEntity value) {
     _$_tournamentAtom.reportWrite(
         value, __tournamentIsInitialized ? super._tournament : null, () {
       super._tournament = value;
@@ -81,7 +81,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.setListKeys', context: context);
 
   @override
-  Future<void> setListKeys(TournamentCollection tournament) {
+  Future<void> setListKeys(TournamentEntity tournament) {
     return _$setListKeysAsyncAction.run(() => super.setListKeys(tournament));
   }
 
@@ -89,7 +89,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.setGoals', context: context);
 
   @override
-  Future<void> setGoals(MatchCollection match, {int? score1, int? score2}) {
+  Future<void> setGoals(MatchEntity match, {int? score1, int? score2}) {
     return _$setGoalsAsyncAction
         .run(() => super.setGoals(match, score1: score1, score2: score2));
   }
