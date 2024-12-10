@@ -10,8 +10,8 @@ abstract class TournamentDao {
   @Query("SELECT * FROM tournaments ORDER BY id DESC")
   Future<List<TournamentEntity>> getAllTournaments();
 
-  @Query("SELECT * FROM tournaments WHERE id = :matchId ORDER BY id DESC")
-  Future<List<TournamentEntity>> getTournamentById( int matchId );
+  @Query("SELECT * FROM tournaments WHERE id = :id ORDER BY id DESC")
+  Future<TournamentEntity?> getTournamentById( int id );
 
   @insert
   Future<int> insertTournament( TournamentEntity tournaments );

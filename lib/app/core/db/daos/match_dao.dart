@@ -11,7 +11,7 @@ abstract class MatchDao {
   Future<List<MatchEntity>> getAllMatches();
 
   @Query("SELECT * FROM matches WHERE id = :matchId ORDER BY id DESC")
-  Future<List<MatchEntity>> getMatchById( int matchId );
+  Future<MatchEntity?> getMatchById( int matchId );
 
   @Query("SELECT * FROM matches WHERE player1 = :player1 AND player2 = :player2 ORDER BY id DESC LIMIT 1")
   Future<MatchEntity?> getMatchByPlayer1AndPlayer2( String player1, String player2 );

@@ -11,7 +11,7 @@ abstract class PlayerDao {
   Future<List<PlayerEntity>> getAllPlayers();
 
   @Query("SELECT * FROM players WHERE id = :playerId")
-  Future<List<PlayerEntity>> getPlayerById( int playerId );
+  Future<PlayerEntity?> getPlayerById( int playerId );
 
   @insert
   Future<List<int>> insertAllPlayers( List<PlayerEntity> players );

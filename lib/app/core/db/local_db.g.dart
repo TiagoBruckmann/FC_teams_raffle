@@ -72,6 +72,8 @@ class _$LocalDb extends LocalDb {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
+  TournamentMapperDao? _tournamentMapperDapInstance;
+
   FcTeamsDrawerDao? _fcTeamDrawerDaoInstance;
 
   TournamentDao? _tournamentDaoInstance;
@@ -104,9 +106,11 @@ class _$LocalDb extends LocalDb {
       },
       onCreate: (database, version) async {
         await database.execute(
+            'CREATE TABLE IF NOT EXISTS `tournaments_mapper` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `tournamentId` INTEGER NOT NULL, `playerId` INTEGER NOT NULL, `matchId` INTEGER NOT NULL, FOREIGN KEY (`tournamentId`) REFERENCES `tournaments` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`playerId`) REFERENCES `players` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`matchId`) REFERENCES `matches` (`id`) ON UPDATE CASCADE ON DELETE CASCADE)');
+        await database.execute(
             'CREATE TABLE IF NOT EXISTS `fc_teams_drawer` (`versionDataSync` INTEGER NOT NULL, PRIMARY KEY (`versionDataSync`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `tournaments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `playerId` TEXT NOT NULL, `matchId` TEXT NOT NULL, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `drawTeams` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `defeats` INTEGER NOT NULL, FOREIGN KEY (`playerId`) REFERENCES `players` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`matchId`) REFERENCES `matches` (`id`) ON UPDATE CASCADE ON DELETE CASCADE)');
+            'CREATE TABLE IF NOT EXISTS `tournaments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `drawTeams` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `defeats` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `players` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `team` TEXT NOT NULL, `losses` INTEGER NOT NULL)');
         await database.execute(
@@ -118,6 +122,12 @@ class _$LocalDb extends LocalDb {
       },
     );
     return sqfliteDatabaseFactory.openDatabase(path, options: databaseOptions);
+  }
+
+  @override
+  TournamentMapperDao get tournamentMapperDap {
+    return _tournamentMapperDapInstance ??=
+        _$TournamentMapperDao(database, changeListener);
   }
 
   @override
@@ -144,6 +154,80 @@ class _$LocalDb extends LocalDb {
   @override
   TeamDao get teamDao {
     return _teamDaoInstance ??= _$TeamDao(database, changeListener);
+  }
+}
+
+class _$TournamentMapperDao extends TournamentMapperDao {
+  _$TournamentMapperDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _tournamentMapperEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'tournaments_mapper',
+            (TournamentMapperEntity item) => <String, Object?>{
+                  'id': item.id,
+                  'tournamentId': item.tournamentId,
+                  'playerId': item.playerId,
+                  'matchId': item.matchId
+                }),
+        _tournamentMapperEntityUpdateAdapter = UpdateAdapter(
+            database,
+            'tournaments_mapper',
+            ['id'],
+            (TournamentMapperEntity item) => <String, Object?>{
+                  'id': item.id,
+                  'tournamentId': item.tournamentId,
+                  'playerId': item.playerId,
+                  'matchId': item.matchId
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<TournamentMapperEntity>
+      _tournamentMapperEntityInsertionAdapter;
+
+  final UpdateAdapter<TournamentMapperEntity>
+      _tournamentMapperEntityUpdateAdapter;
+
+  @override
+  Future<List<TournamentMapperEntity>> getAllTournamentsMapper() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM tournaments_mapper ORDER BY id DESC',
+        mapper: (Map<String, Object?> row) => TournamentMapperEntity(
+            row['tournamentId'] as int,
+            row['playerId'] as int,
+            row['matchId'] as int,
+            id: row['id'] as int?));
+  }
+
+  @override
+  Future<List<TournamentMapperEntity>> getTournamentMapperById(
+      int tournamentId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM tournaments WHERE tournamentId = ?1 ORDER BY id DESC',
+        mapper: (Map<String, Object?> row) => TournamentMapperEntity(
+            row['tournamentId'] as int,
+            row['playerId'] as int,
+            row['matchId'] as int,
+            id: row['id'] as int?),
+        arguments: [tournamentId]);
+  }
+
+  @override
+  Future<int> insertTournamentMapper(TournamentMapperEntity tournaments) {
+    return _tournamentMapperEntityInsertionAdapter.insertAndReturnId(
+        tournaments, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateTournamentMapper(TournamentMapperEntity tournament) async {
+    await _tournamentMapperEntityUpdateAdapter.update(
+        tournament, OnConflictStrategy.abort);
   }
 }
 
@@ -191,8 +275,6 @@ class _$TournamentDao extends TournamentDao {
             'tournaments',
             (TournamentEntity item) => <String, Object?>{
                   'id': item.id,
-                  'playerId': _listStringConverter.encode(item.playerId),
-                  'matchId': _listStringConverter.encode(item.matchId),
                   'name': item.name,
                   'date': item.date,
                   'createdAt': item.createdAt,
@@ -206,8 +288,6 @@ class _$TournamentDao extends TournamentDao {
             ['id'],
             (TournamentEntity item) => <String, Object?>{
                   'id': item.id,
-                  'playerId': _listStringConverter.encode(item.playerId),
-                  'matchId': _listStringConverter.encode(item.matchId),
                   'name': item.name,
                   'date': item.date,
                   'createdAt': item.createdAt,
@@ -232,8 +312,6 @@ class _$TournamentDao extends TournamentDao {
         mapper: (Map<String, Object?> row) => TournamentEntity(
             row['name'] as String,
             row['date'] as String,
-            _listStringConverter.decode(row['playerId'] as String),
-            _listStringConverter.decode(row['matchId'] as String),
             (row['drawTeams'] as int) != 0,
             (row['isActive'] as int) != 0,
             row['defeats'] as int,
@@ -242,20 +320,18 @@ class _$TournamentDao extends TournamentDao {
   }
 
   @override
-  Future<List<TournamentEntity>> getTournamentById(int matchId) async {
-    return _queryAdapter.queryList(
+  Future<TournamentEntity?> getTournamentById(int id) async {
+    return _queryAdapter.query(
         'SELECT * FROM tournaments WHERE id = ?1 ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => TournamentEntity(
             row['name'] as String,
             row['date'] as String,
-            _listStringConverter.decode(row['playerId'] as String),
-            _listStringConverter.decode(row['matchId'] as String),
             (row['drawTeams'] as int) != 0,
             (row['isActive'] as int) != 0,
             row['defeats'] as int,
             row['createdAt'] as String,
             id: row['id'] as int?),
-        arguments: [matchId]);
+        arguments: [id]);
   }
 
   @override
@@ -315,8 +391,8 @@ class _$PlayerDao extends PlayerDao {
   }
 
   @override
-  Future<List<PlayerEntity>> getPlayerById(int playerId) async {
-    return _queryAdapter.queryList('SELECT * FROM players WHERE id = ?1',
+  Future<PlayerEntity?> getPlayerById(int playerId) async {
+    return _queryAdapter.query('SELECT * FROM players WHERE id = ?1',
         mapper: (Map<String, Object?> row) => PlayerEntity(
             row['name'] as String, row['team'] as String, row['losses'] as int,
             id: row['id'] as int?),
@@ -390,8 +466,8 @@ class _$MatchDao extends MatchDao {
   }
 
   @override
-  Future<List<MatchEntity>> getMatchById(int matchId) async {
-    return _queryAdapter.queryList(
+  Future<MatchEntity?> getMatchById(int matchId) async {
+    return _queryAdapter.query(
         'SELECT * FROM matches WHERE id = ?1 ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => MatchEntity(
             row['player1'] as String,

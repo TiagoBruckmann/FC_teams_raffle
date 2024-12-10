@@ -3,9 +3,6 @@ import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
-import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -15,8 +12,6 @@ part 'board.g.dart';
 class BoardMobx extends _BoardMobx with _$BoardMobx {}
 
 abstract class _BoardMobx with Store {
-
-  final _tournamentUseCase = TournamentUseCase(getIt());
 
   ObservableList<MatchEntity> listMatches = ObservableList();
 
@@ -43,9 +38,9 @@ abstract class _BoardMobx with Store {
   @action
   void _setSteps() {
 
-    if ( _tournament.playerId.length > 4 || _tournament.playerId.length < 8 ) {
+    if ( _tournament.getPlayers.length > 4 || _tournament.getPlayers.length < 8 ) {
       qtdSteps = 3;
-    } if ( _tournament.playerId.length > 8 ) {
+    } if ( _tournament.getPlayers.length > 8 ) {
       qtdSteps = 4;
     }
 
@@ -56,7 +51,7 @@ abstract class _BoardMobx with Store {
     _tournament = tournament;
     _setSteps();
 
-    if ( tournament.matchId.isEmpty ) {
+    if ( tournament.getMatches.isEmpty ) {
       return;
     }
 
@@ -68,34 +63,12 @@ abstract class _BoardMobx with Store {
   }
 
   Future<void> _getPlayers() async {
-    final response = await _tournamentUseCase.getPlayers();
-
-    final List<PlayerEntity> players = [];
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (player) => players.addAll(player),
-    );
-
-    players.retainWhere((player) => _tournament.playerId.contains(player.id.toString()));
-
-    listPlayers.addAll(players);
+    listPlayers.addAll(_tournament.getPlayers);
     return;
   }
 
   Future<void> _getMatches() async {
-    final response = await _tournamentUseCase.getMatches();
-
-    final List<MatchEntity> matches = [];
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (match) => matches.addAll(match),
-    );
-
-    matches.retainWhere((match) => _tournament.matchId.contains(match.id.toString()));
-
-    listMatches.addAll(matches);
+    listMatches.addAll(_tournament.getMatches);
     return;
   }
 
@@ -141,17 +114,6 @@ abstract class _BoardMobx with Store {
 
       listPlayers.insert(loserIndex, loserEntity);
       listPlayers.removeWhere((element) => element.losses >= _tournament.defeats );
-
-      if ( _tournament.matchId.isNotEmpty ) {
-        _tournament.matchId.clear();
-      }
-
-      final List<String> matchesId = [];
-      for ( final match in listMatches ) {
-        matchesId.add((match.id ?? 1).toString());
-      }
-
-      _tournament.matchId.addAll(matchesId);
 
     }
 

@@ -1,20 +1,23 @@
 import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/data/model/tournament_model.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class TournamentRemoteDatasource {
 
-  Future<List<TournamentEntity>> getTournaments();
+  Future<List<TournamentModel>> getTournaments();
   Future<List<PlayerEntity>> getPlayers();
   Future<List<int>> createPlayers( List<PlayerEntity> players );
   Future<List<MatchEntity>> getMatches();
   Future<List<int>> createMatches( List<MatchEntity> matches );
-  Future<void> createTournament( TournamentEntity tournament );
+  Future<int> createTournament( TournamentEntity tournament );
   Future<void> updateTournament( TournamentEntity tournament );
+  Future<int> createTournamentMapper( TournamentMapperEntity tournament );
 
 }
 
@@ -24,13 +27,60 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   TournamentRemoteDatasourceImpl( this._localDb );
 
   @override
-  Future<List<TournamentEntity>> getTournaments() async {
-    final response = await _localDb.tournamentDao.getAllTournaments();
+  Future<List<TournamentModel>> getTournaments() async {
+    final responseMapper = await _localDb.tournamentMapperDap.getAllTournamentsMapper();
 
-    print("response => $response");
-    response.removeWhere((tournament) => tournament.matchId.isEmpty || tournament.playerId.isEmpty);
+    final List<TournamentModel> listTournaments = [];
+    late TournamentEntity? tournament;
+    final List<PlayerEntity> listPlayers = [];
+    final List<MatchEntity> listMatches = [];
 
-    return response;
+    int tournamentId = 0;
+
+    for ( final mapper in responseMapper ) {
+
+      if ( tournamentId != mapper.tournamentId ) {
+        tournamentId = mapper.tournamentId;
+        
+        if ( tournament != null && listPlayers.isNotEmpty && listMatches.isNotEmpty ) {
+          listTournaments.add(
+            TournamentModel.fromQuery(tournament, listPlayers, listMatches),
+          );
+        }
+        
+        listPlayers.clear();
+        listMatches.clear();
+
+        tournament = await _localDb.tournamentDao.getTournamentById(tournamentId);
+      }
+
+      final responsePlayers = await _localDb.playerDao.getPlayerById(mapper.playerId);
+      if ( responsePlayers != null ) {
+        listPlayers.add(responsePlayers);
+      }
+
+      final responseMatches = await _localDb.matchDao.getMatchById(mapper.matchId);
+      if ( responseMatches != null ) {
+        listMatches.add(responseMatches);
+      }
+    }
+    
+    final containsLastId = listTournaments.where((TournamentModel tournament) => tournament.id == tournamentId );
+    if ( containsLastId.isEmpty && tournament != null ) {
+      listTournaments.add(
+        TournamentModel.fromQuery(tournament, listPlayers, listMatches),
+      );
+
+      listPlayers.clear();
+      listMatches.clear();
+
+    }
+
+    print("listTournaments => $listTournaments");
+    final list = listTournaments.toSet().toList();
+    print("list => $list");
+
+    return list;
   }
 
   @override
@@ -47,7 +97,6 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     }
 
     return await _localDb.playerDao.insertAllPlayers(players);
-
   }
 
   @override
@@ -64,35 +113,21 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     }
 
     return await _localDb.matchDao.insertAllMatches(matches);
-
   }
 
   @override
-  Future<void> createTournament( TournamentEntity tournament ) async {
-
-    if ( tournament.matchId.isEmpty ) {
-      Session.crash.onError("Failure on CreateTournament: Null ListTournament");
-      throw CacheExceptions("Failure on CreateTournament: Null ListTournament");
-    }
-
-    await _localDb.tournamentDao.insertTournament(tournament);
-
-    return;
-
+  Future<int> createTournament( TournamentEntity tournament ) async {
+    return await _localDb.tournamentDao.insertTournament(tournament);
   }
 
   @override
   Future<void> updateTournament( TournamentEntity tournament ) async {
+    return await _localDb.tournamentDao.updateTournament(tournament);
+  }
 
-    if ( tournament.matchId.isEmpty ) {
-      Session.crash.onError("Failure on CreateTournament: Null ListTournament");
-      throw CacheExceptions("Failure on CreateTournament: Null ListTournament");
-    }
-
-    await _localDb.tournamentDao.updateTournament(tournament);
-
-    return;
-
+  @override
+  Future<int> createTournamentMapper( TournamentMapperEntity tournament ) async {
+    return await _localDb.tournamentMapperDap.insertTournamentMapper(tournament);
   }
 
 }

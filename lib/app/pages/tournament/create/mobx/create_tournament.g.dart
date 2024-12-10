@@ -101,11 +101,21 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
     return _$_saveTournamentAsyncAction.run(() => super._saveTournament());
   }
 
+  late final _$_createTournamentMapperAsyncAction = AsyncAction(
+      '_CreateTournamentMobx._createTournamentMapper',
+      context: context);
+
+  @override
+  Future<void> _createTournamentMapper(int tournamentId) {
+    return _$_createTournamentMapperAsyncAction
+        .run(() => super._createTournamentMapper(tournamentId));
+  }
+
   late final _$_getPlayersAsyncAction =
       AsyncAction('_CreateTournamentMobx._getPlayers', context: context);
 
   @override
-  Future<List<PlayerEntity>> _getPlayers() {
+  Future<List<int>> _getPlayers() {
     return _$_getPlayersAsyncAction.run(() => super._getPlayers());
   }
 
@@ -121,8 +131,8 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       AsyncAction('_CreateTournamentMobx._getMatches', context: context);
 
   @override
-  Future<List<MatchEntity>> _getMatches(List<PlayerEntity> players) {
-    return _$_getMatchesAsyncAction.run(() => super._getMatches(players));
+  Future<List<int>> _getMatches() {
+    return _$_getMatchesAsyncAction.run(() => super._getMatches());
   }
 
   late final _$_CreateTournamentMobxActionController =

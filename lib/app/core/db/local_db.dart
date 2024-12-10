@@ -6,6 +6,8 @@ import 'package:fc_teams_drawer/app/core/db/daos/tournament_dao.dart';
 import 'package:fc_teams_drawer/app/core/db/daos/player_dao.dart';
 import 'package:fc_teams_drawer/app/core/db/daos/match_dao.dart';
 import 'package:fc_teams_drawer/app/core/db/daos/team_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/tournament_mapper.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'adapters/list_string_converter.dart';
 
 // import dos domain
@@ -27,6 +29,7 @@ const kDatabaseName = 'fc_teams_drawer.db';
 @Database(
   version: 1,
   entities: [
+    TournamentMapperEntity,
     FcTeamsDrawerEntity,
     TournamentEntity,
     PlayerEntity,
@@ -35,6 +38,8 @@ const kDatabaseName = 'fc_teams_drawer.db';
   ],
 )
 abstract class LocalDb extends FloorDatabase {
+
+  TournamentMapperDao get tournamentMapperDap;
 
   FcTeamsDrawerDao get fcTeamDrawerDao;
 
