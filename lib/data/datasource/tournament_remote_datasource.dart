@@ -11,13 +11,14 @@ import 'package:injectable/injectable.dart';
 abstract class TournamentRemoteDatasource {
 
   Future<List<TournamentModel>> getTournaments();
+  Future<TournamentEntity?> getTournamentById( int tournamentId );
   Future<List<PlayerEntity>> getPlayers();
   Future<List<int>> createPlayers( List<PlayerEntity> players );
   Future<List<MatchEntity>> getMatches();
   Future<List<int>> createMatches( List<MatchEntity> matches );
   Future<int> createTournament( TournamentEntity tournament );
   Future<void> updateTournament( TournamentEntity tournament );
-  Future<int> createTournamentMapper( TournamentMapperEntity tournament );
+  Future<List<int>> createTournamentMapper( List<TournamentMapperEntity> mappers );
 
 }
 
@@ -31,9 +32,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     final responseMapper = await _localDb.tournamentMapperDap.getAllTournamentsMapper();
 
     final List<TournamentModel> listTournaments = [];
-    late TournamentEntity? tournament;
     final List<PlayerEntity> listPlayers = [];
     final List<MatchEntity> listMatches = [];
+    TournamentEntity? tournament;
 
     int tournamentId = 0;
 
@@ -54,14 +55,18 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         tournament = await _localDb.tournamentDao.getTournamentById(tournamentId);
       }
 
-      final responsePlayers = await _localDb.playerDao.getPlayerById(mapper.playerId);
-      if ( responsePlayers != null ) {
-        listPlayers.add(responsePlayers);
+      if ( mapper.playerId != null ) {
+        final responsePlayers = await _localDb.playerDao.getPlayerById(mapper.playerId!);
+        if ( responsePlayers != null ) {
+          listPlayers.add(responsePlayers);
+        }
       }
 
-      final responseMatches = await _localDb.matchDao.getMatchById(mapper.matchId);
-      if ( responseMatches != null ) {
-        listMatches.add(responseMatches);
+      if ( mapper.matchId != null ) {
+        final responseMatches = await _localDb.matchDao.getMatchById(mapper.matchId!);
+        if ( responseMatches != null ) {
+          listMatches.add(responseMatches);
+        }
       }
     }
     
@@ -76,11 +81,14 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
     }
 
-    print("listTournaments => $listTournaments");
     final list = listTournaments.toSet().toList();
-    print("list => $list");
 
     return list;
+  }
+
+  @override
+  Future<TournamentEntity?> getTournamentById( int tournamentId ) async {
+    return await _localDb.tournamentDao.getTournamentById(tournamentId);
   }
 
   @override
@@ -126,8 +134,8 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<int> createTournamentMapper( TournamentMapperEntity tournament ) async {
-    return await _localDb.tournamentMapperDap.insertTournamentMapper(tournament);
+  Future<List<int>> createTournamentMapper( List<TournamentMapperEntity> mappers ) async {
+    return await _localDb.tournamentMapperDap.insertTournamentMapper(mappers);
   }
 
 }

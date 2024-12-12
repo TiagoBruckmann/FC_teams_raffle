@@ -1,5 +1,5 @@
 // imports nativos
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -15,8 +15,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
 class BoardPage extends StatefulWidget {
-  final TournamentEntity tournament;
-  const BoardPage({ super.key, required this.tournament });
+  final List<TournamentMapperEntity> mappers;
+  const BoardPage({ super.key, required this.mappers });
 
   @override
   State<BoardPage> createState() => _BoardPageState();
@@ -29,8 +29,8 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     super.initState();
-    Session.appEvents.sendScreen("board_page", params: widget.tournament.toString());
-    _mobx.setListKeys(widget.tournament);
+    Session.appEvents.sendScreen("board_page", params: widget.mappers.toString());
+    _mobx.init(widget.mappers);
   }
 
   @override
@@ -147,7 +147,7 @@ class _BoardPageState extends State<BoardPage> {
                           Expanded(
                             child: BodyKeyTournamentWidget(
                               playerName: entity.player1,
-                              teamLogo: entity.player1,
+                              teamLogo: entity.logoTeam1,
                               score: entity.score1,
                               hasWinner: ( entity.winner.trim().isNotEmpty ),
                               function: ( int value ) => _mobx.setGoals(entity, score1: value),
@@ -157,7 +157,7 @@ class _BoardPageState extends State<BoardPage> {
                           Expanded(
                             child: BodyKeyTournamentWidget(
                               playerName: entity.player2,
-                              teamLogo: entity.player2,
+                              teamLogo: entity.logoTeam2,
                               score: entity.score2,
                               hasWinner: ( entity.winner.trim().isNotEmpty ),
                               function: ( int value ) => _mobx.setGoals(entity, score2: value),

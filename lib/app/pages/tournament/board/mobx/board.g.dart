@@ -77,12 +77,37 @@ mixin _$BoardMobx on _BoardMobx, Store {
     });
   }
 
-  late final _$setListKeysAsyncAction =
-      AsyncAction('_BoardMobx.setListKeys', context: context);
+  late final _$initAsyncAction =
+      AsyncAction('_BoardMobx.init', context: context);
 
   @override
-  Future<void> setListKeys(TournamentEntity tournament) {
-    return _$setListKeysAsyncAction.run(() => super.setListKeys(tournament));
+  Future<void> init(List<TournamentMapperEntity> mappers) {
+    return _$initAsyncAction.run(() => super.init(mappers));
+  }
+
+  late final _$_getTournamentAsyncAction =
+      AsyncAction('_BoardMobx._getTournament', context: context);
+
+  @override
+  Future<TournamentEntity?> _getTournament(int tournamentId) {
+    return _$_getTournamentAsyncAction
+        .run(() => super._getTournament(tournamentId));
+  }
+
+  late final _$_getPlayersAsyncAction =
+      AsyncAction('_BoardMobx._getPlayers', context: context);
+
+  @override
+  Future<void> _getPlayers(List<int> players) {
+    return _$_getPlayersAsyncAction.run(() => super._getPlayers(players));
+  }
+
+  late final _$_getMatchesAsyncAction =
+      AsyncAction('_BoardMobx._getMatches', context: context);
+
+  @override
+  Future<void> _getMatches(List<int> matches) {
+    return _$_getMatchesAsyncAction.run(() => super._getMatches(matches));
   }
 
   late final _$setGoalsAsyncAction =

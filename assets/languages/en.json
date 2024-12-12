@@ -38,7 +38,10 @@
         "2": "Semifinals",
         "1": "Final",
         "game_position": "{position}º Game",
-        "invalid_score": "Select a score for the game!"
+        "invalid_score": "Select a score for the game!",
+        "error": {
+          "get_tournament": "Failure to get tournament data, try again later!"
+        }
       }
     },
     "update": {

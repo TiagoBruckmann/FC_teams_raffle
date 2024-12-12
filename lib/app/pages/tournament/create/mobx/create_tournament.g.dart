@@ -9,26 +9,6 @@ part of 'create_tournament.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
-  late final _$tournamentAtom =
-      Atom(name: '_CreateTournamentMobx.tournament', context: context);
-
-  @override
-  TournamentEntity get tournament {
-    _$tournamentAtom.reportRead();
-    return super.tournament;
-  }
-
-  bool _tournamentIsInitialized = false;
-
-  @override
-  set tournament(TournamentEntity value) {
-    _$tournamentAtom.reportWrite(
-        value, _tournamentIsInitialized ? super.tournament : null, () {
-      super.tournament = value;
-      _tournamentIsInitialized = true;
-    });
-  }
-
   late final _$isLoadingAtom =
       Atom(name: '_CreateTournamentMobx.isLoading', context: context);
 
@@ -205,11 +185,11 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   }
 
   @override
-  void _goToBoard() {
+  void _goToBoard(List<TournamentMapperEntity> mappers) {
     final _$actionInfo = _$_CreateTournamentMobxActionController.startAction(
         name: '_CreateTournamentMobx._goToBoard');
     try {
-      return super._goToBoard();
+      return super._goToBoard(mappers);
     } finally {
       _$_CreateTournamentMobxActionController.endAction(_$actionInfo);
     }
@@ -218,7 +198,6 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   @override
   String toString() {
     return '''
-tournament: ${tournament},
 isLoading: ${isLoading},
 qtdPlayers: ${qtdPlayers},
 qtdDefeats: ${qtdDefeats},

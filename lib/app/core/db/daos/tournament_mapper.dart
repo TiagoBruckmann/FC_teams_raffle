@@ -14,7 +14,7 @@ abstract class TournamentMapperDao {
   Future<List<TournamentMapperEntity>> getTournamentMapperById( int tournamentId );
 
   @insert
-  Future<int> insertTournamentMapper( TournamentMapperEntity tournaments );
+  Future<List<int>> insertTournamentMapper( List<TournamentMapperEntity> mappers );
 
   @update
   Future<void> updateTournamentMapper( TournamentMapperEntity tournament );

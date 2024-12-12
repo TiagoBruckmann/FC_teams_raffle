@@ -7,21 +7,10 @@ class MatchEntity extends Equatable {
 
   @PrimaryKey(autoGenerate: true)
   final int? id;
-  final String player1, player2, winner;
+  final String player1, logoTeam1, player2, logoTeam2, winner;
   final int round, score1, score2;
 
-  const MatchEntity( this.player1, this.player2, this.winner, this.round, this.score1, this.score2, { this.id });
-
-  factory MatchEntity.fromJson( Map<String, dynamic> json ) {
-    return MatchEntity(
-      json["player1"],
-      json["player1"],
-      json["winner"],
-      json["round"],
-      json["score1"],
-      json["score2"],
-    );
-  }
+  const MatchEntity( this.player1, this.logoTeam1, this.player2, this.logoTeam2, this.winner, this.round, this.score1, this.score2, { this.id });
 
   void setPlayer1Score( int score ) => score1 + score;
 
@@ -50,6 +39,6 @@ class MatchEntity extends Equatable {
   String toString() => "MatchEntity($player1, $score1, $player2, $score2, $round, $winner)";
 
   @override
-  List<Object?> get props => [ id, player1, player2, winner, round, score1, score2 ];
+  List<Object?> get props => [ id, player1, logoTeam1, player2, logoTeam2, winner, round, score1, score2 ];
 
 }

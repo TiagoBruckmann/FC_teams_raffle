@@ -38,7 +38,10 @@
         "2": "Semifinais",
         "1": "Final",
         "game_position": "{position}º Jogo",
-        "invalid_score": "Selecione um placar para o jogo!"
+        "invalid_score": "Selecione um placar para o jogo!",
+        "error": {
+          "get_tournament": "Falha ao buscar os dados do torneio, tente novamente mais tarde!"
+        }
       }
     },
     "update": {

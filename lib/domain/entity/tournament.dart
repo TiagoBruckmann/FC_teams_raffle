@@ -20,11 +20,25 @@ class TournamentEntity extends Equatable {
   @ignore
   final List<MatchEntity>? matches;
 
-  const TournamentEntity( this.name, this.date, this.drawTeams, this.isActive, this.defeats, this.createdAt, { this.id, this.players, this.matches, });
+  const TournamentEntity( this.name, this.date, this.drawTeams, this.isActive, this.defeats, this.createdAt, { this.id, this.players, this.matches });
 
   List<PlayerEntity> get getPlayers => players ?? [];
 
   List<MatchEntity> get getMatches => matches ?? [];
+
+  factory TournamentEntity.fromMapper( TournamentEntity tournament, List<PlayerEntity> players, List<MatchEntity> matches ) {
+    return TournamentEntity(
+      id: tournament.id,
+      tournament.name,
+      tournament.date,
+      tournament.drawTeams,
+      tournament.isActive,
+      tournament.defeats,
+      tournament.createdAt,
+      players: players,
+      matches: matches,
+    );
+  }
 
   bool isEqual( TournamentEntity entity ) {
     final isEqual = entity.name == name && entity.date == date && entity.createdAt == createdAt;

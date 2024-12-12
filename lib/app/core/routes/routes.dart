@@ -11,7 +11,7 @@ import 'package:fc_teams_drawer/app/pages/splash/splash.dart';
 import 'package:fc_teams_drawer/app/pages/home/home.dart';
 
 // import dos domain
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 
 // import dos pacotes
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -55,7 +55,7 @@ class Routes {
       case "/board" :
         return MaterialPageRoute(
           builder: (_) => BoardPage(
-            tournament: args as TournamentEntity,
+            mappers: args as List<TournamentMapperEntity>,
           ),
         );
       default:

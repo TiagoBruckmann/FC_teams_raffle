@@ -1,6 +1,5 @@
 import 'package:fc_teams_drawer/domain/entity/team.dart';
 import 'package:fc_teams_drawer/domain/source/local/fc_drawer_logs.dart';
-import 'package:fc_teams_drawer/domain/source/local/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
 import 'package:fc_teams_drawer/domain/source/remote/performance.dart';

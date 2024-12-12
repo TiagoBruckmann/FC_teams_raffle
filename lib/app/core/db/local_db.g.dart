@@ -106,7 +106,7 @@ class _$LocalDb extends LocalDb {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `tournaments_mapper` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `tournamentId` INTEGER NOT NULL, `playerId` INTEGER NOT NULL, `matchId` INTEGER NOT NULL, FOREIGN KEY (`tournamentId`) REFERENCES `tournaments` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`playerId`) REFERENCES `players` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`matchId`) REFERENCES `matches` (`id`) ON UPDATE CASCADE ON DELETE CASCADE)');
+            'CREATE TABLE IF NOT EXISTS `tournaments_mapper` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `tournamentId` INTEGER NOT NULL, `playerId` INTEGER, `matchId` INTEGER, FOREIGN KEY (`tournamentId`) REFERENCES `tournaments` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`playerId`) REFERENCES `players` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`matchId`) REFERENCES `matches` (`id`) ON UPDATE CASCADE ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `fc_teams_drawer` (`versionDataSync` INTEGER NOT NULL, PRIMARY KEY (`versionDataSync`))');
         await database.execute(
@@ -114,7 +114,7 @@ class _$LocalDb extends LocalDb {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `players` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `team` TEXT NOT NULL, `losses` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `matches` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `player1` TEXT NOT NULL, `player2` TEXT NOT NULL, `winner` TEXT NOT NULL, `round` INTEGER NOT NULL, `score1` INTEGER NOT NULL, `score2` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `matches` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `player1` TEXT NOT NULL, `logoTeam1` TEXT NOT NULL, `player2` TEXT NOT NULL, `logoTeam2` TEXT NOT NULL, `winner` TEXT NOT NULL, `round` INTEGER NOT NULL, `score1` INTEGER NOT NULL, `score2` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `teams` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `league` TEXT NOT NULL, `logo` TEXT NOT NULL)');
 
@@ -200,9 +200,9 @@ class _$TournamentMapperDao extends TournamentMapperDao {
         'SELECT * FROM tournaments_mapper ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => TournamentMapperEntity(
             row['tournamentId'] as int,
-            row['playerId'] as int,
-            row['matchId'] as int,
-            id: row['id'] as int?));
+            id: row['id'] as int?,
+            playerId: row['playerId'] as int?,
+            matchId: row['matchId'] as int?));
   }
 
   @override
@@ -212,16 +212,17 @@ class _$TournamentMapperDao extends TournamentMapperDao {
         'SELECT * FROM tournaments WHERE tournamentId = ?1 ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => TournamentMapperEntity(
             row['tournamentId'] as int,
-            row['playerId'] as int,
-            row['matchId'] as int,
-            id: row['id'] as int?),
+            id: row['id'] as int?,
+            playerId: row['playerId'] as int?,
+            matchId: row['matchId'] as int?),
         arguments: [tournamentId]);
   }
 
   @override
-  Future<int> insertTournamentMapper(TournamentMapperEntity tournaments) {
-    return _tournamentMapperEntityInsertionAdapter.insertAndReturnId(
-        tournaments, OnConflictStrategy.abort);
+  Future<List<int>> insertTournamentMapper(
+      List<TournamentMapperEntity> mappers) {
+    return _tournamentMapperEntityInsertionAdapter.insertListAndReturnIds(
+        mappers, OnConflictStrategy.abort);
   }
 
   @override
@@ -422,7 +423,9 @@ class _$MatchDao extends MatchDao {
             (MatchEntity item) => <String, Object?>{
                   'id': item.id,
                   'player1': item.player1,
+                  'logoTeam1': item.logoTeam1,
                   'player2': item.player2,
+                  'logoTeam2': item.logoTeam2,
                   'winner': item.winner,
                   'round': item.round,
                   'score1': item.score1,
@@ -435,7 +438,9 @@ class _$MatchDao extends MatchDao {
             (MatchEntity item) => <String, Object?>{
                   'id': item.id,
                   'player1': item.player1,
+                  'logoTeam1': item.logoTeam1,
                   'player2': item.player2,
+                  'logoTeam2': item.logoTeam2,
                   'winner': item.winner,
                   'round': item.round,
                   'score1': item.score1,
@@ -457,7 +462,9 @@ class _$MatchDao extends MatchDao {
     return _queryAdapter.queryList('SELECT * FROM matches ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => MatchEntity(
             row['player1'] as String,
+            row['logoTeam1'] as String,
             row['player2'] as String,
+            row['logoTeam2'] as String,
             row['winner'] as String,
             row['round'] as int,
             row['score1'] as int,
@@ -471,7 +478,9 @@ class _$MatchDao extends MatchDao {
         'SELECT * FROM matches WHERE id = ?1 ORDER BY id DESC',
         mapper: (Map<String, Object?> row) => MatchEntity(
             row['player1'] as String,
+            row['logoTeam1'] as String,
             row['player2'] as String,
+            row['logoTeam2'] as String,
             row['winner'] as String,
             row['round'] as int,
             row['score1'] as int,
@@ -487,7 +496,7 @@ class _$MatchDao extends MatchDao {
   ) async {
     return _queryAdapter.query(
         'SELECT * FROM matches WHERE player1 = ?1 AND player2 = ?2 ORDER BY id DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => MatchEntity(row['player1'] as String, row['player2'] as String, row['winner'] as String, row['round'] as int, row['score1'] as int, row['score2'] as int, id: row['id'] as int?),
+        mapper: (Map<String, Object?> row) => MatchEntity(row['player1'] as String, row['logoTeam1'] as String, row['player2'] as String, row['logoTeam2'] as String, row['winner'] as String, row['round'] as int, row['score1'] as int, row['score2'] as int, id: row['id'] as int?),
         arguments: [player1, player2]);
   }
 

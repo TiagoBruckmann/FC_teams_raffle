@@ -39,9 +39,8 @@ class LoadingOverlay extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
                       message,
-                      style: theme.textTheme.bodyMedium?.apply(
-                        color: theme.scaffoldBackgroundColor,
-                      ),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ),
 

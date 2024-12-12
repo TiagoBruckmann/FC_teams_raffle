@@ -37,9 +37,24 @@ class TournamentMapperEntity extends Equatable {
 
   @PrimaryKey(autoGenerate: true)
   final int? id;
-  final int tournamentId, playerId, matchId;
+  final int tournamentId;
+  final int? playerId, matchId;
 
-  const TournamentMapperEntity( this.tournamentId, this.playerId, this.matchId, { this.id });
+  const TournamentMapperEntity( this.tournamentId, { this.id, this.playerId, this.matchId });
+
+  factory TournamentMapperEntity.fromPlayerId( int tournamentId, int playerId ) {
+    return TournamentMapperEntity(
+      tournamentId,
+      playerId: playerId,
+    );
+  }
+
+  factory TournamentMapperEntity.fromMatchId( int tournamentId, int matchId ) {
+    return TournamentMapperEntity(
+      tournamentId,
+      matchId: matchId,
+    );
+  }
 
   bool isEqual( TournamentMapperEntity entity ) {
     final isEqual = entity.tournamentId == tournamentId && entity.playerId == playerId && entity.matchId == matchId;

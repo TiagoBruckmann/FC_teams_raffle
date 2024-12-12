@@ -30,14 +30,11 @@ abstract class _CreateTournamentMobx with Store {
 
   final _tournamentUseCase = TournamentUseCase(getIt());
 
-  TextEditingController eventNameController = TextEditingController();
+  TextEditingController eventNameController = TextEditingController(text: "Teste");
 
   ObservableList<TextEditingController> playersController = ObservableList();
 
   ObservableList<PlayerEntity> listPlayers = ObservableList();
-
-  @observable
-  late TournamentEntity tournament;
 
   @observable
   bool isLoading = true;
@@ -123,7 +120,7 @@ abstract class _CreateTournamentMobx with Store {
     final date = "$day/$month/${dateNow.year}";
     final createdAt = DateFormat("yyyyMMddkkmmss").format(dateNow);
 
-    tournament = TournamentEntity(
+    final tournament = TournamentEntity(
       eventNameController.text.trim(),
       date,
       raffleTeams,
@@ -150,31 +147,28 @@ abstract class _CreateTournamentMobx with Store {
     final playersIds = await _getPlayers();
     final matchesIds = await _getMatches();
 
-    final List<Map<String, dynamic>> params = [];
+    final List<TournamentMapperEntity> tournamentMapperList = [];
 
     for ( final playerId in playersIds ) {
-      for ( final matchId in matchesIds ) {
-        params.addAll([{"player_id": playerId}, {"match_id": matchId}]);
-      }
-    }
-
-    print("params => $params");
-    final newParam = params.toSet().toList();
-    print("newParam => $newParam");
-
-    for ( final param in params ) {
-      final tournamentMapper = TournamentMapperEntity(tournamentId, param["player_id"], param["match_id"]);
-
-      final response = await _tournamentUseCase.createTournamentMapper(tournamentMapper);
-
-      response.fold(
-        (failure) => Session.logs.errorLog(failure.message),
-        (success) => print("createTournamentMapper => $success"),
+      tournamentMapperList.add(
+        TournamentMapperEntity.fromPlayerId(tournamentId, playerId),
       );
-
     }
 
-    _goToBoard();
+    for ( final matchId in matchesIds ) {
+      tournamentMapperList.add(
+        TournamentMapperEntity.fromMatchId(tournamentId, matchId),
+      );
+    }
+
+    final response = await _tournamentUseCase.createTournamentMapper(tournamentMapperList);
+
+    updIsLoading(false);
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (mappersIds) => _goToBoard(tournamentMapperList),
+    );
   }
 
   @action
@@ -255,7 +249,9 @@ abstract class _CreateTournamentMobx with Store {
       listMatches.add(
         MatchEntity(
           player1.name,
+          player1.team,
           player2.name,
+          player2.team,
           "",
           round,
           0,
@@ -279,9 +275,9 @@ abstract class _CreateTournamentMobx with Store {
   }
 
   @action
-  void _goToBoard() {
+  void _goToBoard( List<TournamentMapperEntity> mappers ) {
     NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: tournament);
+    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: mappers);
   }
 
 }

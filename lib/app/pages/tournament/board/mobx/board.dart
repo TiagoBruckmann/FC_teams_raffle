@@ -1,8 +1,14 @@
 // import das telas
+import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
+import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
+import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
+import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -12,6 +18,8 @@ part 'board.g.dart';
 class BoardMobx extends _BoardMobx with _$BoardMobx {}
 
 abstract class _BoardMobx with Store {
+
+  final _tournamentUseCase = TournamentUseCase(getIt());
 
   ObservableList<MatchEntity> listMatches = ObservableList();
 
@@ -47,28 +55,81 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> setListKeys( TournamentEntity tournament ) async {
-    _tournament = tournament;
-    _setSteps();
+  Future<void> init( List<TournamentMapperEntity> mappers ) async {
 
-    if ( tournament.getMatches.isEmpty ) {
-      return;
+    final List<int> playersIds = [];
+    final List<int> matchesIds = [];
+    for ( final mapper in mappers ) {
+
+      if ( mapper.playerId != null ) {
+        playersIds.add(mapper.playerId!);
+      }
+
+      if ( mapper.matchId != null ) {
+        matchesIds.add(mapper.matchId!);
+      }
+
     }
 
-    await _getPlayers();
-    await _getMatches();
+    final tournament = await _getTournament(mappers[0].tournamentId);
+
+    if ( tournament == null ) {
+      updIsLoading(false);
+      CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
+      return NavigationRoutes.navigation(NavigationTypeEnum.pushAndRemoveUntil.value, RoutesNameEnum.home.name);
+    }
+
+    await _getPlayers(playersIds);
+    await _getMatches(matchesIds);
+
+    _tournament = TournamentEntity.fromMapper(tournament, listPlayers, listMatches);
+    _setSteps();
 
     updIsLoading(false);
 
   }
 
-  Future<void> _getPlayers() async {
-    listPlayers.addAll(_tournament.getPlayers);
+  @action
+  Future<TournamentEntity?> _getTournament( int tournamentId ) async {
+    final response = await _tournamentUseCase.getTournamentById(tournamentId);
+
+    return response.fold(
+      (failure) {
+        Session.logs.errorLog(failure.message);
+        return null;
+      },
+      (tournament) => tournament,
+    );
+
+  }
+
+  @action
+  Future<void> _getPlayers( List<int> players ) async {
+    final response = await _tournamentUseCase.getPlayers();
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (list) {
+        list.retainWhere((player) => players.contains(player.id));
+        listPlayers.addAll(list);
+      },
+    );
+
     return;
   }
 
-  Future<void> _getMatches() async {
-    listMatches.addAll(_tournament.getMatches);
+  @action
+  Future<void> _getMatches( List<int> matches ) async {
+    final response = await _tournamentUseCase.getMatches();
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (list) {
+        list.retainWhere((match) => matches.contains(match.id));
+        listMatches.addAll(list);
+      },
+    );
+
     return;
   }
 

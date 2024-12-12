@@ -30,6 +30,20 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
+  Future<Either<Failure, TournamentEntity?>> getTournamentById( int tournamentId ) async {
+    try {
+      final result = await tournamentRemoteDatasource.getTournamentById( tournamentId );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("get_tournament_by_id_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("get_tournament_by_id_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<PlayerEntity>>> getPlayers() async {
     try {
       final result = await tournamentRemoteDatasource.getPlayers();
@@ -114,9 +128,9 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, int>> createTournamentMapper( TournamentMapperEntity tournament ) async {
+  Future<Either<Failure, List<int>>> createTournamentMapper( List<TournamentMapperEntity> mappers ) async {
     try {
-      final result = await tournamentRemoteDatasource.createTournamentMapper( tournament );
+      final result = await tournamentRemoteDatasource.createTournamentMapper( mappers );
       return right(result);
     } on ServerExceptions catch ( error ) {
       Session.crash.onError("create_tournament_mapper_server_error", error: error.message);

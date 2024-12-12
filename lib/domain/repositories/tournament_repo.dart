@@ -8,12 +8,13 @@ import 'package:fc_teams_drawer/domain/failures/failures.dart';
 abstract class TournamentRepo {
 
   Future<Either<Failure, List<TournamentEntity>>> getTournaments();
+  Future<Either<Failure, TournamentEntity?>> getTournamentById( int tournamentId );
   Future<Either<Failure, List<PlayerEntity>>> getPlayers();
   Future<Either<Failure, List<int>>> createPlayers( List<PlayerEntity> players );
   Future<Either<Failure, List<MatchEntity>>> getMatches();
   Future<Either<Failure, List<int>>> createMatches( List<MatchEntity> matches );
   Future<Either<Failure, int>> createTournament( TournamentEntity tournament );
   Future<Either<Failure, void>> updateTournament( TournamentEntity tournament );
-  Future<Either<Failure, int>> createTournamentMapper( TournamentMapperEntity tournament );
+  Future<Either<Failure, List<int>>> createTournamentMapper( List<TournamentMapperEntity> mappers );
 
 }
