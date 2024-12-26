@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:fc_teams_drawer/app/core/routes/routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/services/firebase_options.dart';
 import 'package:fc_teams_drawer/app/core/services/languages.dart';
 import 'package:fc_teams_drawer/app/core/style/themes.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -20,9 +19,7 @@ void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Firebase.initializeApp();
 
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;

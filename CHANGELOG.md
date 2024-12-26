@@ -39,11 +39,33 @@ Versão publicada no dia 18/07/2024.
     <li>Aplicando novas seguranças do Google.</li>
 </ul>
 
-### :gear: Versão 1.1.0
+---
+
+### :gear: Versão 1.0.2
+
+Está versão ajusta detalhes de segurança e privacidade solicitados pelo Google.
+
+Versão publicada no dia 11/10/2024.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Abertura dos termos e politica de privacidade.</li>
+</ul>
+
+**:bug: Correções de funcionalidades já existentes**
+
+<ul>
+    <li>Exibindo a imagem de todos os times que temos cadastrados.</li>
+    <li>habilitando Google Analytics.</li>
+    <li>Melhor controle de erros.</li>
+</ul>
+
+### :gear: Versão 2.0.0
 
 Está é a versão adiciona a criação de torneios, sorteando os jogos e também os times da competição.
 
-Versão publicada no dia ?/?/2024.
+Versão publicada no dia ?/?/2025.
 
 **:bulb: Novas funcionalidades**
 

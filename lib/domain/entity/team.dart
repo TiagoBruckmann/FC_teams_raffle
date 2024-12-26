@@ -15,7 +15,7 @@ class TeamEntity extends Equatable {
     return TeamEntity(
       json["name"],
       json["league"],
-      json["logo"],
+      json["logo"].toString().toLowerCase(),
     );
   }
 

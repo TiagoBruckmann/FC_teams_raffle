@@ -32,7 +32,7 @@ class MatchEntity extends Equatable {
   }
 
   bool isEqual( MatchEntity match ) {
-    return player1 == match.player1 && winner == match.winner;
+    return id == match.id;
   }
 
   @override

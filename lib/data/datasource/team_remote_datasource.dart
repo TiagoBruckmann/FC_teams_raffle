@@ -31,21 +31,20 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
     try {
 
-      final metric = Session.performance.newHttpMetric("get_teams", HttpMethod.Get);
+      final metric = await Session.performance.newHttpMetric("get_teams", HttpMethod.Get);
       await metric.start();
 
       final response = await teamsRef.get();
 
       await metric.stop();
 
-      _syncData(response.value);
+      return await _syncData(response.value);
 
     } catch ( error ) {
       Session.crash.onError("get_data_sync_firebase", error: error);
       throw ServerExceptions("get_data_sync_firebase => $error");
     }
 
-    return;
   }
 
   Future<void> _syncData( dynamic json ) async {

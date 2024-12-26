@@ -8,7 +8,8 @@
       "solo_help": "Draw your team and the 'machine' team automatically!",
       "x1": "1 v 1",
       "x1_help": "Draw your team and your friend's team!",
-      "tournament_help": "Create your own league to play with your friends!"
+      "tournament_help": "Create your own league to play with your friends!",
+      "access_terms": "Access our terms and conditions "
     },
     "result_raffle": {
       "app_bar": "Draw Result",

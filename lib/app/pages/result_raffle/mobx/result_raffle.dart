@@ -27,7 +27,7 @@ abstract class _ResultRaffleMobx with Store {
 
     teamsList.add(player1);
     teamsList.add(player2);
-    Session.appEvents.sharedEventString("raffle_teams", teamsList.toString());
+    await Session.appEvents.sharedEventString("raffle_teams", teamsList.toString());
 
     return;
   }
