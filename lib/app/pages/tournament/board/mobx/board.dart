@@ -57,21 +57,32 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> init( List<TournamentMapperEntity> mappers ) async {
 
+    print("mappers => $mappers");
+    int tournamentId = mappers.first.id ?? mappers.first.tournamentId;
     final List<int> playersIds = [];
     final List<int> matchesIds = [];
     for ( final mapper in mappers ) {
 
+      print("mapper.id => ${mapper.id}");
+      print("mapper.tournamentId => ${mapper.tournamentId}");
+      if ( tournamentId == 0 ) {
+        tournamentId = mapper.id ?? 0;
+      }
+
+      print("mapper.playerId => ${mapper.playerId}");
       if ( mapper.playerId != null ) {
         playersIds.add(mapper.playerId!);
       }
 
+      print("mapper.matchId => ${mapper.matchId}");
       if ( mapper.matchId != null ) {
         matchesIds.add(mapper.matchId!);
       }
 
     }
 
-    final tournament = await _getTournament(mappers[0].tournamentId);
+    print("tournamentId => $tournamentId");
+    final tournament = await _getTournament(tournamentId);
 
     if ( tournament == null ) {
       updIsLoading(false);
@@ -154,7 +165,7 @@ abstract class _BoardMobx with Store {
       match.setPlayer2Score(score2);
     }
     
-    final elementIndex = listMatches.indexWhere((element) => element.player1 == match.player1 && element.player2 == match.player2 && element.score1 == score1 && element.score2 == score2);
+    final elementIndex = listMatches.indexWhere((element) => element.isEqual(match));
     listMatches.removeAt(elementIndex);
 
     match.setWinner();

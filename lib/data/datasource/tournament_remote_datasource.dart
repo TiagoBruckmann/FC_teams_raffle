@@ -34,26 +34,15 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
     final List<TournamentModel> listTournaments = [];
     final List<PlayerEntity> listPlayers = [];
     final List<MatchEntity> listMatches = [];
+
     TournamentEntity? tournament;
+    int tournamentId = responseMapper.first.tournamentId;
 
-    int tournamentId = 0;
+    for ( int i = 0; i < responseMapper.length; i++ ) {
 
-    for ( final mapper in responseMapper ) {
+      final mapper = responseMapper[i];
 
-      if ( tournamentId != mapper.tournamentId ) {
-        tournamentId = mapper.tournamentId;
-        
-        if ( tournament != null && listPlayers.isNotEmpty && listMatches.isNotEmpty ) {
-          listTournaments.add(
-            TournamentModel.fromQuery(tournament, listPlayers, listMatches),
-          );
-        }
-        
-        listPlayers.clear();
-        listMatches.clear();
-
-        tournament = await _localDb.tournamentDao.getTournamentById(tournamentId);
-      }
+      tournament = await _localDb.tournamentDao.getTournamentById(tournamentId);
 
       if ( mapper.playerId != null ) {
         final responsePlayers = await _localDb.playerDao.getPlayerById(mapper.playerId!);
@@ -68,22 +57,45 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
           listMatches.add(responseMatches);
         }
       }
+
+      bool hasMoreItems = false;
+      TournamentMapperEntity? nextEntity;
+      if ( ( i + 1 ) <= responseMapper.length - 1 ) {
+        hasMoreItems = true;
+        nextEntity = responseMapper[i + 1];
+      }
+
+      if ( tournament != null ) {
+
+        if ( !hasMoreItems && nextEntity == null ) {
+          listTournaments.add(
+            TournamentModel.fromQuery(tournament, listPlayers, listMatches),
+          );
+
+          listPlayers.clear();
+          listMatches.clear();
+          break;
+        }
+
+        if ( tournamentId != nextEntity!.tournamentId ) {
+          tournamentId = nextEntity.tournamentId;
+
+          listTournaments.add(
+            TournamentModel.fromQuery(tournament, listPlayers, listMatches),
+          );
+
+          listPlayers.clear();
+          listMatches.clear();
+
+        }
+
+      }
+
     }
-    
-    final containsLastId = listTournaments.where((TournamentModel tournament) => tournament.id == tournamentId );
-    if ( containsLastId.isEmpty && tournament != null ) {
-      listTournaments.add(
-        TournamentModel.fromQuery(tournament, listPlayers, listMatches),
-      );
 
-      listPlayers.clear();
-      listMatches.clear();
+    print("listTournaments => $listTournaments");
 
-    }
-
-    final list = listTournaments.toSet().toList();
-
-    return list;
+    return listTournaments;
   }
 
   @override

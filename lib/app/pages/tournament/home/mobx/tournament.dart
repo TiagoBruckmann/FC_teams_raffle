@@ -1,6 +1,8 @@
 // import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
+import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -126,7 +128,41 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void openTournament( TournamentEntity entity ) => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
+  void openTournament( TournamentEntity entity ) {
+    if ( entity.id == null ) {
+      CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
+      return;
+    }
+
+    final List<TournamentMapperEntity> list = [TournamentMapperEntity(entity.id!, id: entity.id!)];
+
+    tournamentListComplete.where((tournament) {
+      bool isSuccess = false;
+      if ( tournament.id != null && entity.id! == tournament.id ) {
+
+        print("tournament.getPlayers => ${tournament.getPlayers}");
+        print("tournament.getMatches => ${tournament.getMatches}");
+
+        for ( final player in tournament.getPlayers ) {
+          if ( player.id != null ) {
+            list.add(TournamentMapperEntity(entity.id!, playerId: player.id!));
+          }
+        }
+
+        for ( final match in tournament.getMatches ) {
+          if ( match.id != null ) {
+            list.add(TournamentMapperEntity(entity.id!, matchId: match.id!));
+          }
+        }
+
+      }
+
+      return isSuccess;
+    });
+    print("list => $list");
+
+    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: list);
+  }
 
   @action
   void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);
