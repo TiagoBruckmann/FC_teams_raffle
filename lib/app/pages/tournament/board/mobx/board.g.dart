@@ -81,8 +81,8 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx.init', context: context);
 
   @override
-  Future<void> init(List<TournamentMapperEntity> mappers) {
-    return _$initAsyncAction.run(() => super.init(mappers));
+  Future<void> init(TournamentEntity tournament) {
+    return _$initAsyncAction.run(() => super.init(tournament));
   }
 
   late final _$_getTournamentAsyncAction =
@@ -92,22 +92,6 @@ mixin _$BoardMobx on _BoardMobx, Store {
   Future<TournamentEntity?> _getTournament(int tournamentId) {
     return _$_getTournamentAsyncAction
         .run(() => super._getTournament(tournamentId));
-  }
-
-  late final _$_getPlayersAsyncAction =
-      AsyncAction('_BoardMobx._getPlayers', context: context);
-
-  @override
-  Future<void> _getPlayers(List<int> players) {
-    return _$_getPlayersAsyncAction.run(() => super._getPlayers(players));
-  }
-
-  late final _$_getMatchesAsyncAction =
-      AsyncAction('_BoardMobx._getMatches', context: context);
-
-  @override
-  Future<void> _getMatches(List<int> matches) {
-    return _$_getMatchesAsyncAction.run(() => super._getMatches(matches));
   }
 
   late final _$setGoalsAsyncAction =

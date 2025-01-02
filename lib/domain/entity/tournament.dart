@@ -45,6 +45,18 @@ class TournamentEntity extends Equatable {
     return isEqual;
   }
 
+  TournamentEntity setTournamentId( int tournamentId ) {
+    return TournamentEntity(
+      id: tournamentId,
+      name,
+      date,
+      drawTeams,
+      !isActive,
+      defeats,
+      createdAt,
+    );
+  }
+
   TournamentEntity updStatus() {
     return TournamentEntity(
       name,
@@ -57,7 +69,7 @@ class TournamentEntity extends Equatable {
   }
 
   @override
-  String toString() => "TournamentEntity($name, $date, $defeats, $createdAt, $players, $matches)";
+  String toString() => "TournamentEntity($name, $date, $defeats, $createdAt)";
 
   @override
   List<Object?> get props => [ id, name, date, drawTeams, isActive, defeats, players, matches, createdAt ];

@@ -31,12 +31,20 @@ class TournamentUseCase {
     return await _tournamentRepo.createPlayers( players );
   }
 
+  Future<Either<Failure, void>> updatePlayer( PlayerEntity player ) async {
+    return await _tournamentRepo.updatePlayer( player );
+  }
+
   Future<Either<Failure, List<MatchEntity>>> getMatches() async {
     return await _tournamentRepo.getMatches();
   }
 
   Future<Either<Failure, List<int>>> createMatches( List<MatchEntity> matches ) async {
     return await _tournamentRepo.createMatches( matches );
+  }
+
+  Future<Either<Failure, void>> updateMatches( List<MatchEntity> matches ) async {
+    return await _tournamentRepo.updateMatches( matches );
   }
 
   Future<Either<Failure, int>> createTournament( TournamentEntity tournament ) async {

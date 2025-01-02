@@ -5,7 +5,6 @@ import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
@@ -55,45 +54,23 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> init( List<TournamentMapperEntity> mappers ) async {
+  Future<void> init( TournamentEntity tournament ) async {
 
-    print("mappers => $mappers");
-    int tournamentId = mappers.first.id ?? mappers.first.tournamentId;
-    final List<int> playersIds = [];
-    final List<int> matchesIds = [];
-    for ( final mapper in mappers ) {
-
-      print("mapper.id => ${mapper.id}");
-      print("mapper.tournamentId => ${mapper.tournamentId}");
-      if ( tournamentId == 0 ) {
-        tournamentId = mapper.id ?? 0;
-      }
-
-      print("mapper.playerId => ${mapper.playerId}");
-      if ( mapper.playerId != null ) {
-        playersIds.add(mapper.playerId!);
-      }
-
-      print("mapper.matchId => ${mapper.matchId}");
-      if ( mapper.matchId != null ) {
-        matchesIds.add(mapper.matchId!);
-      }
-
-    }
+    print("tournament => $tournament");
+    int tournamentId = tournament.id ?? 1;
 
     print("tournamentId => $tournamentId");
-    final tournament = await _getTournament(tournamentId);
+    final tournamentResponse = await _getTournament(tournamentId);
 
-    if ( tournament == null ) {
+    if ( tournamentResponse == null ) {
       updIsLoading(false);
       CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
       return NavigationRoutes.navigation(NavigationTypeEnum.pushAndRemoveUntil.value, RoutesNameEnum.home.name);
     }
 
-    await _getPlayers(playersIds);
-    await _getMatches(matchesIds);
-
-    _tournament = TournamentEntity.fromMapper(tournament, listPlayers, listMatches);
+    listPlayers.addAll(tournament.getPlayers);
+    listMatches.addAll(tournament.getMatches);
+    _tournament = TournamentEntity.fromMapper(tournamentResponse, listPlayers, listMatches);
     _setSteps();
 
     updIsLoading(false);
@@ -115,36 +92,6 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<void> _getPlayers( List<int> players ) async {
-    final response = await _tournamentUseCase.getPlayers();
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (list) {
-        list.retainWhere((player) => players.contains(player.id));
-        listPlayers.addAll(list);
-      },
-    );
-
-    return;
-  }
-
-  @action
-  Future<void> _getMatches( List<int> matches ) async {
-    final response = await _tournamentUseCase.getMatches();
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (list) {
-        list.retainWhere((match) => matches.contains(match.id));
-        listMatches.addAll(list);
-      },
-    );
-
-    return;
-  }
-
-  @action
   Future<void> setGoals( MatchEntity match, { int? score1, int? score2 } ) async {
 
     if ( score1 == null && score2 == null ) {
@@ -154,42 +101,119 @@ abstract class _BoardMobx with Store {
 
     updIsLoading(true);
 
-    score1 = score1 ?? match.score1;
-    score2 = score2 ?? match.score2;
-
-    if ( score1 > 0 ) {
-      match.setPlayer1Score(score1);
+    if ( score1 != null ) {
+      match = match.setPlayer1Score(score1);
     }
 
-    if ( score2 > 0 ) {
-      match.setPlayer2Score(score2);
+    if ( score2 != null ) {
+      match = match.setPlayer2Score(score2);
     }
-    
+
     final elementIndex = listMatches.indexWhere((element) => element.isEqual(match));
+    if ( elementIndex.isNegative ) {
+      CustomSnackBar(messageKey: "pages.tournament.board.error.update_match");
+      return;
+    }
+
     listMatches.removeAt(elementIndex);
 
-    match.setWinner();
+    if ( match.score1 != null && match.score2 != null ) {
+      final response = await match.setWinner(listPlayers);
+      print("response => $response");
+      match = response["match"] as MatchEntity;
+      print("match => $match");
+      listPlayers.clear();
+      listPlayers.addAll(response["players"] as List<PlayerEntity>);
+      print("listPlayers => $listPlayers");
+    }
 
     listMatches.insert(elementIndex, match);
 
-    if ( match.score1 != 0 && match.score2 != 0 ) {
-
-      String playerLoser = match.player1;
-      if ( match.score2 < match.score1 ) {
-        playerLoser = match.player2;
-      }
-
-      final loserIndex = listPlayers.indexWhere((element) => element.name.contains(playerLoser));
-      listPlayers.removeAt(loserIndex);
-
-      final loserEntity = listPlayers[loserIndex].setLoser();
-
-      listPlayers.insert(loserIndex, loserEntity);
-      listPlayers.removeWhere((element) => element.losses >= _tournament.defeats );
-
+    if ( match.score1 != null && match.score2 != null ) {
+      await _updNextWinnerGame(match);
     }
 
     updIsLoading(false);
+  }
+
+  Future<void> _updNextWinnerGame( MatchEntity match ) async {
+
+    String winnerName = match.player1;
+    String winnerTeam = match.logoTeam1;
+
+    if ( match.score2! > match.score1! ) {
+      winnerName = match.player2;
+      winnerTeam = match.logoTeam2;
+    }
+
+    bool hasNextWinnerPosition = false;
+    final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == "Próximo ganhador");
+    if ( nextWinnerPosition != -1 ) {
+      hasNextWinnerPosition = true;
+
+      final emptyPLayer = listMatches[nextWinnerPosition];
+      listMatches.removeAt(nextWinnerPosition);
+
+      listMatches.insert(
+        nextWinnerPosition,
+        MatchEntity(
+          id: emptyPLayer.id,
+          emptyPLayer.player1,
+          emptyPLayer.logoTeam1,
+          winnerName,
+          winnerTeam,
+          emptyPLayer.winner,
+          emptyPLayer.round,
+        ),
+      );
+
+    }
+
+    final List<PlayerEntity> players = List.from(listPlayers);
+    print("players.length 1 => ${players.length}");
+    players.retainWhere((player) => player.losses < _tournament.defeats);
+    print("players.length 2 => ${players.length}");
+    print("hasNextWinnerPosition => $hasNextWinnerPosition");
+
+    if ( players.length >= 2 && !hasNextWinnerPosition ) {
+
+      final emptyPlayer = PlayerEntity.empty();
+
+      listMatches.add(
+        MatchEntity(
+          winnerName,
+          winnerTeam,
+          emptyPlayer.name,
+          emptyPlayer.team,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+    }
+
+    if ( players.length == 1 ) {
+      final winner = PlayerEntity.winner();
+
+      listMatches.add(
+        MatchEntity(
+          winnerName,
+          winnerTeam,
+          winner.name,
+          winner.team,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+    }
+
+    final response = await _tournamentUseCase.updateMatches(listMatches);
+    print("response => $response");
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (success) => success,
+    );
+
   }
 
 }

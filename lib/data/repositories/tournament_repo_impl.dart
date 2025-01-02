@@ -72,6 +72,20 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
+  Future<Either<Failure, void>> updatePlayer( PlayerEntity player ) async {
+    try {
+      final result = await tournamentRemoteDatasource.updatePlayer( player );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("update_player_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("update_player_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<MatchEntity>>> getMatches() async {
     try {
       final result = await tournamentRemoteDatasource.getMatches();
@@ -95,6 +109,20 @@ class TournamentRepoImpl implements TournamentRepo {
       return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("create_matches_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateMatches( List<MatchEntity> matches ) async {
+    try {
+      final result = await tournamentRemoteDatasource.updateMatches( matches );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("update_match_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("update_match_error", error: e);
       return left(GeneralFailure(e.toString()));
     }
   }

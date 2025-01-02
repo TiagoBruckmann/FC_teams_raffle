@@ -1,5 +1,4 @@
 // imports nativos
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -10,13 +9,16 @@ import 'package:fc_teams_drawer/app/pages/tournament/board/widgets/body_key_tour
 import 'package:fc_teams_drawer/app/pages/tournament/board/mobx/board.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 
+// import dos domain
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
 class BoardPage extends StatefulWidget {
-  final List<TournamentMapperEntity> mappers;
-  const BoardPage({ super.key, required this.mappers });
+  final TournamentEntity tournament;
+  const BoardPage({ super.key, required this.tournament });
 
   @override
   State<BoardPage> createState() => _BoardPageState();
@@ -29,8 +31,8 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     super.initState();
-    Session.appEvents.sendScreen("board_page", params: widget.mappers.toString());
-    _mobx.init(widget.mappers);
+    Session.appEvents.sendScreen("board_page", params: widget.tournament.toString());
+    _mobx.init(widget.tournament);
   }
 
   @override

@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:flutter/material.dart';
 
 // import das telas
@@ -9,9 +10,6 @@ import 'package:fc_teams_drawer/app/pages/result_raffle/result_raffle.dart';
 import 'package:fc_teams_drawer/app/core/style/app_images.dart';
 import 'package:fc_teams_drawer/app/pages/splash/splash.dart';
 import 'package:fc_teams_drawer/app/pages/home/home.dart';
-
-// import dos domain
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 
 // import dos pacotes
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -55,7 +53,7 @@ class Routes {
       case "/board" :
         return MaterialPageRoute(
           builder: (_) => BoardPage(
-            mappers: args as List<TournamentMapperEntity>,
+            tournament: args as TournamentEntity,
           ),
         );
       default:

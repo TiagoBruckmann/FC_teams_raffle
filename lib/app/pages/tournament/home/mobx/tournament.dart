@@ -2,7 +2,6 @@
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -74,7 +73,7 @@ abstract class _TournamentMobx with Store {
       (success) {
         Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
         _addTournamentList(list: success);
-        searchStatus("Ativos");
+        searchStatus(FlutterI18n.translate(_currentContext, "status.active"));
       },
     );
 
@@ -83,11 +82,12 @@ abstract class _TournamentMobx with Store {
   @action
   void _addTournamentList({ List<TournamentEntity>? list }) {
 
+    print("tournamentListComplete => $tournamentListComplete");
     if ( tournamentListComplete.isEmpty && list != null && list.isNotEmpty ) {
       tournamentListComplete.addAll(list);
     }
 
-    tournamentList.addAll(tournamentListComplete);
+    tournamentList.addAll(List.from(tournamentListComplete));
 
     _updIsLoading(false);
   }
@@ -134,44 +134,20 @@ abstract class _TournamentMobx with Store {
       return;
     }
 
-    final List<TournamentMapperEntity> list = [TournamentMapperEntity(entity.id!, id: entity.id!)];
-
-    tournamentListComplete.where((tournament) {
-      bool isSuccess = false;
-      if ( tournament.id != null && entity.id! == tournament.id ) {
-
-        print("tournament.getPlayers => ${tournament.getPlayers}");
-        print("tournament.getMatches => ${tournament.getMatches}");
-
-        for ( final player in tournament.getPlayers ) {
-          if ( player.id != null ) {
-            list.add(TournamentMapperEntity(entity.id!, playerId: player.id!));
-          }
-        }
-
-        for ( final match in tournament.getMatches ) {
-          if ( match.id != null ) {
-            list.add(TournamentMapperEntity(entity.id!, matchId: match.id!));
-          }
-        }
-
-      }
-
-      return isSuccess;
-    });
-    print("list => $list");
-
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: list);
+    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
   }
 
   @action
   void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);
 
   @action
-  Future<void> refresh() async {
+  Future<void> refresh({ bool forceRefresh = false }) async {
     _updIsLoading(true);
     tournamentList.clear();
     _addTournamentList();
+    if ( forceRefresh ) {
+      clear();
+    }
   }
 
   @action

@@ -69,8 +69,9 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
       AsyncAction('_TournamentMobx.refresh', context: context);
 
   @override
-  Future<void> refresh() {
-    return _$refreshAsyncAction.run(() => super.refresh());
+  Future<void> refresh({bool forceRefresh = false}) {
+    return _$refreshAsyncAction
+        .run(() => super.refresh(forceRefresh: forceRefresh));
   }
 
   late final _$_TournamentMobxActionController =

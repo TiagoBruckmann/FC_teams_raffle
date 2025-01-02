@@ -114,7 +114,7 @@ class _$LocalDb extends LocalDb {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `players` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `team` TEXT NOT NULL, `losses` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `matches` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `player1` TEXT NOT NULL, `logoTeam1` TEXT NOT NULL, `player2` TEXT NOT NULL, `logoTeam2` TEXT NOT NULL, `winner` TEXT NOT NULL, `round` INTEGER NOT NULL, `score1` INTEGER NOT NULL, `score2` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `matches` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `player1` TEXT NOT NULL, `logoTeam1` TEXT NOT NULL, `player2` TEXT NOT NULL, `logoTeam2` TEXT NOT NULL, `winner` TEXT NOT NULL, `round` INTEGER NOT NULL, `score1` INTEGER, `score2` INTEGER)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `teams` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `league` TEXT NOT NULL, `logo` TEXT NOT NULL)');
 
@@ -467,9 +467,9 @@ class _$MatchDao extends MatchDao {
             row['logoTeam2'] as String,
             row['winner'] as String,
             row['round'] as int,
-            row['score1'] as int,
-            row['score2'] as int,
-            id: row['id'] as int?));
+            id: row['id'] as int?,
+            score1: row['score1'] as int?,
+            score2: row['score2'] as int?));
   }
 
   @override
@@ -483,9 +483,9 @@ class _$MatchDao extends MatchDao {
             row['logoTeam2'] as String,
             row['winner'] as String,
             row['round'] as int,
-            row['score1'] as int,
-            row['score2'] as int,
-            id: row['id'] as int?),
+            id: row['id'] as int?,
+            score1: row['score1'] as int?,
+            score2: row['score2'] as int?),
         arguments: [matchId]);
   }
 
@@ -496,7 +496,7 @@ class _$MatchDao extends MatchDao {
   ) async {
     return _queryAdapter.query(
         'SELECT * FROM matches WHERE player1 = ?1 AND player2 = ?2 ORDER BY id DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => MatchEntity(row['player1'] as String, row['logoTeam1'] as String, row['player2'] as String, row['logoTeam2'] as String, row['winner'] as String, row['round'] as int, row['score1'] as int, row['score2'] as int, id: row['id'] as int?),
+        mapper: (Map<String, Object?> row) => MatchEntity(row['player1'] as String, row['logoTeam1'] as String, row['player2'] as String, row['logoTeam2'] as String, row['winner'] as String, row['round'] as int, id: row['id'] as int?, score1: row['score1'] as int?, score2: row['score2'] as int?),
         arguments: [player1, player2]);
   }
 
@@ -507,8 +507,9 @@ class _$MatchDao extends MatchDao {
   }
 
   @override
-  Future<void> updateMatch(MatchEntity match) async {
-    await _matchEntityUpdateAdapter.update(match, OnConflictStrategy.abort);
+  Future<void> updateMatches(List<MatchEntity> matches) async {
+    await _matchEntityUpdateAdapter.updateList(
+        matches, OnConflictStrategy.abort);
   }
 }
 

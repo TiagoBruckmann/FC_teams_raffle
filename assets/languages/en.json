@@ -41,7 +41,8 @@
         "game_position": "{position}º Game",
         "invalid_score": "Select a score for the game!",
         "error": {
-          "get_tournament": "Failure to get tournament data, try again later!"
+          "get_tournament": "Failure to get tournament data, try again later!",
+          "update_match": "Failure to update match score, please try again later!"
         }
       }
     },

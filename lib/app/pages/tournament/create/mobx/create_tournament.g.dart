@@ -86,9 +86,9 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       context: context);
 
   @override
-  Future<void> _createTournamentMapper(int tournamentId) {
+  Future<void> _createTournamentMapper(TournamentEntity tournament) {
     return _$_createTournamentMapperAsyncAction
-        .run(() => super._createTournamentMapper(tournamentId));
+        .run(() => super._createTournamentMapper(tournament));
   }
 
   late final _$_getPlayersAsyncAction =
@@ -185,11 +185,11 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   }
 
   @override
-  void _goToBoard(List<TournamentMapperEntity> mappers) {
+  void _goToBoard(TournamentEntity tournament) {
     final _$actionInfo = _$_CreateTournamentMobxActionController.startAction(
         name: '_CreateTournamentMobx._goToBoard');
     try {
-      return super._goToBoard(mappers);
+      return super._goToBoard(tournament);
     } finally {
       _$_CreateTournamentMobxActionController.endAction(_$actionInfo);
     }

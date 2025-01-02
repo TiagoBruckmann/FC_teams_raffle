@@ -20,6 +20,6 @@ abstract class MatchDao {
   Future<List<int>> insertAllMatches( List<MatchEntity> matches );
 
   @update
-  Future<void> updateMatch( MatchEntity match );
+  Future<void> updateMatches( List<MatchEntity> matches );
 
 }

@@ -36,6 +36,8 @@ abstract class _CreateTournamentMobx with Store {
 
   ObservableList<PlayerEntity> listPlayers = ObservableList();
 
+  ObservableList<MatchEntity> listMatches = ObservableList();
+
   @observable
   bool isLoading = true;
 
@@ -136,13 +138,13 @@ abstract class _CreateTournamentMobx with Store {
         CustomSnackBar(messageKey: "pages.tournament.create.invalid_name");
         updIsLoading(false);
       },
-      ( tournamentId ) => _createTournamentMapper(tournamentId),
+      ( tournamentId ) => _createTournamentMapper(tournament.setTournamentId(tournamentId)),
     );
 
   }
 
   @action
-  Future<void> _createTournamentMapper( int tournamentId ) async {
+  Future<void> _createTournamentMapper( TournamentEntity tournament ) async {
 
     final playersIds = await _getPlayers();
     final matchesIds = await _getMatches();
@@ -151,13 +153,13 @@ abstract class _CreateTournamentMobx with Store {
 
     for ( final playerId in playersIds ) {
       tournamentMapperList.add(
-        TournamentMapperEntity.fromPlayerId(tournamentId, playerId),
+        TournamentMapperEntity.fromPlayerId(tournament.id!, playerId),
       );
     }
 
     for ( final matchId in matchesIds ) {
       tournamentMapperList.add(
-        TournamentMapperEntity.fromMatchId(tournamentId, matchId),
+        TournamentMapperEntity.fromMatchId(tournament.id!, matchId),
       );
     }
 
@@ -167,7 +169,10 @@ abstract class _CreateTournamentMobx with Store {
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
-      (mappersIds) => _goToBoard(tournamentMapperList),
+      (mappersIds) {
+        tournament = TournamentEntity.fromMapper(tournament, listPlayers, listMatches);
+        _goToBoard(tournament);
+      },
     );
   }
 
@@ -228,8 +233,6 @@ abstract class _CreateTournamentMobx with Store {
   @action
   Future<List<int>> _getMatches() async {
 
-    final List<MatchEntity> listMatches = [];
-
     final random = Random();
     int round = 1;
 
@@ -254,8 +257,6 @@ abstract class _CreateTournamentMobx with Store {
           player2.team,
           "",
           round,
-          0,
-          0,
         ),
       );
 
@@ -275,9 +276,9 @@ abstract class _CreateTournamentMobx with Store {
   }
 
   @action
-  void _goToBoard( List<TournamentMapperEntity> mappers ) {
+  void _goToBoard( TournamentEntity tournament ) {
     NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: mappers);
+    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: tournament);
   }
 
 }
