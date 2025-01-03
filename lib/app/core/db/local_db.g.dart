@@ -170,16 +170,6 @@ class _$TournamentMapperDao extends TournamentMapperDao {
                   'tournamentId': item.tournamentId,
                   'playerId': item.playerId,
                   'matchId': item.matchId
-                }),
-        _tournamentMapperEntityUpdateAdapter = UpdateAdapter(
-            database,
-            'tournaments_mapper',
-            ['id'],
-            (TournamentMapperEntity item) => <String, Object?>{
-                  'id': item.id,
-                  'tournamentId': item.tournamentId,
-                  'playerId': item.playerId,
-                  'matchId': item.matchId
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -190,9 +180,6 @@ class _$TournamentMapperDao extends TournamentMapperDao {
 
   final InsertionAdapter<TournamentMapperEntity>
       _tournamentMapperEntityInsertionAdapter;
-
-  final UpdateAdapter<TournamentMapperEntity>
-      _tournamentMapperEntityUpdateAdapter;
 
   @override
   Future<List<TournamentMapperEntity>> getAllTournamentsMapper() async {
@@ -219,16 +206,10 @@ class _$TournamentMapperDao extends TournamentMapperDao {
   }
 
   @override
-  Future<List<int>> insertTournamentMapper(
+  Future<List<int>> insertOrUpdateTournamentMapper(
       List<TournamentMapperEntity> mappers) {
     return _tournamentMapperEntityInsertionAdapter.insertListAndReturnIds(
-        mappers, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateTournamentMapper(TournamentMapperEntity tournament) async {
-    await _tournamentMapperEntityUpdateAdapter.update(
-        tournament, OnConflictStrategy.abort);
+        mappers, OnConflictStrategy.replace);
   }
 }
 
@@ -430,21 +411,6 @@ class _$MatchDao extends MatchDao {
                   'round': item.round,
                   'score1': item.score1,
                   'score2': item.score2
-                }),
-        _matchEntityUpdateAdapter = UpdateAdapter(
-            database,
-            'matches',
-            ['id'],
-            (MatchEntity item) => <String, Object?>{
-                  'id': item.id,
-                  'player1': item.player1,
-                  'logoTeam1': item.logoTeam1,
-                  'player2': item.player2,
-                  'logoTeam2': item.logoTeam2,
-                  'winner': item.winner,
-                  'round': item.round,
-                  'score1': item.score1,
-                  'score2': item.score2
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -454,8 +420,6 @@ class _$MatchDao extends MatchDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<MatchEntity> _matchEntityInsertionAdapter;
-
-  final UpdateAdapter<MatchEntity> _matchEntityUpdateAdapter;
 
   @override
   Future<List<MatchEntity>> getAllMatches() async {
@@ -501,15 +465,9 @@ class _$MatchDao extends MatchDao {
   }
 
   @override
-  Future<List<int>> insertAllMatches(List<MatchEntity> matches) {
+  Future<List<int>> createOrUpdateMatches(List<MatchEntity> matches) {
     return _matchEntityInsertionAdapter.insertListAndReturnIds(
-        matches, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateMatches(List<MatchEntity> matches) async {
-    await _matchEntityUpdateAdapter.updateList(
-        matches, OnConflictStrategy.abort);
+        matches, OnConflictStrategy.replace);
   }
 }
 

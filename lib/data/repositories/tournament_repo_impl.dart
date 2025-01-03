@@ -100,29 +100,15 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, List<int>>> createMatches( List<MatchEntity> matches ) async {
+  Future<Either<Failure, List<int>>> createOrUpdateMatches( List<MatchEntity> matches ) async {
     try {
-      final result = await tournamentRemoteDatasource.createMatches( matches );
+      final result = await tournamentRemoteDatasource.createOrUpdateMatches( matches );
       return right(result);
     } on ServerExceptions catch ( error ) {
       Session.crash.onError("create_matches_server_error", error: error.message);
       return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("create_matches_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> updateMatches( List<MatchEntity> matches ) async {
-    try {
-      final result = await tournamentRemoteDatasource.updateMatches( matches );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("update_match_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("update_match_error", error: e);
       return left(GeneralFailure(e.toString()));
     }
   }
@@ -156,9 +142,9 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, List<int>>> createTournamentMapper( List<TournamentMapperEntity> mappers ) async {
+  Future<Either<Failure, List<int>>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers ) async {
     try {
-      final result = await tournamentRemoteDatasource.createTournamentMapper( mappers );
+      final result = await tournamentRemoteDatasource.createOrUpdateTournamentMapper( mappers );
       return right(result);
     } on ServerExceptions catch ( error ) {
       Session.crash.onError("create_tournament_mapper_server_error", error: error.message);

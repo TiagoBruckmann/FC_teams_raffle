@@ -1,9 +1,6 @@
 // import dos pacotes
 import 'package:equatable/equatable.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
-import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
-import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/session.dart';
 import 'package:floor/floor.dart';
 
 @Entity(tableName: "matches")
@@ -58,15 +55,10 @@ class MatchEntity extends Equatable {
       loserTeam = logoTeam2;
     }
 
-    print("players 1 => $players");
-    print("loserTeam => $loserTeam");
     players.retainWhere((player) => player.team == loserTeam);
-    print("players 2 => $players");
     if ( players.isNotEmpty ) {
       final loser = await players.first.setLoser();
-      print("loser => $loser");
       final loserIndex = allPlayers.indexWhere((player) => player.team == loserTeam);
-      print("loserIndex => $loserIndex");
 
       allPlayers.removeAt(loserIndex);
 

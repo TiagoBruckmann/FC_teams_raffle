@@ -44,6 +44,11 @@
           "get_tournament": "Failure to get tournament data, try again later!",
           "update_match": "Failure to update match score, please try again later!"
         }
+      },
+      "player": {
+        "champion": "You are the champion!",
+        "next_winner": "Next winner",
+        "next_loser": "Next loser"
       }
     },
     "update": {

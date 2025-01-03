@@ -4,6 +4,7 @@ import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 @Entity(tableName: "players")
 class PlayerEntity extends Equatable {
@@ -18,17 +19,25 @@ class PlayerEntity extends Equatable {
 
   const PlayerEntity( this.name, this.team, this.losses, { this.id });
 
-  factory PlayerEntity.empty() {
-    return const PlayerEntity(
-      "Próximo ganhador",
+  factory PlayerEntity.nextWinner() {
+    return PlayerEntity(
+      FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"),
       "",
       0,
     );
   }
 
-  factory PlayerEntity.winner() {
-    return const PlayerEntity(
-      "Você é o ganhador!",
+  factory PlayerEntity.nextLoser() {
+    return PlayerEntity(
+      FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser"),
+      "",
+      0,
+    );
+  }
+
+  factory PlayerEntity.champion() {
+    return PlayerEntity(
+      FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion"),
       "",
       0,
     );
@@ -43,8 +52,6 @@ class PlayerEntity extends Equatable {
   }
 
   Future<PlayerEntity> setLoser() async {
-
-    print("losses + 1 => ${losses + 1}");
     final player = PlayerEntity(
       name,
       team,
@@ -53,7 +60,6 @@ class PlayerEntity extends Equatable {
 
     final useCase = TournamentUseCase(getIt());
     final response = await useCase.updatePlayer(player);
-    print("setLoser => $response");
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),

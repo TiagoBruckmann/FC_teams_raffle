@@ -39,12 +39,8 @@ class TournamentUseCase {
     return await _tournamentRepo.getMatches();
   }
 
-  Future<Either<Failure, List<int>>> createMatches( List<MatchEntity> matches ) async {
-    return await _tournamentRepo.createMatches( matches );
-  }
-
-  Future<Either<Failure, void>> updateMatches( List<MatchEntity> matches ) async {
-    return await _tournamentRepo.updateMatches( matches );
+  Future<Either<Failure, List<int>>> createOrUpdateMatches( List<MatchEntity> matches ) async {
+    return await _tournamentRepo.createOrUpdateMatches( matches );
   }
 
   Future<Either<Failure, int>> createTournament( TournamentEntity tournament ) async {
@@ -55,8 +51,8 @@ class TournamentUseCase {
     return await _tournamentRepo.updateTournament( tournament );
   }
 
-  Future<Either<Failure, List<int>>> createTournamentMapper( List<TournamentMapperEntity> mappers ) async {
-    return await _tournamentRepo.createTournamentMapper( mappers );
+  Future<Either<Failure, List<int>>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers ) async {
+    return await _tournamentRepo.createOrUpdateTournamentMapper( mappers );
   }
 
 }

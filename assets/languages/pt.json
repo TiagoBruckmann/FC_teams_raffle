@@ -44,6 +44,11 @@
           "get_tournament": "Falha ao buscar os dados do torneio, tente novamente mais tarde!",
           "update_match": "Falha ao atualizar o placar do jogo, tente novamente mais tarde!"
         }
+      },
+      "player": {
+        "champion": "Você é o campeão!",
+        "next_winner": "Próximo ganhador",
+        "next_loser": "Próximo perdedor"
       }
     },
     "update": {

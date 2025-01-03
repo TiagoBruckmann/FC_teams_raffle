@@ -16,11 +16,10 @@ abstract class TournamentRemoteDatasource {
   Future<List<int>> createPlayers( List<PlayerEntity> players );
   Future<void> updatePlayer( PlayerEntity player );
   Future<List<MatchEntity>> getMatches();
-  Future<List<int>> createMatches( List<MatchEntity> matches );
-  Future<void> updateMatches( List<MatchEntity> matches );
+  Future<List<int>> createOrUpdateMatches( List<MatchEntity> matches );
   Future<int> createTournament( TournamentEntity tournament );
   Future<void> updateTournament( TournamentEntity tournament );
-  Future<List<int>> createTournamentMapper( List<TournamentMapperEntity> mappers );
+  Future<List<int>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers );
 
 }
 
@@ -70,6 +69,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
       if ( tournament != null ) {
 
         if ( !hasMoreItems && nextEntity == null ) {
+          listMatches.sort((a, b) => b.round.compareTo(a.round));
           listTournaments.add(
             TournamentModel.fromQuery(tournament, List.from(listPlayers), List.from(listMatches)),
           );
@@ -126,23 +126,22 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
   @override
   Future<List<MatchEntity>> getMatches() async {
-    return await _localDb.matchDao.getAllMatches();
+    final matches = await _localDb.matchDao.getAllMatches();
+
+    matches.sort((a, b) => b.round.compareTo(a.round));
+
+    return matches;
   }
 
   @override
-  Future<List<int>> createMatches( List<MatchEntity> matches ) async {
+  Future<List<int>> createOrUpdateMatches( List<MatchEntity> matches ) async {
 
     if ( matches.isEmpty ) {
       Session.crash.onError("Failure on createMatches: Empty ListMatches");
       throw CacheExceptions("Failure on createMatches: Empty ListMatches");
     }
 
-    return await _localDb.matchDao.insertAllMatches(matches);
-  }
-
-  @override
-  Future<void> updateMatches( List<MatchEntity> matches ) async {
-    return await _localDb.matchDao.updateMatches(matches);
+    return await _localDb.matchDao.createOrUpdateMatches(matches);
   }
 
   @override
@@ -156,8 +155,8 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<List<int>> createTournamentMapper( List<TournamentMapperEntity> mappers ) async {
-    return await _localDb.tournamentMapperDap.insertTournamentMapper(mappers);
+  Future<List<int>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers ) async {
+    return await _localDb.tournamentMapperDap.insertOrUpdateTournamentMapper(mappers);
   }
 
 }

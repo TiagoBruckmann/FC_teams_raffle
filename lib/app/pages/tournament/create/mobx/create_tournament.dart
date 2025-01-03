@@ -163,9 +163,11 @@ abstract class _CreateTournamentMobx with Store {
       );
     }
 
-    final response = await _tournamentUseCase.createTournamentMapper(tournamentMapperList);
+    final response = await _tournamentUseCase.createOrUpdateTournamentMapper(tournamentMapperList);
 
     updIsLoading(false);
+
+    listMatches.sort((a, b) => b.round.compareTo(a.round));
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
@@ -235,17 +237,18 @@ abstract class _CreateTournamentMobx with Store {
 
     final random = Random();
     int round = 1;
+    final List<PlayerEntity> players = List.from(listPlayers);
 
-    while ( listPlayers.isNotEmpty ) {
+    while ( players.isNotEmpty ) {
 
-      final player1 = listPlayers[random.nextInt(listPlayers.length)];
-      listPlayers.removeWhere((element) => element.isEqual(player1) );
-      final totalPlayers = listPlayers.length;
+      final player1 = players[random.nextInt(players.length)];
+      players.removeWhere((element) => element.isEqual(player1) );
+      final totalPlayers = players.length;
 
-      PlayerEntity player2 = PlayerEntity.empty();
+      PlayerEntity player2 = PlayerEntity.nextWinner();
       if ( totalPlayers > 0 ) {
-        final secondPlayer = listPlayers[random.nextInt(listPlayers.length)];
-        listPlayers.removeWhere((element) => element.isEqual(secondPlayer) );
+        final secondPlayer = players[random.nextInt(players.length)];
+        players.removeWhere((element) => element.isEqual(secondPlayer) );
         player2 = secondPlayer;
       }
 
@@ -264,7 +267,7 @@ abstract class _CreateTournamentMobx with Store {
 
     }
 
-    final ids = await _tournamentUseCase.createMatches(listMatches);
+    final ids = await _tournamentUseCase.createOrUpdateMatches(listMatches);
 
     List<int> matchesIds = [];
     ids.fold(

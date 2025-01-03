@@ -16,10 +16,7 @@ abstract class MatchDao {
   @Query("SELECT * FROM matches WHERE player1 = :player1 AND player2 = :player2 ORDER BY id DESC LIMIT 1")
   Future<MatchEntity?> getMatchByPlayer1AndPlayer2( String player1, String player2 );
 
-  @insert
-  Future<List<int>> insertAllMatches( List<MatchEntity> matches );
-
-  @update
-  Future<void> updateMatches( List<MatchEntity> matches );
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<List<int>> createOrUpdateMatches( List<MatchEntity> matches );
 
 }

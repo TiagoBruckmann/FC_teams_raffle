@@ -82,7 +82,6 @@ abstract class _TournamentMobx with Store {
   @action
   void _addTournamentList({ List<TournamentEntity>? list }) {
 
-    print("tournamentListComplete => $tournamentListComplete");
     if ( tournamentListComplete.isEmpty && list != null && list.isNotEmpty ) {
       tournamentListComplete.addAll(list);
     }
@@ -128,26 +127,30 @@ abstract class _TournamentMobx with Store {
   }
 
   @action
-  void openTournament( TournamentEntity entity ) {
+  Future<void> openTournament( TournamentEntity entity ) async {
     if ( entity.id == null ) {
       CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
       return;
     }
 
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: entity);
+    await NavigationRoutes.asyncNavigation(RoutesNameEnum.board.name, extra: entity);
+    await refresh(forceRefresh: true);
   }
 
   @action
-  void goToNewTournament() => NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.newTournament.name);
+  Future<void> goToNewTournament() async {
+    await NavigationRoutes.asyncNavigation(RoutesNameEnum.newTournament.name);
+    await refresh(forceRefresh: true);
+  }
 
   @action
   Future<void> refresh({ bool forceRefresh = false }) async {
     _updIsLoading(true);
+    if ( forceRefresh ) {
+      return clear();
+    }
     tournamentList.clear();
     _addTournamentList();
-    if ( forceRefresh ) {
-      clear();
-    }
   }
 
   @action

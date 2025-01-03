@@ -13,10 +13,7 @@ abstract class TournamentMapperDao {
   @Query("SELECT * FROM tournaments WHERE tournamentId = :tournamentId ORDER BY id DESC")
   Future<List<TournamentMapperEntity>> getTournamentMapperById( int tournamentId );
 
-  @insert
-  Future<List<int>> insertTournamentMapper( List<TournamentMapperEntity> mappers );
-
-  @update
-  Future<void> updateTournamentMapper( TournamentMapperEntity tournament );
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<List<int>> insertOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers );
 
 }

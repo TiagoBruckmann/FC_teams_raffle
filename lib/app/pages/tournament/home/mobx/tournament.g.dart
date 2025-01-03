@@ -65,6 +65,22 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
     return _$updStatusAsyncAction.run(() => super.updStatus(entity));
   }
 
+  late final _$openTournamentAsyncAction =
+      AsyncAction('_TournamentMobx.openTournament', context: context);
+
+  @override
+  Future<void> openTournament(TournamentEntity entity) {
+    return _$openTournamentAsyncAction.run(() => super.openTournament(entity));
+  }
+
+  late final _$goToNewTournamentAsyncAction =
+      AsyncAction('_TournamentMobx.goToNewTournament', context: context);
+
+  @override
+  Future<void> goToNewTournament() {
+    return _$goToNewTournamentAsyncAction.run(() => super.goToNewTournament());
+  }
+
   late final _$refreshAsyncAction =
       AsyncAction('_TournamentMobx.refresh', context: context);
 
@@ -105,28 +121,6 @@ mixin _$TournamentMobx on _TournamentMobx, Store {
         name: '_TournamentMobx._addTournamentList');
     try {
       return super._addTournamentList(list: list);
-    } finally {
-      _$_TournamentMobxActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void openTournament(TournamentEntity entity) {
-    final _$actionInfo = _$_TournamentMobxActionController.startAction(
-        name: '_TournamentMobx.openTournament');
-    try {
-      return super.openTournament(entity);
-    } finally {
-      _$_TournamentMobxActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void goToNewTournament() {
-    final _$actionInfo = _$_TournamentMobxActionController.startAction(
-        name: '_TournamentMobx.goToNewTournament');
-    try {
-      return super.goToNewTournament();
     } finally {
       _$_TournamentMobxActionController.endAction(_$actionInfo);
     }

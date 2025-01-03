@@ -1,5 +1,6 @@
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BodyKeyTournamentWidget extends StatelessWidget {
@@ -44,7 +45,7 @@ class BodyKeyTournamentWidget extends StatelessWidget {
       ),
       title: Text(
         ( isLoser && playerName.trim().isEmpty )
-        ? "Próximo perdedor"
+        ? FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser")
         : playerName,
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall,

@@ -5,9 +5,11 @@ import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -56,10 +58,8 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> init( TournamentEntity tournament ) async {
 
-    print("tournament => $tournament");
     int tournamentId = tournament.id ?? 1;
 
-    print("tournamentId => $tournamentId");
     final tournamentResponse = await _getTournament(tournamentId);
 
     if ( tournamentResponse == null ) {
@@ -119,35 +119,47 @@ abstract class _BoardMobx with Store {
 
     if ( match.score1 != null && match.score2 != null ) {
       final response = await match.setWinner(listPlayers);
-      print("response => $response");
       match = response["match"] as MatchEntity;
-      print("match => $match");
       listPlayers.clear();
       listPlayers.addAll(response["players"] as List<PlayerEntity>);
-      print("listPlayers => $listPlayers");
     }
 
     listMatches.insert(elementIndex, match);
 
     if ( match.score1 != null && match.score2 != null ) {
+      await _updNextLoserGame(match);
       await _updNextWinnerGame(match);
     }
+
+    final response = await _tournamentUseCase.createOrUpdateMatches(listMatches);
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (ids) async => await _updateTournament(ids),
+    );
+
+    listMatches.sort((a, b) => b.round.compareTo(a.round));
 
     updIsLoading(false);
   }
 
+  @action
   Future<void> _updNextWinnerGame( MatchEntity match ) async {
 
     String winnerName = match.player1;
     String winnerTeam = match.logoTeam1;
+    String loserName = match.player2;
+    String loserTeam = match.logoTeam2;
 
     if ( match.score2! > match.score1! ) {
       winnerName = match.player2;
       winnerTeam = match.logoTeam2;
+      loserName = match.player1;
+      loserTeam = match.logoTeam1;
     }
 
     bool hasNextWinnerPosition = false;
-    final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == "Próximo ganhador");
+    final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"));
     if ( nextWinnerPosition != -1 ) {
       hasNextWinnerPosition = true;
 
@@ -169,15 +181,11 @@ abstract class _BoardMobx with Store {
 
     }
 
-    final List<PlayerEntity> players = List.from(listPlayers);
-    print("players.length 1 => ${players.length}");
-    players.retainWhere((player) => player.losses < _tournament.defeats);
-    print("players.length 2 => ${players.length}");
-    print("hasNextWinnerPosition => $hasNextWinnerPosition");
+    listPlayers.removeWhere((player) => player.losses >= _tournament.defeats);
 
-    if ( players.length >= 2 && !hasNextWinnerPosition ) {
+    if ( listPlayers.length > 2 && !hasNextWinnerPosition ) {
 
-      final emptyPlayer = PlayerEntity.empty();
+      final emptyPlayer = PlayerEntity.nextWinner();
 
       listMatches.add(
         MatchEntity(
@@ -189,10 +197,33 @@ abstract class _BoardMobx with Store {
           listMatches.length + 1,
         ),
       );
+
+      return;
     }
 
-    if ( players.length == 1 ) {
-      final winner = PlayerEntity.winner();
+    int qtdLosses = _tournament.defeats;
+    final loserIndex = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(loserName, loserTeam));
+    if ( loserIndex != -1 ) {
+      qtdLosses = listPlayers[loserIndex].losses;
+    }
+
+    if ( listPlayers.length == 2 && qtdLosses < _tournament.defeats ) {
+      listMatches.add(
+        MatchEntity(
+          winnerName,
+          winnerTeam,
+          loserName,
+          loserTeam,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+
+      return;
+    }
+
+    if ( listPlayers.length == 1 ) {
+      final winner = PlayerEntity.champion();
 
       listMatches.add(
         MatchEntity(
@@ -204,10 +235,108 @@ abstract class _BoardMobx with Store {
           listMatches.length + 1,
         ),
       );
+
+      return;
     }
 
-    final response = await _tournamentUseCase.updateMatches(listMatches);
-    print("response => $response");
+  }
+
+  @action
+  Future<void> _updNextLoserGame( MatchEntity match ) async {
+
+    String winnerName = match.player1;
+    String winnerTeam = match.logoTeam1;
+    String loserName = match.player2;
+    String loserTeam = match.logoTeam2;
+
+    if ( match.score2! > match.score1! ) {
+      winnerName = match.player2;
+      winnerTeam = match.logoTeam2;
+      loserName = match.player1;
+      loserTeam = match.logoTeam1;
+    }
+
+    int qtdLosses = _tournament.defeats;
+    final loserIndex = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(loserName, loserTeam));
+    if ( loserIndex != -1 ) {
+      qtdLosses = listPlayers[loserIndex].losses;
+    }
+
+    bool hasNextLoserPosition = false;
+    final nextLoserPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser"));
+    if ( nextLoserPosition != -1 ) {
+      hasNextLoserPosition = true;
+
+      final emptyPLayer = listMatches[nextLoserPosition];
+      listMatches.removeAt(nextLoserPosition);
+
+      if ( qtdLosses >= _tournament.defeats ) {
+        loserName = winnerName;
+        loserTeam = winnerTeam;
+      }
+
+      listMatches.insert(
+        nextLoserPosition,
+        MatchEntity(
+          id: emptyPLayer.id,
+          emptyPLayer.player1,
+          emptyPLayer.logoTeam1,
+          loserName,
+          loserTeam,
+          emptyPLayer.winner,
+          emptyPLayer.round,
+        ),
+      );
+
+    }
+
+    listPlayers.removeWhere((player) => player.losses >= _tournament.defeats);
+
+    if ( listPlayers.length > 2 && !hasNextLoserPosition && qtdLosses < _tournament.defeats ) {
+
+      final emptyPlayer = PlayerEntity.nextLoser();
+
+      listMatches.add(
+        MatchEntity(
+          loserName,
+          loserTeam,
+          emptyPlayer.name,
+          emptyPlayer.team,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+
+      return;
+    }
+  }
+
+  @action
+  Future<void> _updateTournament( List<int> matchesIds ) async {
+
+    final List<int> playersIds = [];
+
+    for ( final player in listPlayers ) {
+      if ( player.id != null ) {
+        playersIds.add(player.id!);
+      }
+    }
+
+    final List<TournamentMapperEntity> tournamentMapperList = [];
+
+    for ( final playerId in playersIds ) {
+      tournamentMapperList.add(
+        TournamentMapperEntity.fromPlayerId(_tournament.id!, playerId),
+      );
+    }
+
+    for ( final matchId in matchesIds ) {
+      tournamentMapperList.add(
+        TournamentMapperEntity.fromMatchId(_tournament.id!, matchId),
+      );
+    }
+
+    final response = await _tournamentUseCase.createOrUpdateTournamentMapper(tournamentMapperList);
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),

@@ -113,7 +113,7 @@ class _TournamentPageState extends State<TournamentPage> {
 
             ],
             page: RefreshIndicator(
-              onRefresh: () => _mobx.refresh(),
+              onRefresh: () => _mobx.refresh(forceRefresh: true),
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric( horizontal: 8, vertical: 10 ),
                 itemCount: _mobx.tournamentList.length,
