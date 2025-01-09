@@ -1,5 +1,3 @@
-import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
-import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:flutter/material.dart';
 
 class LoadingOverlay extends StatelessWidget {
@@ -14,13 +12,7 @@ class LoadingOverlay extends StatelessWidget {
     final theme = Theme.of(context);
 
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: ( canPop, object ) {
-        if ( !isLoading ) {
-          return Navigator.pop(context);
-          // return NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
-        }
-      },
+      canPop: !isLoading,
       child: Stack(
         children: [
           child,
@@ -28,7 +20,7 @@ class LoadingOverlay extends StatelessWidget {
           if ( isLoading )
             Container(
               width: MediaQuery.of(context).size.width,
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

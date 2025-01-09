@@ -1,4 +1,5 @@
 // imports nativos
+import 'package:fc_teams_drawer/app/core/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 
 // imports globais
@@ -16,13 +17,14 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 class VerifyConnection extends StatelessWidget {
-
   final String keyAppBar;
   final Map<String, String>? appBarParams;
   final List<Widget>? actionWidgets;
   final Widget page;
   final Function? floatingFunction;
-  const VerifyConnection({ super.key, required this.keyAppBar, this.appBarParams, this.actionWidgets, required this.page, this.floatingFunction });
+  final bool isLoading;
+  final String loadingMessage;
+  const VerifyConnection({ super.key, required this.keyAppBar, this.appBarParams, this.actionWidgets, required this.page, this.floatingFunction, this.isLoading = false, this.loadingMessage = ""});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,11 @@ class VerifyConnection extends StatelessWidget {
             ),
             body: ( !Session.sharedServices.validateConnection(connectionMobx) )
             ? const LoadingConnection()
-            : page,
+            : LoadingOverlay(
+              isLoading: isLoading,
+              message: "Estamos criando seu torneio, aguarde mais um pouco!",
+              child: page,
+            ),
             floatingActionButton: ( floatingFunction == null )
             ? null
             : FloatingActionButton(
