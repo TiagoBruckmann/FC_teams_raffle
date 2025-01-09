@@ -55,7 +55,9 @@ class BodyKeyTournamentWidget extends StatelessWidget {
           enabled: !hasWinner && teamLogo.trim().isNotEmpty,
           color: theme.colorScheme.secondary,
           icon: Text(
-            ( score != null) ? score.toString() : " - ",
+            ( score != null)
+              ? score.toString()
+              : " - ",
             style: theme.textTheme.bodySmall,
           ),
           onSelected: ( int value ) => function( value ),

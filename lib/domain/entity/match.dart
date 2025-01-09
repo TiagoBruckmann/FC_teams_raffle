@@ -1,7 +1,9 @@
 // import dos pacotes
 import 'package:equatable/equatable.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/session.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 @Entity(tableName: "matches")
 class MatchEntity extends Equatable {
@@ -88,8 +90,20 @@ class MatchEntity extends Equatable {
     return id == match.id && round == match.round;
   }
 
+  bool hasRound( MatchEntity match ) => round == match.round;
+
+  bool isLoserOrWinner() {
+    final nextWinner = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner");
+    final nextLoser = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser");
+    return player2 == nextWinner || player2 == nextLoser;
+  }
+
+  bool isScoreNotNull() {
+    return score1 != null && score2 != null && winner.trim().isNotEmpty;
+  }
+
   @override
-  String toString() => "MatchEntity($player1, $score1, $player2, $score2, $round, $winner)";
+  String toString() => "MatchEntity($id, $player1, $score1, $player2, $score2, $round, $winner)";
 
   @override
   List<Object?> get props => [ id, player1, logoTeam1, player2, logoTeam2, winner, round, score1, score2 ];

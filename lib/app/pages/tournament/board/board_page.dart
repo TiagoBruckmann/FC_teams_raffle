@@ -28,6 +28,10 @@ class _BoardPageState extends State<BoardPage> {
 
   final BoardMobx _mobx = BoardMobx();
 
+  final _nextWinner = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner");
+  final _nextLoser = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser");
+  final _champion = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion");
+
   @override
   void initState() {
     super.initState();
@@ -151,7 +155,7 @@ class _BoardPageState extends State<BoardPage> {
                               playerName: entity.player1,
                               teamLogo: entity.logoTeam1,
                               score: entity.score1,
-                              hasWinner: ( entity.winner.trim().isNotEmpty ),
+                              hasWinner: ( entity.winner.trim().isNotEmpty || entity.player2.contains(_nextWinner) || entity.player2.contains(_nextLoser) || entity.player2.contains(_champion) ),
                               function: ( int value ) => _mobx.setGoals(entity, score1: value),
                             ),
                           ),

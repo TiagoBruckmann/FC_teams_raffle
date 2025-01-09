@@ -53,9 +53,19 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
       }
 
       if ( mapper.matchId != null ) {
-        final responseMatches = await _localDb.matchDao.getMatchById(mapper.matchId!);
-        if ( responseMatches != null ) {
-          listMatches.add(responseMatches);
+        final responseMatch = await _localDb.matchDao.getMatchById(mapper.matchId!);
+
+        if ( responseMatch != null ) {
+          final index = listMatches.indexWhere((match) => match.hasRound(responseMatch));
+          if ( index.isNegative ) {
+            listMatches.add(responseMatch);
+          }
+
+          if ( !responseMatch.isLoserOrWinner() && responseMatch.isScoreNotNull() && !index.isNegative ) {
+            listMatches.removeAt(index);
+            listMatches.insert(index, responseMatch);
+          }
+
         }
       }
 
@@ -81,6 +91,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
 
         if ( tournamentId != nextEntity!.tournamentId ) {
           tournamentId = nextEntity.tournamentId;
+          listMatches.sort((a, b) => b.round.compareTo(a.round));
 
           listTournaments.add(
             TournamentModel.fromQuery(tournament, List.from(listPlayers), List.from(listMatches)),

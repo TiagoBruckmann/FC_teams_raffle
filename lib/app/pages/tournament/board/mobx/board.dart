@@ -70,6 +70,7 @@ abstract class _BoardMobx with Store {
 
     listPlayers.addAll(tournament.getPlayers);
     listMatches.addAll(tournament.getMatches);
+
     _tournament = TournamentEntity.fromMapper(tournamentResponse, listPlayers, listMatches);
     _setSteps();
 
