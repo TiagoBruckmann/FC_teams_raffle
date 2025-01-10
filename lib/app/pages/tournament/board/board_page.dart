@@ -55,6 +55,7 @@ class _BoardPageState extends State<BoardPage> {
             child: Column(
               children: [
 
+                /*
                 SingleChildScrollView(
                   padding: const EdgeInsets.only( top: 10, bottom: 5 ),
                   scrollDirection: Axis.horizontal,
@@ -132,6 +133,7 @@ class _BoardPageState extends State<BoardPage> {
                     ],
                   ),
                 ),
+                */
 
                 for ( final entity in _mobx.listMatches )
                   Column(

@@ -122,7 +122,7 @@ abstract class _TournamentMobx with Store {
     tournamentList.insert(index, entity);
 
     await _tournamentUseCase.updateTournament(entity);
-    clear();
+    refresh(forceRefresh: true);
 
   }
 

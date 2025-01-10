@@ -22,6 +22,8 @@
     "tournament": {
       "app_bar": "Tournament {status}",
       "date": "Competition day: {date}",
+      "active": "This tournament is still open!",
+      "closed": "This tournament has now closed!",
       "active_status": "Set this tournament as finished!",
       "closed_status": "Set this tournament to Open!",
       "create": {
@@ -31,9 +33,11 @@
         "raffle_teams": "Draw teams?",
         "player_name": "{position}th player name",
         "invalid_name": "Fill in the tournament name correctly!",
-        "invalid_players_name": "One or more players have invalid fields, correct them to continue!"
+        "invalid_players_name": "One or more players have invalid fields, correct them to continue!",
+        "create": "Creating your tournament, please wait a little longer..."
       },
       "board": {
+        "getting": "Searching your tournaments, please wait...",
         "4": "Octaves",
         "3": "Quarterfinal",
         "2": "Semifinals",

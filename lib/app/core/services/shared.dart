@@ -1,20 +1,10 @@
 // import dos domains
 import 'dart:math';
 
-import 'package:fc_teams_drawer/domain/source/local/mobx/connection/connection.dart';
-
 // import dos pacotes
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 class SharedServices {
-
-  bool validateConnection( ConnectionMobx connectionMobx ) {
-    if ( connectionMobx.connectionStatus == ConnectivityResult.wifi || connectionMobx.connectionStatus == ConnectivityResult.mobile ) {
-      return true;
-    }
-    return false;
-  }
 
   static String convertDate( int value ) {
 

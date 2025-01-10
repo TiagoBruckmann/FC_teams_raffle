@@ -1,4 +1,3 @@
-import 'package:fc_teams_drawer/app/core/widgets/loading_overlay.dart';
 import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/create/mobx/create_tournament.dart';
 import 'package:fc_teams_drawer/session.dart';
@@ -34,7 +33,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
         return VerifyConnection(
           isLoading: _mobx.isLoading,
-          loadingMessage: "Estamos criando seu torneio, aguarde mais um pouco!",
+          loadingMessage: "pages.tournament.create.create",
           keyAppBar: "pages.tournament.app_bar",
           appBarParams: const {"status": ""},
           page: SingleChildScrollView(
