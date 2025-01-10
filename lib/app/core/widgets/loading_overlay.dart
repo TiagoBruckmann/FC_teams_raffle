@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final Widget child;
@@ -31,7 +32,7 @@ class LoadingOverlay extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
-                      message,
+                      FlutterI18n.translate(context, message),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium,
                     ),

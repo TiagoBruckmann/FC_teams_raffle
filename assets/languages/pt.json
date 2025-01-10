@@ -50,6 +50,7 @@
         }
       },
       "player": {
+        "team_champion": "{team} é o campeão!",
         "champion": "Você é o campeão!",
         "next_winner": "Próximo ganhador",
         "next_loser": "Próximo perdedor"

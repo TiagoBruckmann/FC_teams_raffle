@@ -2,6 +2,7 @@ import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/create/mobx/create_tournament.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -162,6 +163,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                           ? TextInputAction.done
                           : TextInputAction.next,
                       style: theme.textTheme.bodyMedium!.apply(fontSizeFactor: 1.2),
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         labelText: FlutterI18n.translate(context, "pages.tournament.create.player_name", translationParams: {"position": (i + 1).toString()}),
                       ),

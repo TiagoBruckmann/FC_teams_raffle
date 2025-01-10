@@ -140,41 +140,62 @@ class _BoardPageState extends State<BoardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 20 ),
-                        child: Text(
-                          FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.round.toString()}),
-                          style: theme.textTheme.bodyMedium,
+                      if ( entity.player2.contains(_champion) ) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            Expanded(
+                              child: BodyKeyTournamentWidget(
+                                playerName: entity.player1,
+                                teamLogo: entity.logoTeam1,
+                                score: entity.score1,
+                                hasWinner: true,
+                                hasChampion: true,
+                                function: ( int value ) => _mobx.setGoals(entity, score1: value),
+                              ),
+                            ),
+
+                          ],
                         ),
-                      ),
+                      ] else ...[
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-
-                          Expanded(
-                            child: BodyKeyTournamentWidget(
-                              playerName: entity.player1,
-                              teamLogo: entity.logoTeam1,
-                              score: entity.score1,
-                              hasWinner: ( entity.winner.trim().isNotEmpty || entity.player2.contains(_nextWinner) || entity.player2.contains(_nextLoser) || entity.player2.contains(_champion) ),
-                              function: ( int value ) => _mobx.setGoals(entity, score1: value),
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric( vertical: 10, horizontal: 20 ),
+                          child: Text(
+                            FlutterI18n.translate(context, "pages.tournament.board.game_position", translationParams: {"position": entity.round.toString()}),
+                            style: theme.textTheme.bodyMedium,
                           ),
+                        ),
 
-                          Expanded(
-                            child: BodyKeyTournamentWidget(
-                              playerName: entity.player2,
-                              teamLogo: entity.logoTeam2,
-                              score: entity.score2,
-                              hasWinner: ( entity.winner.trim().isNotEmpty ),
-                              function: ( int value ) => _mobx.setGoals(entity, score2: value),
-                              // isLoser: entity.player2["defeats"] > 0,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+
+                            Expanded(
+                              child: BodyKeyTournamentWidget(
+                                playerName: entity.player1,
+                                teamLogo: entity.logoTeam1,
+                                score: entity.score1,
+                                hasWinner: ( entity.winner.trim().isNotEmpty || entity.player2.contains(_nextWinner) || entity.player2.contains(_nextLoser) ),
+                                function: ( int value ) => _mobx.setGoals(entity, score1: value),
+                              ),
                             ),
-                          ),
 
-                        ],
-                      ),
+                            Expanded(
+                              child: BodyKeyTournamentWidget(
+                                playerName: entity.player2,
+                                teamLogo: entity.logoTeam2,
+                                score: entity.score2,
+                                hasWinner: ( entity.winner.trim().isNotEmpty ),
+                                function: ( int value ) => _mobx.setGoals(entity, score2: value),
+                                // isLoser: entity.player2["defeats"] > 0,
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ],
 
                       const Divider(
                         height: 30,

@@ -9,8 +9,9 @@ class BodyKeyTournamentWidget extends StatelessWidget {
   final Function( int ) function;
   final int? score;
   final bool hasWinner;
+  final bool hasChampion;
   final bool isLoser;
-  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function, this.isLoser = false });
+  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function, this.hasChampion = false, this.isLoser = false });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,15 @@ class BodyKeyTournamentWidget extends StatelessWidget {
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall,
       ),
-      subtitle: Card(
+      subtitle: ( hasChampion )
+      ? Text(
+        FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.team_champion", translationParams: {"team": teamLogo.replaceAll("_", " ")}),
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodyMedium!.apply(
+          color: theme.colorScheme.secondary,
+        ),
+      )
+      : Card(
         child: PopupMenuButton<int>(
           enabled: !hasWinner && teamLogo.trim().isNotEmpty,
           color: theme.colorScheme.secondary,
