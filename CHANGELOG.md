@@ -79,6 +79,7 @@ Versão publicada no dia 10/01/2025.
 
 <ul>
     <li>Atualizado a versão do Flutter para a 3.27.1</li>
+    <li>Abertura de links em Android 10+.</li>
     <li>Melhoria do sistema de logs.</li>
     <li>Analise de performance.</li>
 </ul>
