@@ -1,5 +1,6 @@
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BodyKeyTournamentWidget extends StatelessWidget {
@@ -8,8 +9,9 @@ class BodyKeyTournamentWidget extends StatelessWidget {
   final Function( int ) function;
   final int? score;
   final bool hasWinner;
+  final bool hasChampion;
   final bool isLoser;
-  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function, this.isLoser = false });
+  const BodyKeyTournamentWidget({ super.key, required this.playerName, required this.teamLogo, this.score, required this.hasWinner, required this.function, this.hasChampion = false, this.isLoser = false });
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +46,27 @@ class BodyKeyTournamentWidget extends StatelessWidget {
       ),
       title: Text(
         ( isLoser && playerName.trim().isEmpty )
-        ? "Próximo perdedor"
+        ? FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser")
         : playerName,
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall,
       ),
-      subtitle: Card(
+      subtitle: ( hasChampion )
+      ? Text(
+        FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.team_champion", translationParams: {"team": teamLogo.replaceAll("_", " ")}),
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodyMedium!.apply(
+          color: theme.colorScheme.secondary,
+        ),
+      )
+      : Card(
         child: PopupMenuButton<int>(
           enabled: !hasWinner && teamLogo.trim().isNotEmpty,
           color: theme.colorScheme.secondary,
           icon: Text(
-            ( score != null) ? score.toString() : " ",
+            ( score != null)
+              ? score.toString()
+              : " - ",
             style: theme.textTheme.bodySmall,
           ),
           onSelected: ( int value ) => function( value ),

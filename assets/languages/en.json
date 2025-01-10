@@ -8,7 +8,8 @@
       "solo_help": "Draw your team and the 'machine' team automatically!",
       "x1": "1 v 1",
       "x1_help": "Draw your team and your friend's team!",
-      "tournament_help": "Create your own league to play with your friends!"
+      "tournament_help": "Create your own league to play with your friends!",
+      "access_terms": "Access our terms and conditions "
     },
     "result_raffle": {
       "app_bar": "Draw Result",
@@ -21,6 +22,8 @@
     "tournament": {
       "app_bar": "Tournament {status}",
       "date": "Competition day: {date}",
+      "active": "This tournament is still open!",
+      "closed": "This tournament has now closed!",
       "active_status": "Set this tournament as finished!",
       "closed_status": "Set this tournament to Open!",
       "create": {
@@ -30,15 +33,27 @@
         "raffle_teams": "Draw teams?",
         "player_name": "{position}th player name",
         "invalid_name": "Fill in the tournament name correctly!",
-        "invalid_players_name": "One or more players have invalid fields, correct them to continue!"
+        "invalid_players_name": "One or more players have invalid fields, correct them to continue!",
+        "create": "Creating your tournament, please wait a little longer..."
       },
       "board": {
+        "getting": "Searching your tournaments, please wait...",
         "4": "Octaves",
         "3": "Quarterfinal",
         "2": "Semifinals",
         "1": "Final",
         "game_position": "{position}º Game",
-        "invalid_score": "Select a score for the game!"
+        "invalid_score": "Select a score for the game!",
+        "error": {
+          "get_tournament": "Failure to get tournament data, try again later!",
+          "update_match": "Failure to update match score, please try again later!"
+        }
+      },
+      "player": {
+        "team_champion": "{team} is the champion!",
+        "champion": "You are the champion!",
+        "next_winner": "Next winner",
+        "next_loser": "Next loser"
       }
     },
     "update": {

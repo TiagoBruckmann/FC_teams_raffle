@@ -9,26 +9,6 @@ part of 'create_tournament.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
-  late final _$tournamentAtom =
-      Atom(name: '_CreateTournamentMobx.tournament', context: context);
-
-  @override
-  TournamentCollection get tournament {
-    _$tournamentAtom.reportRead();
-    return super.tournament;
-  }
-
-  bool _tournamentIsInitialized = false;
-
-  @override
-  set tournament(TournamentCollection value) {
-    _$tournamentAtom.reportWrite(
-        value, _tournamentIsInitialized ? super.tournament : null, () {
-      super.tournament = value;
-      _tournamentIsInitialized = true;
-    });
-  }
-
   late final _$isLoadingAtom =
       Atom(name: '_CreateTournamentMobx.isLoading', context: context);
 
@@ -101,11 +81,21 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
     return _$_saveTournamentAsyncAction.run(() => super._saveTournament());
   }
 
+  late final _$_createTournamentMapperAsyncAction = AsyncAction(
+      '_CreateTournamentMobx._createTournamentMapper',
+      context: context);
+
+  @override
+  Future<void> _createTournamentMapper(TournamentEntity tournament) {
+    return _$_createTournamentMapperAsyncAction
+        .run(() => super._createTournamentMapper(tournament));
+  }
+
   late final _$_getPlayersAsyncAction =
       AsyncAction('_CreateTournamentMobx._getPlayers', context: context);
 
   @override
-  Future<List<PlayerCollection>> _getPlayers() {
+  Future<List<int>> _getPlayers() {
     return _$_getPlayersAsyncAction.run(() => super._getPlayers());
   }
 
@@ -121,8 +111,8 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
       AsyncAction('_CreateTournamentMobx._getMatches', context: context);
 
   @override
-  Future<List<MatchCollection>> _getMatches(List<PlayerCollection> players) {
-    return _$_getMatchesAsyncAction.run(() => super._getMatches(players));
+  Future<List<int>> _getMatches() {
+    return _$_getMatchesAsyncAction.run(() => super._getMatches());
   }
 
   late final _$_CreateTournamentMobxActionController =
@@ -195,11 +185,11 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   }
 
   @override
-  void _goToBoard() {
+  void _goToBoard(TournamentEntity tournament) {
     final _$actionInfo = _$_CreateTournamentMobxActionController.startAction(
         name: '_CreateTournamentMobx._goToBoard');
     try {
-      return super._goToBoard();
+      return super._goToBoard(tournament);
     } finally {
       _$_CreateTournamentMobxActionController.endAction(_$actionInfo);
     }
@@ -208,7 +198,6 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
   @override
   String toString() {
     return '''
-tournament: ${tournament},
 isLoading: ${isLoading},
 qtdPlayers: ${qtdPlayers},
 qtdDefeats: ${qtdDefeats},

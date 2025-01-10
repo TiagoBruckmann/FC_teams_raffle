@@ -4,7 +4,9 @@ import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
 import 'package:fc_teams_drawer/domain/repositories/team_repo.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:injectable/injectable.dart';
 
+@Injectable(as: TeamRepo)
 class TeamRepoImpl implements TeamRepo {
   final TeamRemoteDatasource remoteDatasource;
   TeamRepoImpl( this.remoteDatasource );

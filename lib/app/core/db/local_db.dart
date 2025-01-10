@@ -1,144 +1,54 @@
-import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
-import 'package:fc_teams_drawer/app/core/db/collections/game.dart';
-import 'package:fc_teams_drawer/session.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:isar/isar.dart';
+// import core
+import 'dart:async';
 
-class LocalDb {
+import 'package:fc_teams_drawer/app/core/db/daos/fc_teams_drawer_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/tournament_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/player_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/match_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/team_dao.dart';
+import 'package:fc_teams_drawer/app/core/db/daos/tournament_mapper.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
+import 'adapters/list_string_converter.dart';
 
-  Future<Isar> _openDb() async {
+// import dos domain
+import 'package:fc_teams_drawer/domain/entity/fc_teams_drawer.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/domain/entity/match.dart';
+import 'package:fc_teams_drawer/domain/entity/team.dart';
 
-    try {
+// import dos pacotes
+import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:floor/floor.dart';
 
-      if (Isar.instanceNames.isEmpty) {
+part 'local_db.g.dart';
 
-        final dir = await getApplicationDocumentsDirectory();
-        final schema = [FCTeamsCollectionSchema, PlayerCollectionSchema, TournamentCollectionSchema, MatchCollectionSchema];
-        return await Isar.open(schema, directory: dir.path);
+const kDatabaseName = 'fc_teams_drawer.db';
 
-      }
-      return Future.value(Isar.getInstance());
+@TypeConverters([ListStringConverter])
+@Database(
+  version: 1,
+  entities: [
+    TournamentMapperEntity,
+    FcTeamsDrawerEntity,
+    TournamentEntity,
+    PlayerEntity,
+    MatchEntity,
+    TeamEntity,
+  ],
+)
+abstract class LocalDb extends FloorDatabase {
 
-    } catch (ex) {
-      Session.logs.errorLog("Failed to open database: $ex");
-      throw Exception('Failed to open database: $ex');
-    }
+  TournamentMapperDao get tournamentMapperDap;
 
-  }
+  FcTeamsDrawerDao get fcTeamDrawerDao;
 
-  Future<bool> syncFCTeamDataModel( FCTeamsCollection dataModel ) async {
-    try {
-      Session.logs.successLog("Inserting data sync in FCTeams database");
+  TournamentDao get tournamentDao;
 
-      final response = await _openDb();
+  PlayerDao get playerDao;
 
-      final totalDocuments = await response.fCTeamsCollections
-          .where()
-          .filter()
-          .versionDataSyncEqualTo(dataModel.versionDataSync)
-          .count();
+  MatchDao get matchDao;
 
-      if ( totalDocuments > 1 ) {
-        await _delete(collection: FCTeamsCollection);
-      }
-
-      await insertDb(object: dataModel);
-
-      Session.logs.successLog("Data sync inserted in FCTeams database");
-      return true;
-    } catch (ex) {
-      Session.logs.errorLog(ex.toString());
-      throw Exception('No controls were found in the FCTeams database. ${ex.toString()}');
-    }
-  }
-
-  Future<FCTeamsCollection?> getFCTeamCollection( int versionDataSync ) async {
-    try {
-
-      final response = await _openDb();
-
-      final dataSync = await response.fCTeamsCollections
-          .where()
-          .filter()
-          .versionDataSyncEqualTo(versionDataSync)
-          .findFirst();
-
-      if ( dataSync == null ) {
-        return null;
-      }
-
-      Session.logs.successLog("Data Sync gotten with success in FCTeamsCollection");
-
-      return dataSync;
-
-    } catch (e, s) {
-      String message = "${e.toString()} - ${s.toString()}";
-      Session.logs.errorLog(message);
-      throw Exception("${e.toString()} - ${s.toString()}");
-    }
-
-  }
-
-  Future<TournamentCollection?> getGamesCollection() async {
-    try {
-
-      final response = await _openDb();
-
-      final dataSync = await response.tournamentCollections
-          .where()
-          .findFirst();
-
-      if ( dataSync == null ) {
-        return null;
-      }
-
-      Session.logs.successLog("Data Sync gotten with success in GamesCollection");
-
-      return dataSync;
-
-    } catch (e, s) {
-      String message = "${e.toString()} - ${s.toString()}";
-      Session.logs.errorLog(message);
-      throw Exception("${e.toString()} - ${s.toString()}");
-    }
-
-  }
-
-  Future<void> _delete<Model>({required collection}) async {
-    final isar = await _openDb();
-
-    if ( collection is FCTeamsCollection ) {
-      isar.writeTxn(() async => await isar.fCTeamsCollections.clear());
-    } else {
-      isar.writeTxn(() async => await isar.tournamentCollections.clear());
-    }
-
-    return;
-  }
-
-  Future<bool> insertDb<Model>({required object}) async {
-    final isar = await _openDb();
-
-    int response = -1;
-    if ( object is FCTeamsCollection ) {
-      await Session.secureStorage.writeStorage("version_data_sync", object.versionDataSync.toString());
-      response = await isar.writeTxn(() async => await isar.fCTeamsCollections.put(object));
-    } else if ( object is PlayerCollection ) {
-      response = await isar.writeTxn(() async => await isar.playerCollections.put(object));
-    } else if ( object is MatchCollection ) {
-      response = await isar.writeTxn(() async => await isar.matchCollections.put(object));
-    } else {
-      response = await isar.writeTxn(() async => await isar.tournamentCollections.put(object));
-    }
-
-    if ( response < 0 ) {
-      Session.logs.errorLog("Data Sync inserted with error");
-      return false;
-    }
-
-    Session.logs.successLog("Data Sync inserted with success");
-    return true;
-
-  }
+  TeamDao get teamDao;
 
 }

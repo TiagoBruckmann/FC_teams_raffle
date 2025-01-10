@@ -2,12 +2,13 @@
 import 'package:equatable/equatable.dart';
 
 abstract class Failure {
-  final String message = "";
+  final String message;
+  Failure(this.message);
 }
 
 class ServerFailure extends Failure with EquatableMixin {
   final String errorMessage;
-  ServerFailure( this.errorMessage );
+  ServerFailure( this.errorMessage ) : super(errorMessage);
 
   @override
   List<Object?> get props => [errorMessage];
@@ -16,7 +17,7 @@ class ServerFailure extends Failure with EquatableMixin {
 
 class CacheFailure extends Failure with EquatableMixin {
   final String errorMessage;
-  CacheFailure( this.errorMessage );
+  CacheFailure( this.errorMessage ) : super(errorMessage);
 
   @override
   List<Object?> get props => [errorMessage];
@@ -24,7 +25,7 @@ class CacheFailure extends Failure with EquatableMixin {
 
 class GeneralFailure extends Failure with EquatableMixin {
   final String errorMessage;
-  GeneralFailure( this.errorMessage );
+  GeneralFailure( this.errorMessage ) : super(errorMessage);
 
   @override
   List<Object?> get props => [errorMessage];

@@ -32,4 +32,14 @@ class NavigationRoutes {
 
   }
 
+  static Future<dynamic> asyncNavigation( String route, { Object? extra }) async {
+
+    return await Navigator.pushNamed(
+      currentContext,
+      route,
+      arguments: extra,
+    );
+
+  }
+
 }

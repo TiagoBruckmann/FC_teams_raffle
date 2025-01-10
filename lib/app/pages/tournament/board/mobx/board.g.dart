@@ -29,7 +29,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       Atom(name: '_BoardMobx._tournament', context: context);
 
   @override
-  TournamentCollection get _tournament {
+  TournamentEntity get _tournament {
     _$_tournamentAtom.reportRead();
     return super._tournament;
   }
@@ -37,7 +37,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
   bool __tournamentIsInitialized = false;
 
   @override
-  set _tournament(TournamentCollection value) {
+  set _tournament(TournamentEntity value) {
     _$_tournamentAtom.reportWrite(
         value, __tournamentIsInitialized ? super._tournament : null, () {
       super._tournament = value;
@@ -77,21 +77,57 @@ mixin _$BoardMobx on _BoardMobx, Store {
     });
   }
 
-  late final _$setListKeysAsyncAction =
-      AsyncAction('_BoardMobx.setListKeys', context: context);
+  late final _$initAsyncAction =
+      AsyncAction('_BoardMobx.init', context: context);
 
   @override
-  Future<void> setListKeys(TournamentCollection tournament) {
-    return _$setListKeysAsyncAction.run(() => super.setListKeys(tournament));
+  Future<void> init(TournamentEntity tournament) {
+    return _$initAsyncAction.run(() => super.init(tournament));
+  }
+
+  late final _$_getTournamentAsyncAction =
+      AsyncAction('_BoardMobx._getTournament', context: context);
+
+  @override
+  Future<TournamentEntity?> _getTournament(int tournamentId) {
+    return _$_getTournamentAsyncAction
+        .run(() => super._getTournament(tournamentId));
   }
 
   late final _$setGoalsAsyncAction =
       AsyncAction('_BoardMobx.setGoals', context: context);
 
   @override
-  Future<void> setGoals(MatchCollection match, {int? score1, int? score2}) {
+  Future<void> setGoals(MatchEntity match, {int? score1, int? score2}) {
     return _$setGoalsAsyncAction
         .run(() => super.setGoals(match, score1: score1, score2: score2));
+  }
+
+  late final _$_updNextWinnerGameAsyncAction =
+      AsyncAction('_BoardMobx._updNextWinnerGame', context: context);
+
+  @override
+  Future<void> _updNextWinnerGame(MatchEntity match) {
+    return _$_updNextWinnerGameAsyncAction
+        .run(() => super._updNextWinnerGame(match));
+  }
+
+  late final _$_updNextLoserGameAsyncAction =
+      AsyncAction('_BoardMobx._updNextLoserGame', context: context);
+
+  @override
+  Future<void> _updNextLoserGame(MatchEntity match) {
+    return _$_updNextLoserGameAsyncAction
+        .run(() => super._updNextLoserGame(match));
+  }
+
+  late final _$_updateTournamentAsyncAction =
+      AsyncAction('_BoardMobx._updateTournament', context: context);
+
+  @override
+  Future<void> _updateTournament(List<int> matchesIds) {
+    return _$_updateTournamentAsyncAction
+        .run(() => super._updateTournament(matchesIds));
   }
 
   late final _$_BoardMobxActionController =

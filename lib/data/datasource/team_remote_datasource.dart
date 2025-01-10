@@ -1,9 +1,12 @@
-import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
 import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/data/utils/firebase_service.dart';
+import 'package:fc_teams_drawer/domain/entity/fc_teams_drawer.dart';
+import 'package:fc_teams_drawer/domain/entity/team.dart';
+import 'package:fc_teams_drawer/domain/source/local/secure_storage.dart';
 import 'package:fc_teams_drawer/session.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:injectable/injectable.dart';
 
 abstract class TeamRemoteDatasource {
 
@@ -11,69 +14,74 @@ abstract class TeamRemoteDatasource {
 
 }
 
+@Injectable(as: TeamRemoteDatasource)
 class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
-  final FirebaseDatabase db;
-  TeamRemoteDatasourceImpl( this.db );
+  final SecureStorageWrapper _storage;
+  final FirebaseService _service;
+  final LocalDb _localDb;
+  TeamRemoteDatasourceImpl( this._storage, this._service, this._localDb );
 
   @override
   Future<void> getDataSync() async {
 
-    final teamsRef = db.ref("data");
-    db.setLoggingEnabled(true);
-    db.setPersistenceEnabled(true);
-    db.setPersistenceCacheSizeBytes(10000000);
+    final teamsRef = _service.db.ref("data");
+    _service.db.setLoggingEnabled(true);
+    _service.db.setPersistenceEnabled(true);
+    _service.db.setPersistenceCacheSizeBytes(10000000);
 
     try {
 
-      final metric = Session.performance.newHttpMetric("get_teams", HttpMethod.Get);
+      final metric = await Session.performance.newHttpMetric("get_teams", HttpMethod.Get);
       await metric.start();
 
       final response = await teamsRef.get();
 
       await metric.stop();
 
-      _syncData(response.value);
+      return await _syncData(response.value);
 
     } catch ( error ) {
       Session.crash.onError("get_data_sync_firebase", error: error);
       throw ServerExceptions("get_data_sync_firebase => $error");
     }
 
-    return;
   }
 
   Future<void> _syncData( dynamic json ) async {
 
     try {
 
-      final versionDataSync = int.parse(await Session.secureStorage.readStorage("version_data_sync") ?? "0");
+      final versionDataSync = int.parse(await _storage.readStorage("version_data_sync") ?? "0");
 
-      final localDb = await LocalDb().getFCTeamCollection(versionDataSync);
+      final fcTeamCollection = FcTeamsDrawerEntity.fromJson(json);
 
-      final fcTeamCollection = FCTeamsCollection.fromJson(json);
+      int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? versionDataSync;
 
-      int localVersion = localDb?.versionDataSync ?? versionDataSync;
+      if ( localVersion < fcTeamCollection.versionDataSync ) {
 
-      if ( localVersion < fcTeamCollection.versionDataSync! ) {
-
-        final isSuccessSyncDataModel = await LocalDb().syncFCTeamDataModel(fcTeamCollection);
-
-        if ( !isSuccessSyncDataModel ) {
-          Session.crash.onError("Failure on Sync FC Teams data model");
-          throw CacheExceptions("Failure on Sync FC Teams data model");
+        final List<TeamEntity> teams = [];
+        for ( final team in json["teams"] ) {
+          teams.add(TeamEntity.fromJson(team));
         }
 
-        Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(fcTeamCollection);
+        await _localDb.teamDao.insertAllTeams(teams);
+        Session.teams.clear();
+        Session.teams.addAll(teams);
 
-      } else {
-        Session.fcTeamCollection = FCTeamsCollection.collectionToEntity(localDb!);
+        return;
+
       }
+
+      final teams = await _localDb.teamDao.getAllTeams();
+      Session.teams.clear();
+      Session.teams.addAll(teams);
 
       return;
 
     } catch ( error ) {
-      Session.crash.onError("get_data_sync_local_db", error: error);
-      throw CacheExceptions("get_data_sync_local_db => $error");
+      Session.teams.clear();
+      Session.crash.onError("get_data_sync_local_service.db", error: error);
+      throw CacheExceptions("get_data_sync_local_service.db => $error");
     }
 
   }
