@@ -6,6 +6,7 @@ import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -30,7 +31,7 @@ abstract class _CreateTournamentMobx with Store {
 
   final _tournamentUseCase = TournamentUseCase(getIt());
 
-  TextEditingController eventNameController = TextEditingController(text: "Teste");
+  TextEditingController eventNameController = TextEditingController(text: kDebugMode ? "Teste" : "");
 
   ObservableList<TextEditingController> playersController = ObservableList();
 
