@@ -2,7 +2,7 @@ name: fc_teams_drawer
 description: "An app for all FIFA players or any other soccer game."
 publish_to: 'none'
 
-version: 2.0.0+22
+version: 2.0.0+25
 
 environment:
   sdk: '>=3.5.3 <4.0.0'
@@ -19,7 +19,6 @@ dependencies:
   firebase_analytics: ^10.10.7
   shimmer_animation: ^2.1.0+1
   firebase_database: ^10.5.7
-  connectivity_plus: ^6.0.3
   device_info_plus: ^10.1.0
   new_version_plus: ^0.0.12
   cloud_firestore: ^4.17.5
