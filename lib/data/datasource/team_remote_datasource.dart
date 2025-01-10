@@ -44,7 +44,6 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
       Session.crash.onError("get_data_sync_firebase", error: error);
       throw ServerExceptions("get_data_sync_firebase => $error");
     }
-
   }
 
   Future<void> _syncData( dynamic json ) async {
