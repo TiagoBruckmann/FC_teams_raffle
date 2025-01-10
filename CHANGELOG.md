@@ -31,7 +31,9 @@ Está é a versão inclui ajustes de segurança do Google.
 
 Versão publicada no dia 18/07/2024.
 
-**:bulb: Novas funcionalidades**
+---
+
+**:star2: Melhorias**
 
 <ul>
     <li>Aplicando novas seguranças do Google.</li>
@@ -57,6 +59,29 @@ Versão publicada no dia 11/10/2024.
     <li>Exibindo a imagem de todos os times que temos cadastrados.</li>
     <li>habilitando Google Analytics.</li>
     <li>Melhor controle de erros.</li>
+</ul>
+
+---
+
+### :gear: Versão 2.0.0
+
+Está é a versão adiciona a criação de torneios, sorteando os jogos e também os times da competição.
+
+Versão publicada no dia 10/01/2025.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Criação de torneios.</li>
+</ul>
+
+**:star2: Melhorias**
+
+<ul>
+    <li>Atualizado a versão do Flutter para a 3.27.1</li>
+    <li>Abertura de links em Android 10+.</li>
+    <li>Melhoria do sistema de logs.</li>
+    <li>Analise de performance.</li>
 </ul>
 
 ---

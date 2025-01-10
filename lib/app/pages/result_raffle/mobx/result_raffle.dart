@@ -1,6 +1,5 @@
 import 'dart:math';
-
-import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
+import 'package:fc_teams_drawer/domain/entity/team.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:mobx/mobx.dart';
 
@@ -10,20 +9,20 @@ class ResultRaffleMobx extends _ResultRaffleMobx with _$ResultRaffleMobx {}
 
 abstract class _ResultRaffleMobx with Store {
 
-  ObservableList<TeamCollection> teamsList = ObservableList();
+  ObservableList<TeamEntity> teamsList = ObservableList();
 
   @action
   Future<void> sortTeams() async {
 
     final random = Random();
 
-    int totalTeams = Session.fcTeamCollection.teamCollection!.length;
+    int totalTeams = Session.teams.length;
 
-    final player1 = Session.fcTeamCollection.teamCollection![random.nextInt(totalTeams)];
-    TeamCollection player2 = Session.fcTeamCollection.teamCollection![random.nextInt(totalTeams)];
+    final player1 = Session.teams[random.nextInt(totalTeams)];
+    TeamEntity player2 = Session.teams[random.nextInt(totalTeams)];
 
     while ( player2 == player1 ) {
-      player2 = Session.fcTeamCollection.teamCollection![random.nextInt(totalTeams)];
+      player2 = Session.teams[random.nextInt(totalTeams)];
     }
 
     teamsList.add(player1);

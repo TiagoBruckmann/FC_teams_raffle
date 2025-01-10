@@ -1,5 +1,6 @@
 {
   "btn_update": "Update",
+  "btn_generate": "Generate",
   "pages": {
     "home": {
       "app_bar": "Game Type",
@@ -7,7 +8,6 @@
       "solo_help": "Draw your team and the 'machine' team automatically!",
       "x1": "1 v 1",
       "x1_help": "Draw your team and your friend's team!",
-      "tournament": "Tournament",
       "tournament_help": "Create your own league to play with your friends!",
       "access_terms": "Access our terms and conditions "
     },
@@ -19,6 +19,43 @@
       "machine": "Machine",
       "league": "League: {league}"
     },
+    "tournament": {
+      "app_bar": "Tournament {status}",
+      "date": "Competition day: {date}",
+      "active": "This tournament is still open!",
+      "closed": "This tournament has now closed!",
+      "active_status": "Set this tournament as finished!",
+      "closed_status": "Set this tournament to Open!",
+      "create": {
+        "event_name": "Tournament name",
+        "qtd_participants": "Quantity of players",
+        "qtd_defeats": "Quantity of defeats",
+        "raffle_teams": "Draw teams?",
+        "player_name": "{position}th player name",
+        "invalid_name": "Fill in the tournament name correctly!",
+        "invalid_players_name": "One or more players have invalid fields, correct them to continue!",
+        "create": "Creating your tournament, please wait a little longer..."
+      },
+      "board": {
+        "getting": "Searching your tournaments, please wait...",
+        "4": "Octaves",
+        "3": "Quarterfinal",
+        "2": "Semifinals",
+        "1": "Final",
+        "game_position": "{position}º Game",
+        "invalid_score": "Select a score for the game!",
+        "error": {
+          "get_tournament": "Failure to get tournament data, try again later!",
+          "update_match": "Failure to update match score, please try again later!"
+        }
+      },
+      "player": {
+        "team_champion": "{team} is the champion!",
+        "champion": "You are the champion!",
+        "next_winner": "Next winner",
+        "next_loser": "Next loser"
+      }
+    },
     "update": {
       "title": "Hello, dear player",
       "subtitle": "We have a new version for you! Update your app and check out the new features!"
@@ -27,6 +64,12 @@
   "routes": {
     "app_bar": "Screen not found",
     "title": "Error 404",
-    "subtitle": "Oops, it looks like this screen doesn't exist!"
+    "subtitle": "Oops, it looks like this screen doesn't exist!",
+    "btn": "Back to home!"
+  },
+  "status": {
+    "all": "All",
+    "active": "Active",
+    "closed": "Closed"
   }
 }

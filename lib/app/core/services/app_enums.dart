@@ -11,6 +11,8 @@ enum RoutesNameEnum {
   splash("/splash"),
   home("/"),
   tournament("/tournament"),
+  newTournament("/new-tournament"),
+  board("/board"),
   resultRaffle("/result-raffle");
 
   final String name;

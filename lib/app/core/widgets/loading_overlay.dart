@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final Widget child;
@@ -12,12 +13,7 @@ class LoadingOverlay extends StatelessWidget {
     final theme = Theme.of(context);
 
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: ( canPop, object ) {
-        if ( !isLoading ) {
-          return Navigator.pop(context);
-        }
-      },
+      canPop: !isLoading,
       child: Stack(
         children: [
           child,
@@ -25,7 +21,7 @@ class LoadingOverlay extends StatelessWidget {
           if ( isLoading )
             Container(
               width: MediaQuery.of(context).size.width,
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,10 +32,9 @@ class LoadingOverlay extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
-                      message,
-                      style: theme.textTheme.bodyMedium?.apply(
-                        color: theme.scaffoldBackgroundColor,
-                      ),
+                      FlutterI18n.translate(context, message),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ),
 
