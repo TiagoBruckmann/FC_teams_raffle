@@ -2,7 +2,6 @@ import 'package:fc_teams_drawer/app/core/widgets/verify_connection.dart';
 import 'package:fc_teams_drawer/app/pages/tournament/create/mobx/create_tournament.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 

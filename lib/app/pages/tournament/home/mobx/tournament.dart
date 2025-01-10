@@ -69,7 +69,10 @@ abstract class _TournamentMobx with Store {
     final successOrFailure = await _tournamentUseCase.getTournaments();
 
     successOrFailure.fold(
-      (failure) => Session.logs.errorLog(failure.message),
+      (failure) {
+        Session.logs.errorLog(failure.message);
+        _updIsLoading(false);
+      },
       (success) {
         Session.appEvents.sharedSuccessEvent("get_tournaments", success.toString());
         _addTournamentList(list: success);

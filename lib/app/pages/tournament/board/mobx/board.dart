@@ -159,32 +159,56 @@ abstract class _BoardMobx with Store {
       loserTeam = match.logoTeam1;
     }
 
+    final player1Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player1, match.logoTeam1));
+    final player2Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player2, match.logoTeam2));
+
+    final miss1Loser = _tournament.defeats - 1;
+
+    bool isLoserGame = false;
+    if ( !player1Index.isNegative && !player2Index.isNegative ) {
+      final player1 = listPlayers[player1Index];
+      final player2 = listPlayers[player2Index];
+
+      isLoserGame = player1.getLosses >= miss1Loser && player2.getLosses >= miss1Loser;
+    }
+
+    if ( !player1Index.isNegative && player2Index.isNegative ) {
+      final player1 = listPlayers[player1Index];
+
+      isLoserGame = player1.getLosses >= miss1Loser;
+    }
+
+    if ( player1Index.isNegative && !player2Index.isNegative ) {
+      final player2 = listPlayers[player2Index];
+
+      isLoserGame = player2.getLosses >= miss1Loser;
+    }
+
     bool hasNextWinnerPosition = false;
     final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"));
-    if ( nextWinnerPosition != -1 ) {
+    if ( nextWinnerPosition != -1 && !isLoserGame ) {
       hasNextWinnerPosition = true;
 
-      final emptyPLayer = listMatches[nextWinnerPosition];
+      final previousWinner = listMatches[nextWinnerPosition];
       listMatches.removeAt(nextWinnerPosition);
 
       listMatches.insert(
         nextWinnerPosition,
         MatchEntity(
-          id: emptyPLayer.id,
-          emptyPLayer.player1,
-          emptyPLayer.logoTeam1,
+          previousWinner.player1,
+          previousWinner.logoTeam1,
           winnerName,
           winnerTeam,
-          emptyPLayer.winner,
-          emptyPLayer.round,
+          previousWinner.winner,
+          previousWinner.round,
         ),
       );
 
     }
 
-    listPlayers.removeWhere((player) => player.losses >= _tournament.defeats);
+    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
 
-    if ( listPlayers.length > 2 && !hasNextWinnerPosition ) {
+    if ( listPlayers.length > 2 && !hasNextWinnerPosition && !isLoserGame ) {
 
       final emptyPlayer = PlayerEntity.nextWinner();
 
@@ -205,7 +229,7 @@ abstract class _BoardMobx with Store {
     int qtdLosses = _tournament.defeats;
     final loserIndex = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(loserName, loserTeam));
     if ( loserIndex != -1 ) {
-      qtdLosses = listPlayers[loserIndex].losses;
+      qtdLosses = listPlayers[loserIndex].getLosses;
     }
 
     if ( listPlayers.length == 2 && qtdLosses < _tournament.defeats ) {
@@ -215,6 +239,24 @@ abstract class _BoardMobx with Store {
           winnerTeam,
           loserName,
           loserTeam,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+
+      return;
+    }
+
+    if ( listPlayers.length == 2 && !nextWinnerPosition.isNegative ) {
+      final previousWinner = listMatches[nextWinnerPosition];
+      listMatches.removeAt(nextWinnerPosition);
+
+      listMatches.add(
+        MatchEntity(
+          previousWinner.player1,
+          previousWinner.logoTeam1,
+          winnerName,
+          winnerTeam,
           "",
           listMatches.length + 1,
         ),
@@ -260,7 +302,7 @@ abstract class _BoardMobx with Store {
     int qtdLosses = _tournament.defeats;
     final loserIndex = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(loserName, loserTeam));
     if ( loserIndex != -1 ) {
-      qtdLosses = listPlayers[loserIndex].losses;
+      qtdLosses = listPlayers[loserIndex].getLosses;
     }
 
     bool hasNextLoserPosition = false;
@@ -291,7 +333,7 @@ abstract class _BoardMobx with Store {
 
     }
 
-    listPlayers.removeWhere((player) => player.losses >= _tournament.defeats);
+    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
 
     if ( listPlayers.length > 2 && !hasNextLoserPosition && qtdLosses < _tournament.defeats ) {
 
