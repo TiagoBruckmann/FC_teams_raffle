@@ -61,11 +61,13 @@ Versão publicada no dia 11/10/2024.
     <li>Melhor controle de erros.</li>
 </ul>
 
+---
+
 ### :gear: Versão 2.0.0
 
 Está é a versão adiciona a criação de torneios, sorteando os jogos e também os times da competição.
 
-Versão publicada no dia ?/?/2025.
+Versão publicada no dia 10/01/2025.
 
 **:bulb: Novas funcionalidades**
 
@@ -76,6 +78,7 @@ Versão publicada no dia ?/?/2025.
 **:star2: Melhorias**
 
 <ul>
+    <li>Atualizado a versão do Flutter para a 3.27.1</li>
     <li>Melhoria do sistema de logs.</li>
     <li>Analise de performance.</li>
 </ul>
