@@ -125,7 +125,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                     ),
                     items: [
 
-                      for ( int i = 1; i < 5; i++ )
+                      for ( int i = 1; i < 3; i++ )
                         DropdownMenuItem(
                           value: i,
                           child: Text(

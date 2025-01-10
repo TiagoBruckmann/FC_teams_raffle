@@ -162,7 +162,7 @@ abstract class _BoardMobx with Store {
     final player1Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player1, match.logoTeam1));
     final player2Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player2, match.logoTeam2));
 
-    final miss1Loser = _tournament.defeats - 1;
+    final miss1Loser = ( _tournament.defeats - 1 == 0 ) ? 1 : _tournament.defeats - 1;
 
     bool isLoserGame = false;
     if ( !player1Index.isNegative && !player2Index.isNegative ) {
