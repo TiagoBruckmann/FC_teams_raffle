@@ -2,6 +2,8 @@
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
+import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
+import 'package:fc_teams_drawer/domain/usecases/team_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
@@ -16,7 +18,22 @@ class HomeMobx extends _HomeMobx with _$HomeMobx {}
 
 abstract class _HomeMobx with Store {
 
+  final _teamUseCase = TeamUseCase(getIt());
+
   final currentContext = Session.globalContext.currentContext!;
+
+  Future<void> _getTeams() async {
+
+    if ( Session.teams.isNotEmpty ) return;
+
+    final response = await _teamUseCase.getDataSync();
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (success) => Session.logs.successLog("success_getDataSync_home"),
+    );
+
+  }
 
   @action
   Future<void> verifyVersion() async {
@@ -39,6 +56,8 @@ abstract class _HomeMobx with Store {
 
       }
     }
+
+    await _getTeams();
   }
 
   @action
