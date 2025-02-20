@@ -58,6 +58,8 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
       if ( localVersion < fcTeamCollection.versionDataSync ) {
 
+        await _storage.writeStorage("version_data_sync", fcTeamCollection.versionDataSync.toString());
+
         final List<TeamEntity> teams = [];
         for ( final team in json["teams"] ) {
           teams.add(TeamEntity.fromJson(team));
