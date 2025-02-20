@@ -8,7 +8,7 @@ FC Raffle - An app for all FIFA players or any other soccer game.
 
 Está versão corrije uns bugs, principalmente a busca dos times vir vazia, além de atualizar o ambiente Android para um mais recente como o gradle 8.3.
 
-Versão publicada no dia ?/02/2025.
+Versão publicada no dia 21/02/2025.
 
 **:bulb: Novas funcionalidades**
 
