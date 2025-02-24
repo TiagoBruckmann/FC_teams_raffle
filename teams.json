@@ -1,0 +1,343 @@
+{
+  "data": {
+    "teams": [
+      {
+        "league": "Italiana",
+        "logo": "milan",
+        "name": "AC Milan",
+        "score": 80
+      },
+      {
+        "league": "Saudita",
+        "logo": "ahli",
+        "name": "Al-Ahli",
+        "score": 73
+      },
+      {
+        "league": "Saudita",
+        "logo": "hilal",
+        "name": "Al-Hilal",
+        "score": 78
+      },
+      {
+        "league": "Saudita",
+        "logo": "al_ittihad",
+        "name": "Al-Ittihad",
+        "score": 78
+      },
+      {
+        "league": "Saudita",
+        "logo": "al_nassr",
+        "name": "Al-Nassr",
+        "score": 78
+      },
+      {
+        "league": "Inglesa",
+        "logo": "arsenal",
+        "name": "Arsenal",
+        "score": 83
+      },
+      {
+        "league": "Francesa",
+        "logo": "monaco",
+        "name": "AS Monaco",
+        "score": 77
+      },
+      {
+        "league": "Italiana",
+        "logo": "roma",
+        "name": "AS Roma",
+        "score": 80
+      },
+      {
+        "league": "Espanhola",
+        "logo": "athletic_bilbao",
+        "name": "Athletic Bilbao",
+        "score": 79
+      },
+      {
+        "league": "Espanhola",
+        "logo": "atletico_madrid",
+        "name": "Atlético de Madrid",
+        "score": 82
+      },
+      {
+        "league": "Inglesa",
+        "logo": "aston_villa",
+        "name": "Aston Villa",
+        "score": 79
+      },
+      {
+        "league": "Alemã",
+        "logo": "bayer_leverkusen",
+        "name": "Bayer Leverkusen",
+        "score": 82
+      },
+      {
+        "league": "Alemã",
+        "logo": "bayern_munique",
+        "name": "Bayern de Munique",
+        "score": 85
+      },
+      {
+        "league": "Portuguesa",
+        "logo": "benfica",
+        "name": "Benfica",
+        "score": 79
+      },
+      {
+        "league": "Alemã",
+        "logo": "borussia_dortmund",
+        "name": "Borussia Dortmund",
+        "score": 81
+      },
+      {
+        "league": "Alemã",
+        "logo": "borussia_monchengladbach",
+        "name": "Borussia Monchengladbach",
+        "score": 76
+      },
+      {
+        "league": "Portuguesa",
+        "logo": "braga",
+        "name": "Braga",
+        "score": 76
+      },
+      {
+        "league": "Inglesa",
+        "logo": "brentford",
+        "name": "Brentford",
+        "score": 75
+      },
+      {
+        "league": "Inglesa",
+        "logo": "brighton",
+        "name": "Brighton & Hove Albion",
+        "score": 75
+      },
+      {
+        "league": "Inglesa",
+        "logo": "chelsea",
+        "name": "Chelsea",
+        "score": 79
+      },
+      {
+        "league": "Inglesa",
+        "logo": "crystal_palace",
+        "name": "Crystal Palace",
+        "score": 75
+      },
+      {
+        "league": "Alemã",
+        "logo": "eintracht_frankfurt",
+        "name": "Eintracht Frankfurt",
+        "score": 77
+      },
+      {
+        "league": "Italiana",
+        "logo": "empoli",
+        "name": "Empoli",
+        "score": 72
+      },
+      {
+        "league": "Inglesa",
+        "logo": "everton",
+        "name": "Everton",
+        "score": 76
+      },
+      {
+        "league": "Alemã",
+        "logo": "augsburg",
+        "name": "FC Augsburg",
+        "score": 75
+      },
+      {
+        "league": "Espanhola",
+        "logo": "barca",
+        "name": "FC Barcelona",
+        "score": 84
+      },
+      {
+        "league": "Italiana",
+        "logo": "fiorentina",
+        "name": "Fiorentina",
+        "score": 76
+      },
+      {
+        "league": "Italiana",
+        "logo": "inter_milao",
+        "name": "Inter de Milão",
+        "score": 83
+      },
+      {
+        "league": "Americana",
+        "logo": "inter_miami",
+        "name": "Inter Miami",
+        "score": 75
+      },
+      {
+        "league": "Italiana",
+        "logo": "juventus",
+        "name": "Juventus",
+        "score": 80
+      },
+      {
+        "league": "Italiana",
+        "logo": "lazio",
+        "name": "Lazio",
+        "score": 79
+      },
+      {
+        "league": "Inglesa",
+        "logo": "leeds_united",
+        "name": "Leeds United",
+        "score": 73
+      },
+      {
+        "league": "Inglesa",
+        "logo": "leicester_city",
+        "name": "Leicester City",
+        "score": 76
+      },
+      {
+        "league": "Francesa",
+        "logo": "lille",
+        "name": "Lille",
+        "score": 77
+      },
+      {
+        "league": "Inglesa",
+        "logo": "liverpool",
+        "name": "Liverpool",
+        "score": 83
+      },
+      {
+        "league": "Francesa",
+        "logo": "lyon",
+        "name": "Lyon",
+        "score": 76
+      },
+      {
+        "league": "Inglesa",
+        "logo": "manchester_city",
+        "name": "Manchester City",
+        "score": 85
+      },
+      {
+        "league": "Inglesa",
+        "logo": "manchester_united",
+        "name": "Manchester United",
+        "score": 79
+      },
+      {
+        "league": "Francesa",
+        "logo": "marseille",
+        "name": "Marseille",
+        "score": 77
+      },
+      {
+        "league": "Italiana",
+        "logo": "napoli",
+        "name": "Napoli",
+        "score": 80
+      },
+      {
+        "league": "Inglesa",
+        "logo": "newcastle",
+        "name": "Newcastle United",
+        "score": 76
+      },
+      {
+        "league": "Francesa",
+        "logo": "psg",
+        "name": "Paris Saint-Germain",
+        "score": 81
+      },
+      {
+        "league": "Portuguesa",
+        "logo": "porto",
+        "name": "Porto",
+        "score": 77
+      },
+      {
+        "league": "Alemã",
+        "logo": "leipzig",
+        "name": "RB Leipzig",
+        "score": 80
+      },
+      {
+        "league": "Espanhola",
+        "logo": "real_betis",
+        "name": "Real Betis",
+        "score": 77
+      },
+      {
+        "league": "Espanhola",
+        "logo": "real_madrid",
+        "name": "Real Madrid",
+        "score": 85
+      },
+      {
+        "league": "Espanhola",
+        "logo": "real_sociedad",
+        "name": "Real Sociedad",
+        "score": 80
+      },
+      {
+        "league": "Espanhola",
+        "logo": "sevilla",
+        "name": "Sevilla",
+        "score": 78
+      },
+      {
+        "league": "Portuguesa",
+        "logo": "sporting",
+        "name": "Sporting CP",
+        "score": 78
+      },
+      {
+        "league": "Inglesa",
+        "logo": "tottenham",
+        "name": "Tottenham Hotspur",
+        "score": 81
+      },
+      {
+        "league": "Espanhola",
+        "logo": "valencia",
+        "name": "Valencia",
+        "score": 75
+      },
+      {
+        "league": "Alemã",
+        "logo": "wolfsburg",
+        "name": "VfL Wolfsburg",
+        "score": 75
+      },
+      {
+        "league": "Espanhola",
+        "logo": "villarreal",
+        "name": "Villarreal",
+        "score": 78
+      },
+      {
+        "league": "Inglesa",
+        "logo": "watford",
+        "name": "Watford",
+        "score": 70
+      },
+      {
+        "league": "Inglesa",
+        "logo": "west_ham",
+        "name": "West Ham United",
+        "score": 79
+      },
+      {
+        "league": "Inglesa",
+        "logo": "wolverhampton",
+        "name": "Wolverhampton Wanderers",
+        "score": 77
+      }
+    ],
+    "version": 4
+  }
+}
