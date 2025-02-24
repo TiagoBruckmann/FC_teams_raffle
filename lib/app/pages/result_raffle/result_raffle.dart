@@ -53,7 +53,7 @@ class _ResultRaffleState extends State<ResultRaffle> {
                 children: [
 
                   Padding(
-                    padding: const EdgeInsets.only( top: 20, bottom: 40),
+                    padding: const EdgeInsets.only( top: 20, bottom: 40 ),
                     child: Text(
                       FlutterI18n.translate(context, "pages.result_raffle.title"),
                       style: theme.textTheme.displaySmall?.apply(
@@ -113,7 +113,7 @@ class _ResultRaffleState extends State<ResultRaffle> {
                               Padding(
                                 padding: const EdgeInsets.symmetric( vertical: 5 ),
                                 child: Text(
-                                  _mobx.teamsList[i].name,
+                                  "${_mobx.teamsList[i].name} - ${_mobx.teamsList[i].score} PTS",
                                   style: theme.textTheme.bodySmall,
                                 ),
                               ),
@@ -132,6 +132,16 @@ class _ResultRaffleState extends State<ResultRaffle> {
 
                       ],
                     ),
+
+                  Padding(
+                    padding: const EdgeInsets.only( top: 50 ),
+                    child: Text(
+                      FlutterI18n.translate(context, "pages.result_raffle.obs"),
+                      style: theme.textTheme.bodySmall?.apply(
+                        letterSpacingDelta: 2.5,
+                      ),
+                    ),
+                  ),
 
                 ],
               ),

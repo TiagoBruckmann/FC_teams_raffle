@@ -17,7 +17,8 @@
       "player1": "Player 1",
       "player2": "Player 2",
       "machine": "Machine",
-      "league": "League: {league}"
+      "league": "League: {league}",
+      "obs": "OBS: The teams are sorted by your score in FC 2024."
     },
     "tournament": {
       "app_bar": "Tournament {status}",

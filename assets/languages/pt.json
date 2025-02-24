@@ -17,7 +17,8 @@
       "player1": "Jogador 1",
       "player2": "Jogador 2",
       "machine": "Máquina",
-      "league": "Liga: {league}"
+      "league": "Liga: {league}",
+      "obs": "OBS: Os times são sorteados com base em sua pontuação no FC 2024."
     },
     "tournament": {
       "app_bar": "Torneio {status}",
