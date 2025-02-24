@@ -4,6 +4,26 @@ FC Raffle - An app for all FIFA players or any other soccer game.
 
 ---
 
+### :gear: Versão 2.1.0
+
+Está versão traz novas funcionalidades de sorteios onde agora serão sorteados com base em um média de cada time (média retirada do FIFA 24), para ter jogos com times mais semelhantes em sua pontuação.
+
+Versão publicada no dia ?/?/2025.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Sorteio de times com base em uma média de cada time.</li>
+</ul>
+
+**:star2: Melhorias**
+
+<ul>
+    <li>Remoção de pacotes desnecessarios.</li>
+</ul>
+
+---
+
 ### :gear: Versão 2.0.1
 
 Está versão corrije uns bugs, principalmente a busca dos times vir vazia, além de atualizar o ambiente Android para um mais recente como o gradle 8.3.
