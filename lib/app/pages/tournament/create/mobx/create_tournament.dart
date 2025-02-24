@@ -39,6 +39,8 @@ abstract class _CreateTournamentMobx with Store {
 
   ObservableList<MatchEntity> listMatches = ObservableList();
 
+  final List<TeamEntity> sortTeamsList = [];
+
   @observable
   bool isLoading = true;
 
@@ -220,15 +222,60 @@ abstract class _CreateTournamentMobx with Store {
   @action
   Future<String> _sortTeams( List<String> listTeams ) async {
 
+    if ( sortTeamsList.isNotEmpty ) {
+      return _sortFilteredTeams(listTeams);
+    }
+
     final random = Random();
 
     int totalTeams = Session.teams.length;
 
     TeamEntity team = Session.teams[random.nextInt(totalTeams)];
+    final minimumScore = team.score - 3;
+    final maximumScore = team.score + 3;
+
+    sortTeamsList.addAll(List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore)));
+    sortTeamsList.removeWhere((entity) => listTeams.contains(team.logo) || entity.logo == team.logo);
+    totalTeams = sortTeamsList.length;
 
     while ( listTeams.contains(team.logo) ) {
-      team = Session.teams[random.nextInt(totalTeams)];
+      team = sortTeamsList[random.nextInt(totalTeams)];
     }
+
+    sortTeamsList.removeWhere((entity) => entity.logo == team.logo);
+
+    return team.logo;
+  }
+
+  @action
+  Future<String> _sortFilteredTeams( List<String> listTeams ) async {
+    final random = Random();
+
+    int totalTeams = sortTeamsList.length;
+
+    TeamEntity team = sortTeamsList[random.nextInt(totalTeams)];
+    int minimumScore = team.score - 3;
+    int maximumScore = team.score + 3;
+
+    sortTeamsList.removeWhere((entity) => listTeams.contains(team.logo) || entity.logo == team.logo);
+    totalTeams = sortTeamsList.length;
+
+    if ( sortTeamsList.length <= 2 ) {
+
+      minimumScore = team.score - 3;
+      maximumScore = team.score + 3;
+
+      sortTeamsList.addAll(List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore)));
+      sortTeamsList.removeWhere((entity) => listTeams.contains(team.logo) || entity.logo == team.logo);
+      totalTeams = sortTeamsList.length;
+
+    }
+
+    while ( listTeams.contains(team.logo) ) {
+      team = sortTeamsList[random.nextInt(totalTeams)];
+    }
+
+    sortTeamsList.removeWhere((entity) => entity.logo == team.logo);
 
     return team.logo;
   }
