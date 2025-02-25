@@ -17,7 +17,8 @@
       "player1": "Jogador 1",
       "player2": "Jogador 2",
       "machine": "Máquina",
-      "league": "Liga: {league}"
+      "league": "Liga: {league}",
+      "obs": "OBS: Os times são sorteados com base em sua pontuação no FC 2024."
     },
     "tournament": {
       "app_bar": "Torneio {status}",
@@ -32,6 +33,7 @@
         "qtd_defeats": "Quantidade de derrotas",
         "raffle_teams": "Sortear times?",
         "player_name": "Nome do {position}º jogador",
+        "team_name": "Nome do {position}º time",
         "invalid_name": "Preencha o nome do torneio corretamente!",
         "invalid_players_name": "Um ou mais jogadores estão com campos inválidos, corrija-os para continuar!",
         "create": "Estamos criando seu torneio, por favor aguarde mais um pouco..."

@@ -116,7 +116,7 @@ class _$LocalDb extends LocalDb {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `matches` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `player1` TEXT NOT NULL, `logoTeam1` TEXT NOT NULL, `player2` TEXT NOT NULL, `logoTeam2` TEXT NOT NULL, `winner` TEXT NOT NULL, `round` INTEGER NOT NULL, `score1` INTEGER, `score2` INTEGER)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `teams` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `league` TEXT NOT NULL, `logo` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `teams` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `league` TEXT NOT NULL, `logo` TEXT NOT NULL, `score` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -483,7 +483,8 @@ class _$TeamDao extends TeamDao {
                   'id': item.id,
                   'name': item.name,
                   'league': item.league,
-                  'logo': item.logo
+                  'logo': item.logo,
+                  'score': item.score
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -498,7 +499,7 @@ class _$TeamDao extends TeamDao {
   Future<List<TeamEntity>> getAllTeams() async {
     return _queryAdapter.queryList('SELECT * FROM teams',
         mapper: (Map<String, Object?> row) => TeamEntity(row['name'] as String,
-            row['league'] as String, row['logo'] as String,
+            row['league'] as String, row['logo'] as String, row['score'] as int,
             id: row['id'] as int?));
   }
 

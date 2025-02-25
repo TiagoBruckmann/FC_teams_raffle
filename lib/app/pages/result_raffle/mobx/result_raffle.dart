@@ -19,11 +19,14 @@ abstract class _ResultRaffleMobx with Store {
     int totalTeams = Session.teams.length;
 
     final player1 = Session.teams[random.nextInt(totalTeams)];
-    TeamEntity player2 = Session.teams[random.nextInt(totalTeams)];
+    final minimumScore = player1.score - 3;
+    final maximumScore = player1.score + 3;
 
-    while ( player2 == player1 ) {
-      player2 = Session.teams[random.nextInt(totalTeams)];
-    }
+    final List<TeamEntity> list = List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore));
+    list.removeWhere((team) => team.logo == player1.logo);
+    totalTeams = list.length;
+
+    TeamEntity player2 = list[random.nextInt(totalTeams)];
 
     teamsList.add(player1);
     teamsList.add(player2);

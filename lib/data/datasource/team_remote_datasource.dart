@@ -3,7 +3,6 @@ import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/data/utils/firebase_service.dart';
 import 'package:fc_teams_drawer/domain/entity/fc_teams_drawer.dart';
 import 'package:fc_teams_drawer/domain/entity/team.dart';
-import 'package:fc_teams_drawer/domain/source/local/secure_storage.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:injectable/injectable.dart';
@@ -16,10 +15,9 @@ abstract class TeamRemoteDatasource {
 
 @Injectable(as: TeamRemoteDatasource)
 class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
-  final SecureStorageWrapper _storage;
   final FirebaseService _service;
   final LocalDb _localDb;
-  TeamRemoteDatasourceImpl( this._storage, this._service, this._localDb );
+  TeamRemoteDatasourceImpl( this._service, this._localDb );
 
   @override
   Future<void> getDataSync() async {
@@ -50,15 +48,11 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
     try {
 
-      final versionDataSync = int.parse(await _storage.readStorage("version_data_sync") ?? "0");
-
       final fcTeamCollection = FcTeamsDrawerEntity.fromJson(json);
 
-      int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? versionDataSync;
+      int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? 0;
 
       if ( localVersion < fcTeamCollection.versionDataSync ) {
-
-        await _storage.writeStorage("version_data_sync", fcTeamCollection.versionDataSync.toString());
 
         final List<TeamEntity> teams = [];
         for ( final team in json["teams"] ) {
@@ -67,7 +61,7 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
         await _localDb.teamDao.insertAllTeams(teams);
         Session.teams.clear();
-        Session.teams.addAll(teams);
+        Session.teams.addAll(teams.toSet().toList());
 
         return;
 
@@ -75,7 +69,7 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
       final teams = await _localDb.teamDao.getAllTeams();
       Session.teams.clear();
-      Session.teams.addAll(teams);
+      Session.teams.addAll(teams.toSet().toList());
 
       return;
 

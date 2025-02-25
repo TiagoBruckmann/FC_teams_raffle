@@ -152,13 +152,14 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                   ),
                 ),
 
-                for ( int i = 0; i < _mobx.playersController.length; i++ )
+                for ( int i = 0; i < _mobx.qtdPlayers; i++ ) ...[
+
                   Padding(
                     padding: const EdgeInsets.symmetric( vertical: 7 ),
                     child: TextField(
                       controller: _mobx.playersController[i],
                       keyboardType: TextInputType.text,
-                      textInputAction: ( i + 1 == _mobx.playersController.length )
+                      textInputAction: ( i + 1 == _mobx.playersController.length && _mobx.raffleTeams )
                           ? TextInputAction.done
                           : TextInputAction.next,
                       style: theme.textTheme.bodyMedium!.apply(fontSizeFactor: 1.2),
@@ -168,6 +169,31 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                       ),
                     ),
                   ),
+
+                  if ( !_mobx.raffleTeams )
+                    Padding(
+                      padding: const EdgeInsets.symmetric( vertical: 7 ),
+                      child: TextField(
+                        controller: _mobx.teamsNameController[i],
+                        keyboardType: TextInputType.text,
+                        textInputAction: ( i + 1 == _mobx.teamsNameController.length )
+                            ? TextInputAction.done
+                            : TextInputAction.next,
+                        style: theme.textTheme.bodyMedium!.apply(fontSizeFactor: 1.2),
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: FlutterI18n.translate(context, "pages.tournament.create.team_name", translationParams: {"position": (i + 1).toString()}),
+                        ),
+                      ),
+                    ),
+
+                  if ( !_mobx.raffleTeams && i + 1 < _mobx.teamsNameController.length )
+                    Divider(
+                      color: theme.colorScheme.inversePrimary,
+                      height: 25,
+                    ),
+
+                ],
 
                 Container(
                   padding: const EdgeInsets.only( top: 20 ),

@@ -107,6 +107,15 @@ mixin _$CreateTournamentMobx on _CreateTournamentMobx, Store {
     return _$_sortTeamsAsyncAction.run(() => super._sortTeams(listTeams));
   }
 
+  late final _$_sortFilteredTeamsAsyncAction =
+      AsyncAction('_CreateTournamentMobx._sortFilteredTeams', context: context);
+
+  @override
+  Future<String> _sortFilteredTeams(List<String> listTeams) {
+    return _$_sortFilteredTeamsAsyncAction
+        .run(() => super._sortFilteredTeams(listTeams));
+  }
+
   late final _$_getMatchesAsyncAction =
       AsyncAction('_CreateTournamentMobx._getMatches', context: context);
 

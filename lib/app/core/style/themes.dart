@@ -151,7 +151,9 @@ class Themes {
     dividerTheme: _dividerThemeDataDark,
     inputDecorationTheme: InputDecorationTheme(
       contentPadding: const EdgeInsets.all(8),
-      labelStyle: _bodyMediumTextDark,
+      labelStyle: _bodyMediumTextDark.apply(
+        color: _onSecondaryColorDark,
+      ),
       filled: true,
       fillColor: Colors.transparent,
       enabledBorder: const OutlineInputBorder(

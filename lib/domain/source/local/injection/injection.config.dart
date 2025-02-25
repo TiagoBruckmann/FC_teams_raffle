@@ -21,8 +21,6 @@ import 'package:fc_teams_drawer/domain/repositories/team_repo.dart' as _i571;
 import 'package:fc_teams_drawer/domain/repositories/tournament_repo.dart'
     as _i813;
 import 'package:fc_teams_drawer/domain/source/local/local_module.dart' as _i606;
-import 'package:fc_teams_drawer/domain/source/local/secure_storage.dart'
-    as _i28;
 import 'package:fc_teams_drawer/domain/usecases/team_usecase.dart' as _i240;
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart'
     as _i156;
@@ -46,9 +44,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => localModule.localDb(),
       preResolve: true,
     );
-    gh.singleton<_i28.SecureStorageWrapper>(() => localModule.storageWrapper());
     gh.factory<_i899.TeamRemoteDatasource>(() => _i899.TeamRemoteDatasourceImpl(
-          gh<_i28.SecureStorageWrapper>(),
           gh<_i760.FirebaseService>(),
           gh<_i681.LocalDb>(),
         ));
