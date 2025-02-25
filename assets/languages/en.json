@@ -33,6 +33,7 @@
         "qtd_defeats": "Quantity of defeats",
         "raffle_teams": "Draw teams?",
         "player_name": "{position}th player name",
+        "team_name": "{position}th team name",
         "invalid_name": "Fill in the tournament name correctly!",
         "invalid_players_name": "One or more players have invalid fields, correct them to continue!",
         "create": "Creating your tournament, please wait a little longer..."

@@ -1,11 +1,4 @@
 // imports nativos
-import 'package:fc_teams_drawer/domain/entity/match.dart';
-import 'package:fc_teams_drawer/domain/entity/player.dart';
-import 'package:fc_teams_drawer/domain/entity/team.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
-import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
-import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -18,6 +11,15 @@ import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/services/shared.dart';
+
+// import dos domain
+import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
+import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
+import 'package:fc_teams_drawer/domain/entity/tournament.dart';
+import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/domain/entity/match.dart';
+import 'package:fc_teams_drawer/domain/entity/team.dart';
 
 // import dos pacotes
 import 'package:mobx/mobx.dart';
@@ -34,6 +36,8 @@ abstract class _CreateTournamentMobx with Store {
   TextEditingController eventNameController = TextEditingController(text: kDebugMode ? "Teste" : "");
 
   ObservableList<TextEditingController> playersController = ObservableList();
+
+  ObservableList<TextEditingController> teamsNameController = ObservableList();
 
   ObservableList<PlayerEntity> listPlayers = ObservableList();
 
@@ -66,14 +70,32 @@ abstract class _CreateTournamentMobx with Store {
   @action
   void setQtdPlayers( int value ) {
 
+    final List<TextEditingController> players = List.from(playersController);
+    final List<TextEditingController> teams = List.from(teamsNameController);
+
     if ( playersController.isNotEmpty ) {
       playersController.clear();
+      teamsNameController.clear();
     }
 
+    if ( players.length > value ) {
+      players.removeRange(value, players.length);
+      teams.removeRange(value, teams.length);
+    }
+
+    playersController.addAll(players);
+    teamsNameController.addAll(teams);
+
     while ( playersController.length < value ) {
+
       playersController.add(
         TextEditingController(),
       );
+
+      teamsNameController.add(
+        TextEditingController(),
+      );
+
     }
 
     qtdPlayers = value;
@@ -186,18 +208,21 @@ abstract class _CreateTournamentMobx with Store {
 
     final List<String> listTeams = [];
 
-    for ( final item in playersController ) {
+    for ( int i = 0; i < playersController.length; i++ ) {
 
-      String logo = "";
+      final player = playersController[i].text.trim();
+      String logo = teamsNameController[i].text.trim().toLowerCase().replaceAll(" ", "_");
 
       if ( raffleTeams ) {
+
         logo = await _sortTeams(listTeams);
         listTeams.add(logo);
+
       }
 
       listPlayers.add(
         PlayerEntity(
-          item.text.trim(),
+          player,
           logo,
           0,
         ),
