@@ -24,7 +24,6 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
     final teamsRef = _service.db.ref("data");
     _service.db.setLoggingEnabled(true);
-    _service.db.setPersistenceEnabled(true);
     _service.db.setPersistenceCacheSizeBytes(10000000);
 
     try {
@@ -39,6 +38,13 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
       return await _syncData(response.value);
 
     } catch ( error ) {
+      final teams = await _localDb.teamDao.getAllTeams();
+
+      if ( teams.isNotEmpty ) {
+        Session.teams.clear();
+        Session.teams.addAll(teams.toSet().toList());
+      }
+
       Session.crash.onError("get_data_sync_firebase", error: error);
       throw ServerExceptions("get_data_sync_firebase => $error");
     }
@@ -49,19 +55,25 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
     try {
 
       final fcTeamCollection = FcTeamsDrawerEntity.fromJson(json);
-
       int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? 0;
 
       if ( localVersion < fcTeamCollection.versionDataSync ) {
 
         final List<TeamEntity> teams = [];
         for ( final team in json["teams"] ) {
-          teams.add(TeamEntity.fromJson(team));
+          if ( team != null ) {
+            teams.add(TeamEntity.fromJson(team));
+          }
         }
 
+        await _localDb.fcTeamDrawerDao.insertVersionDB(fcTeamCollection);
         await _localDb.teamDao.insertAllTeams(teams);
         Session.teams.clear();
         Session.teams.addAll(teams.toSet().toList());
+
+        if ( Session.teams.isEmpty ) {
+          Session.teams.addAll(teams);
+        }
 
         return;
 
@@ -71,10 +83,23 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
       Session.teams.clear();
       Session.teams.addAll(teams.toSet().toList());
 
+      if ( Session.teams.isEmpty ) {
+        Session.teams.addAll(teams);
+      }
+
       return;
 
     } catch ( error ) {
+      final List<TeamEntity> teams = [];
+      for ( final team in json["teams"] ) {
+        if ( team != null ) {
+          teams.add(TeamEntity.fromJson(team));
+        }
+      }
+
       Session.teams.clear();
+      Session.teams.addAll(teams);
+
       Session.crash.onError("get_data_sync_local_service.db", error: error);
       throw CacheExceptions("get_data_sync_local_service.db => $error");
     }

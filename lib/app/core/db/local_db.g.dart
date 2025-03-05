@@ -241,8 +241,8 @@ class _$FcTeamsDrawerDao extends FcTeamsDrawerDao {
   }
 
   @override
-  Future<int> insertVersionDB(FcTeamsDrawerEntity entity) {
-    return _fcTeamsDrawerEntityInsertionAdapter.insertAndReturnId(
+  Future<void> insertVersionDB(FcTeamsDrawerEntity entity) async {
+    await _fcTeamsDrawerEntityInsertionAdapter.insert(
         entity, OnConflictStrategy.abort);
   }
 }

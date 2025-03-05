@@ -9,6 +9,6 @@ abstract class FcTeamsDrawerDao {
   Future<int?> getLastVersionDB();
 
   @insert
-  Future<int> insertVersionDB( FcTeamsDrawerEntity entity );
+  Future<void> insertVersionDB( FcTeamsDrawerEntity entity );
 
 }

@@ -48,7 +48,8 @@
         "invalid_score": "Selecione um placar para o jogo!",
         "error": {
           "get_tournament": "Falha ao buscar os dados do torneio, tente novamente mais tarde!",
-          "update_match": "Falha ao atualizar o placar do jogo, tente novamente mais tarde!"
+          "update_match": "Falha ao atualizar o placar do jogo, tente novamente mais tarde!",
+          "equal_score": "O jogo não pode terminar empatado, finalize a partida!"
         }
       },
       "player": {
