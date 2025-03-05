@@ -56,8 +56,6 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
       final fcTeamCollection = FcTeamsDrawerEntity.fromJson(json);
       int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? 0;
-      print("localVersion => $localVersion");
-      print("fcTeamCollection.versionDataSync => ${fcTeamCollection.versionDataSync}");
 
       if ( localVersion < fcTeamCollection.versionDataSync ) {
 
