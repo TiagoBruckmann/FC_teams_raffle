@@ -119,6 +119,13 @@ abstract class _BoardMobx with Store {
     listMatches.removeAt(elementIndex);
 
     if ( match.score1 != null && match.score2 != null ) {
+
+      if ( match.score1 == match.score2 ) {
+        CustomSnackBar(messageKey: "pages.tournament.board.error.equal_score");
+        listMatches.insert(elementIndex, match);
+        return;
+      }
+
       final response = await match.setWinner(listPlayers);
       match = response["match"] as MatchEntity;
       listPlayers.clear();
@@ -268,6 +275,12 @@ abstract class _BoardMobx with Store {
     if ( listPlayers.length == 1 ) {
       final winner = PlayerEntity.champion();
 
+      final hasChampion = listMatches.where((match) => match.player2.toLowerCase() == winner.name.toLowerCase());
+
+      if ( hasChampion.isNotEmpty ) {
+        return;
+      }
+
       listMatches.add(
         MatchEntity(
           winnerName,
@@ -352,6 +365,30 @@ abstract class _BoardMobx with Store {
 
       return;
     }
+
+    if ( listPlayers.length == 1 ) {
+      final winner = PlayerEntity.champion();
+
+      final hasChampion = listMatches.where((match) => match.player2.toLowerCase() == winner.name.toLowerCase());
+
+      if ( hasChampion.isNotEmpty ) {
+        return;
+      }
+
+      listMatches.add(
+        MatchEntity(
+          winnerName,
+          winnerTeam,
+          winner.name,
+          winner.team,
+          "",
+          listMatches.length + 1,
+        ),
+      );
+
+      return;
+    }
+
   }
 
   @action
