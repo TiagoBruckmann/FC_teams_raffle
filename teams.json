@@ -8,30 +8,6 @@
         "score": 80
       },
       {
-        "league": "Saudita",
-        "logo": "ahli",
-        "name": "Al-Ahli",
-        "score": 73
-      },
-      {
-        "league": "Saudita",
-        "logo": "hilal",
-        "name": "Al-Hilal",
-        "score": 78
-      },
-      {
-        "league": "Saudita",
-        "logo": "al_ittihad",
-        "name": "Al-Ittihad",
-        "score": 78
-      },
-      {
-        "league": "Saudita",
-        "logo": "al_nassr",
-        "name": "Al-Nassr",
-        "score": 78
-      },
-      {
         "league": "Inglesa",
         "logo": "arsenal",
         "name": "Arsenal",
@@ -134,12 +110,6 @@
         "score": 77
       },
       {
-        "league": "Italiana",
-        "logo": "empoli",
-        "name": "Empoli",
-        "score": 72
-      },
-      {
         "league": "Inglesa",
         "logo": "everton",
         "name": "Everton",
@@ -168,12 +138,6 @@
         "logo": "inter_milao",
         "name": "Inter de Milão",
         "score": 83
-      },
-      {
-        "league": "Americana",
-        "logo": "inter_miami",
-        "name": "Inter Miami",
-        "score": 75
       },
       {
         "league": "Italiana",
@@ -318,12 +282,6 @@
         "logo": "villarreal",
         "name": "Villarreal",
         "score": 78
-      },
-      {
-        "league": "Inglesa",
-        "logo": "watford",
-        "name": "Watford",
-        "score": 70
       },
       {
         "league": "Inglesa",
