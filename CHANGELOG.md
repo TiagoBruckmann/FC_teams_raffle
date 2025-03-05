@@ -4,6 +4,27 @@ FC Raffle - An app for all FIFA players or any other soccer game.
 
 ---
 
+### :gear: Versão 2.1.1
+
+Está versão traz melhorias de funcionalidades dos torneios / campeonatos, assim como muitos ajustes de bugs que foram encontrados recentemente.
+
+Versão publicada no dia 05/03/2025.
+
+**:bulb: Novas funcionalidades**
+
+<ul>
+    <li>Remoção dos times mais fracos, agora a pontuação média minima é de 75%.</li>
+</ul>
+
+**:star2: Melhorias**
+
+<ul>
+    <li>Remoção de pacotes desnecessarios.</li>
+    <li>Correções de bugs.</li>
+</ul>
+
+---
+
 ### :gear: Versão 2.1.0
 
 Está versão traz novas funcionalidades de sorteios onde agora serão sorteados com base em um média de cada time (média retirada do FIFA 24), para ter jogos com times mais semelhantes em sua pontuação.
