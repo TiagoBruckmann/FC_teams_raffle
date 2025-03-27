@@ -44,32 +44,20 @@ class TournamentUseCase {
     return await _tournamentRepo.updatePlayer( json );
   }
 
-  Future<Either<Failure, void>> createMatches( String tournamentId, List<MatchEntity> matches ) async {
-    final Map<String, dynamic> json = {
+  Future<Either<Failure, void>> createMatch( String tournamentId, MatchEntity match ) async {
+    final json = match.toJson({
       "tournament_id": tournamentId,
-    };
+    });
 
-    for ( final match in matches ) {
-      json.addAll({
-        "matches": match.toJson(),
-      });
-    }
-
-    return await _tournamentRepo.createMatches( json );
+    return await _tournamentRepo.createMatch( json );
   }
 
-  Future<Either<Failure, void>> updateMatches( String tournamentId, List<MatchEntity> matches ) async {
-    final Map<String, dynamic> json = {
+  Future<Either<Failure, void>> updateMatch( String tournamentId, MatchEntity match ) async {
+    final json = match.toJson({
       "tournament_id": tournamentId,
-    };
+    });
 
-    for ( final match in matches ) {
-      json.addAll({
-        "matches": match.toJson(),
-      });
-    }
-
-    return await _tournamentRepo.updateMatches( json );
+    return await _tournamentRepo.updateMatch( json );
   }
 
 }

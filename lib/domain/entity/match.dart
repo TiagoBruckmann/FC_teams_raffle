@@ -98,8 +98,8 @@ class MatchEntity extends Equatable {
     return score1 != null && score2 != null && winner.trim().isNotEmpty;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson( Map<String, dynamic> json ) {
+    json.addAll({
       "id": id,
       "player1": player1,
       "logo_team1": logoTeam1,
@@ -109,7 +109,9 @@ class MatchEntity extends Equatable {
       "score2": score2,
       "round": round,
       "winner": winner,
-    };
+    });
+
+    return json;
   }
 
   @override

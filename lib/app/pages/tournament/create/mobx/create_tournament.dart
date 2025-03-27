@@ -10,7 +10,6 @@ import 'package:fc_teams_drawer/session.dart';
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
 
 // import dos domain
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -146,7 +145,7 @@ abstract class _CreateTournamentMobx with Store {
     final date = "$day/$month/${dateNow.year}";
     final createdAt = DateFormat("yyyyMMddkkmmss").format(dateNow);
 
-    final tournament = TournamentEntity(
+    TournamentEntity tournament = TournamentEntity(
       Session.sharedServices.getRandomString(20),
       eventNameController.text.trim(),
       date,
@@ -164,52 +163,20 @@ abstract class _CreateTournamentMobx with Store {
         CustomSnackBar(messageKey: "pages.tournament.create.invalid_name");
         updIsLoading(false);
       },
-      ( tournamentId ) => _createTournamentMapper(tournament),
-    );
+      ( success ) async {
+        await _getPlayers(tournament.id);
+        await _getMatches(tournament.id);
 
-  }
-
-  @action
-  Future<void> _createTournamentMapper( TournamentEntity tournament ) async {
-
-    /*
-    final playersIds = await _getPlayers();
-    final matchesIds = await _getMatches();
-
-    final List<TournamentMapperEntity> tournamentMapperList = [];
-
-    for ( final playerId in playersIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromPlayerId(tournament.id!, playerId),
-      );
-    }
-
-    for ( final matchId in matchesIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromMatchId(tournament.id!, matchId),
-      );
-    }
-
-    final response = await _tournamentUseCase.createOrUpdateTournamentMapper(tournamentMapperList);
-
-    updIsLoading(false);
-
-    listMatches.sort((a, b) => b.round.compareTo(a.round));
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (mappersIds) {
         tournament = TournamentEntity.fromMapper(tournament, listPlayers, listMatches);
         _goToBoard(tournament);
       },
     );
-    */
+
   }
 
   @action
-  Future<List<int>> _getPlayers() async {
+  Future<void> _getPlayers( String tournamentId ) async {
 
-    /*
     final List<String> listTeams = [];
 
     for ( int i = 0; i < playersController.length; i++ ) {
@@ -224,30 +191,23 @@ abstract class _CreateTournamentMobx with Store {
 
       }
 
-      listPlayers.add(
-        PlayerEntity(
-          player,
-          logo,
-          0,
-        ),
+      PlayerEntity playerEntity = PlayerEntity(
+        Session.sharedServices.getRandomString(20),
+        player,
+        logo,
+        0,
       );
 
+      final response = await _tournamentUseCase.createPlayer(tournamentId, playerEntity);
+      response.fold(
+        (failure) => Session.logs.errorLog(failure.message),
+        (success) => listPlayers.add(playerEntity),
+      );
     }
 
     listTeams.clear();
 
-    final ids = await _tournamentUseCase.createPlayers(listPlayers);
-
-    List<int> playersIds = [];
-    ids.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (ids) => playersIds.addAll(ids),
-    );
-
-    return playersIds;
-     */
-
-    return [1];
+    return;
   }
 
   @action
@@ -312,9 +272,8 @@ abstract class _CreateTournamentMobx with Store {
   }
 
   @action
-  Future<List<int>> _getMatches() async {
+  Future<void> _getMatches( String tournamentId ) async {
 
-    /*
     final random = Random();
     int round = 1;
     final List<PlayerEntity> players = List.from(listPlayers);
@@ -332,32 +291,29 @@ abstract class _CreateTournamentMobx with Store {
         player2 = secondPlayer;
       }
 
-      listMatches.add(
-        MatchEntity(
-          player1.name,
-          player1.team,
-          player2.name,
-          player2.team,
-          "",
-          round,
-        ),
+      final matchEntity = MatchEntity(
+        Session.sharedServices.getRandomString(20),
+        player1.name,
+        player1.team,
+        player2.name,
+        player2.team,
+        "",
+        round,
       );
 
-      round++;
+      final response = await _tournamentUseCase.createMatch(tournamentId, matchEntity);
+
+      response.fold(
+        (failure) => Session.logs.errorLog(failure.message),
+        (ids) {
+          listMatches.add(matchEntity);
+          round++;
+        },
+      );
 
     }
 
-    final ids = await _tournamentUseCase.createOrUpdateMatches(listMatches);
-
-    List<int> matchesIds = [];
-    ids.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (ids) => matchesIds.addAll(ids),
-    );
-
-    return matchesIds;
-     */
-    return [1];
+    return;
   }
 
   @action

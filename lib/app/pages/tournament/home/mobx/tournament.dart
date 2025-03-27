@@ -131,11 +131,6 @@ abstract class _TournamentMobx with Store {
 
   @action
   Future<void> openTournament( TournamentEntity entity ) async {
-    if ( entity.id == null ) {
-      CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
-      return;
-    }
-
     await NavigationRoutes.asyncNavigation(RoutesNameEnum.board.name, extra: entity);
     await refresh(forceRefresh: true);
   }

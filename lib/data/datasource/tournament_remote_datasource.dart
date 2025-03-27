@@ -15,8 +15,8 @@ abstract class TournamentRemoteDatasource {
   Future<TournamentEntity?> getTournamentById( String tournamentId );
   Future<void> createPlayer( Map<String, dynamic> json );
   Future<void> updatePlayer( Map<String, dynamic> json );
-  Future<void> createMatches( Map<String, dynamic> json );
-  Future<void> updateMatches( Map<String, dynamic> json );
+  Future<void> createMatch( Map<String, dynamic> json );
+  Future<void> updateMatch( Map<String, dynamic> json );
 
 }
 
@@ -268,7 +268,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<void> createMatches( Map<String, dynamic> json ) async {
+  Future<void> createMatch( Map<String, dynamic> json ) async {
     final base = await _firebaseService.getTournamentBaseUrl();
 
     final tournamentId = json["tournament_id"];
@@ -292,7 +292,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<void> updateMatches( Map<String, dynamic> json ) async {
+  Future<void> updateMatch( Map<String, dynamic> json ) async {
     final base = await _firebaseService.getTournamentBaseUrl();
 
     final tournamentId = json["tournament_id"];

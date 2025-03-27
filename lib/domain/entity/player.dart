@@ -15,27 +15,27 @@ class PlayerEntity extends Equatable {
 
   const PlayerEntity( this.id, this.name, this.team, this.losses );
 
-  factory PlayerEntity.nextWinner( String id ) {
+  factory PlayerEntity.nextWinner() {
     return PlayerEntity(
-      id,
+      "next_winner",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"),
       "",
       0,
     );
   }
 
-  factory PlayerEntity.nextLoser( String id ) {
+  factory PlayerEntity.nextLoser() {
     return PlayerEntity(
-      id,
+      "next_loser",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser"),
       "",
       0,
     );
   }
 
-  factory PlayerEntity.champion( String id ) {
+  factory PlayerEntity.champion() {
     return PlayerEntity(
-      id,
+      "champion",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion"),
       "",
       0,
