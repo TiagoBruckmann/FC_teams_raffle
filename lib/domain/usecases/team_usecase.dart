@@ -1,5 +1,5 @@
 // import dos domain
-import 'package:fc_teams_drawer/domain/repositories/team_repo.dart';
+import 'package:fc_teams_drawer/data/repositories/team_repo_impl.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
 
 // import dos pacotes

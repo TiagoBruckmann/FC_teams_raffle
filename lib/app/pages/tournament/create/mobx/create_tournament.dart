@@ -15,7 +15,6 @@ import 'package:fc_teams_drawer/app/core/services/shared.dart';
 // import dos domain
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
@@ -141,18 +140,20 @@ abstract class _CreateTournamentMobx with Store {
   Future<void> _saveTournament() async {
 
     final dateNow = DateTime.now();
-    final day = SharedServices.convertDate(dateNow.day);
-    final month = SharedServices.convertDate(dateNow.month);
+    final day = Session.sharedServices.convertDate(dateNow.day);
+    final month = Session.sharedServices.convertDate(dateNow.month);
 
     final date = "$day/$month/${dateNow.year}";
     final createdAt = DateFormat("yyyyMMddkkmmss").format(dateNow);
 
     final tournament = TournamentEntity(
+      Session.sharedServices.getRandomString(20),
       eventNameController.text.trim(),
       date,
       raffleTeams,
       true,
       qtdDefeats,
+      false,
       createdAt,
     );
 
@@ -163,7 +164,7 @@ abstract class _CreateTournamentMobx with Store {
         CustomSnackBar(messageKey: "pages.tournament.create.invalid_name");
         updIsLoading(false);
       },
-      ( tournamentId ) => _createTournamentMapper(tournament.setTournamentId(tournamentId)),
+      ( tournamentId ) => _createTournamentMapper(tournament),
     );
 
   }
@@ -171,6 +172,7 @@ abstract class _CreateTournamentMobx with Store {
   @action
   Future<void> _createTournamentMapper( TournamentEntity tournament ) async {
 
+    /*
     final playersIds = await _getPlayers();
     final matchesIds = await _getMatches();
 
@@ -201,11 +203,13 @@ abstract class _CreateTournamentMobx with Store {
         _goToBoard(tournament);
       },
     );
+    */
   }
 
   @action
   Future<List<int>> _getPlayers() async {
 
+    /*
     final List<String> listTeams = [];
 
     for ( int i = 0; i < playersController.length; i++ ) {
@@ -241,7 +245,9 @@ abstract class _CreateTournamentMobx with Store {
     );
 
     return playersIds;
+     */
 
+    return [1];
   }
 
   @action
@@ -308,6 +314,7 @@ abstract class _CreateTournamentMobx with Store {
   @action
   Future<List<int>> _getMatches() async {
 
+    /*
     final random = Random();
     int round = 1;
     final List<PlayerEntity> players = List.from(listPlayers);
@@ -349,6 +356,8 @@ abstract class _CreateTournamentMobx with Store {
     );
 
     return matchesIds;
+     */
+    return [1];
   }
 
   @action

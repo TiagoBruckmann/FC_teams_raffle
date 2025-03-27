@@ -1,17 +1,12 @@
-// import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
-
-// import dos pacotes
 import 'package:mobx/mobx.dart';
 
 part 'board.g.dart';
@@ -58,9 +53,7 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> init( TournamentEntity tournament ) async {
 
-    int tournamentId = tournament.id ?? 1;
-
-    final tournamentResponse = await _getTournament(tournamentId);
+    final tournamentResponse = await _getTournament(tournament.id);
 
     if ( tournamentResponse == null ) {
       updIsLoading(false);
@@ -79,7 +72,7 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<TournamentEntity?> _getTournament( int tournamentId ) async {
+  Future<TournamentEntity?> _getTournament( String tournamentId ) async {
     final response = await _tournamentUseCase.getTournamentById(tournamentId);
 
     return response.fold(
@@ -126,7 +119,7 @@ abstract class _BoardMobx with Store {
         return;
       }
 
-      final response = await match.setWinner(listPlayers);
+      final response = await match.setWinner(_tournament.id, listPlayers);
       match = response["match"] as MatchEntity;
       listPlayers.clear();
       listPlayers.addAll(response["players"] as List<PlayerEntity>);
@@ -139,6 +132,7 @@ abstract class _BoardMobx with Store {
       await _updNextWinnerGame(match);
     }
 
+    /*
     final response = await _tournamentUseCase.createOrUpdateMatches(listMatches);
 
     response.fold(
@@ -147,6 +141,7 @@ abstract class _BoardMobx with Store {
     );
 
     listMatches.sort((a, b) => b.round.compareTo(a.round));
+    */
 
     updIsLoading(false);
   }
@@ -154,6 +149,7 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> _updNextWinnerGame( MatchEntity match ) async {
 
+    /*
     String winnerName = match.player1;
     String winnerTeam = match.logoTeam1;
     String loserName = match.player2;
@@ -294,12 +290,14 @@ abstract class _BoardMobx with Store {
 
       return;
     }
+     */
 
   }
 
   @action
   Future<void> _updNextLoserGame( MatchEntity match ) async {
 
+    /*
     String winnerName = match.player1;
     String winnerTeam = match.logoTeam1;
     String loserName = match.player2;
@@ -388,12 +386,14 @@ abstract class _BoardMobx with Store {
 
       return;
     }
+     */
 
   }
 
   @action
   Future<void> _updateTournament( List<int> matchesIds ) async {
 
+    /*
     final List<int> playersIds = [];
 
     for ( final player in listPlayers ) {
@@ -422,6 +422,7 @@ abstract class _BoardMobx with Store {
       (failure) => Session.logs.errorLog(failure.message),
       (success) => success,
     );
+     */
 
   }
 

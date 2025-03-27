@@ -5,34 +5,25 @@ import 'package:fc_teams_drawer/domain/entity/player.dart';
 // import dos pacotes
 import 'package:equatable/equatable.dart';
 import 'package:fc_teams_drawer/session.dart';
-import 'package:floor/floor.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-@Entity(tableName: "tournaments")
 class TournamentEntity extends Equatable {
 
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-  final String name, date, createdAt;
-  final bool drawTeams, isActive;
+  final String id, name, date, createdAt;
+  final bool drawTeams, isActive, hasChampion;
   final int defeats;
 
-  @ignore
   final List<PlayerEntity>? players;
 
-  @ignore
   final List<MatchEntity>? matches;
 
-  @ignore
-  final bool? hasChampion;
-
-  const TournamentEntity( this.name, this.date, this.drawTeams, this.isActive, this.defeats, this.createdAt, { this.id, this.players, this.matches, this.hasChampion });
+  const TournamentEntity( this.id, this.name, this.date, this.drawTeams, this.isActive, this.defeats, this.hasChampion, this.createdAt, { this.players, this.matches });
 
   List<PlayerEntity> get getPlayers => players ?? [];
 
   List<MatchEntity> get getMatches => matches ?? [];
 
-  bool get getHasChampion => hasChampion ?? false;
+  bool get getHasChampion => hasChampion;
 
   factory TournamentEntity.fromMapper( TournamentEntity tournament, List<PlayerEntity> players, List<MatchEntity> matches ) {
 
@@ -44,16 +35,16 @@ class TournamentEntity extends Equatable {
     }
 
     return TournamentEntity(
-      id: tournament.id,
+      tournament.id,
       tournament.name,
       tournament.date,
       tournament.drawTeams,
       ( hasChampion ) ? false : tournament.isActive,
       tournament.defeats,
+      hasChampion,
       tournament.createdAt,
       players: players,
       matches: matches,
-      hasChampion: hasChampion,
     );
   }
 
@@ -62,28 +53,30 @@ class TournamentEntity extends Equatable {
     return isEqual;
   }
 
-  TournamentEntity setTournamentId( int tournamentId ) {
+  TournamentEntity updStatus() {
     return TournamentEntity(
-      id: tournamentId,
+      id,
       name,
       date,
       drawTeams,
       !isActive,
       defeats,
+      hasChampion,
       createdAt,
     );
   }
 
-  TournamentEntity updStatus() {
-    return TournamentEntity(
-      id: id,
-      name,
-      date,
-      drawTeams,
-      !isActive,
-      defeats,
-      createdAt,
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "date": date,
+      "draw_teams": drawTeams,
+      "is_active": isActive,
+      "defeats": defeats,
+      "has_champion": hasChampion,
+      "created_at": createdAt,
+    };
   }
 
   @override

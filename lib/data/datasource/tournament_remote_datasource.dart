@@ -1,173 +1,318 @@
-import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/data/model/match_model.dart';
+import 'package:fc_teams_drawer/data/model/player_model.dart';
 import 'package:fc_teams_drawer/data/model/tournament_model.dart';
-import 'package:fc_teams_drawer/domain/entity/match.dart';
-import 'package:fc_teams_drawer/domain/entity/player.dart';
+import 'package:fc_teams_drawer/data/utils/firebase_service.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class TournamentRemoteDatasource {
 
+  Future<void> createTournament( Map<String, dynamic> json );
+  Future<void> updateTournament( Map<String, dynamic> json );
   Future<List<TournamentModel>> getTournaments();
-  Future<TournamentEntity?> getTournamentById( int tournamentId );
-  Future<List<PlayerEntity>> getPlayers();
-  Future<List<int>> createPlayers( List<PlayerEntity> players );
-  Future<void> updatePlayer( PlayerEntity player );
-  Future<List<MatchEntity>> getMatches();
-  Future<List<int>> createOrUpdateMatches( List<MatchEntity> matches );
-  Future<int> createTournament( TournamentEntity tournament );
-  Future<void> updateTournament( TournamentEntity tournament );
-  Future<List<int>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers );
+  Future<TournamentEntity?> getTournamentById( String tournamentId );
+  Future<void> createPlayer( Map<String, dynamic> json );
+  Future<void> updatePlayer( Map<String, dynamic> json );
+  Future<void> createMatches( Map<String, dynamic> json );
+  Future<void> updateMatches( Map<String, dynamic> json );
 
 }
 
 @Injectable(as: TournamentRemoteDatasource)
 class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
-  final LocalDb _localDb;
-  TournamentRemoteDatasourceImpl( this._localDb );
+  final FirebaseService _firebaseService;
+  TournamentRemoteDatasourceImpl( this._firebaseService );
+
+  @override
+  Future<void> createTournament( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
+
+    await base
+      .doc(json["id"])
+      .set(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return;
+  }
+
+  @override
+  Future<void> updateTournament( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
+
+    await base
+      .doc(json["id"])
+      .update(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return;
+  }
 
   @override
   Future<List<TournamentModel>> getTournaments() async {
-    final responseMapper = await _localDb.tournamentMapperDap.getAllTournamentsMapper();
+    final base = await _firebaseService.getTournamentBaseUrl();
 
-    final List<TournamentModel> listTournaments = [];
-    final List<PlayerEntity> listPlayers = [];
-    final List<MatchEntity> listMatches = [];
+    try {
 
-    TournamentEntity? tournament;
-    int tournamentId = responseMapper.first.tournamentId;
+      final List<TournamentModel> tournaments = [];
 
-    for ( int i = 0; i < responseMapper.length; i++ ) {
+      await base
+        .get()
+        .then((value) async {
 
-      final mapper = responseMapper[i];
+          final List<PlayerModel> players = [];
+          final List<MatchModel> matches = [];
 
-      tournament = await _localDb.tournamentDao.getTournamentById(tournamentId);
+          for ( final item in value.docs ) {
 
-      if ( mapper.playerId != null ) {
-        final responsePlayers = await _localDb.playerDao.getPlayerById(mapper.playerId!);
-        if ( responsePlayers != null ) {
-          listPlayers.add(responsePlayers);
-        }
-      }
+            await item.reference
+            .collection("players")
+            .get()
+            .then((items) {
 
-      if ( mapper.matchId != null ) {
-        final responseMatch = await _localDb.matchDao.getMatchById(mapper.matchId!);
+              for ( final item in items.docs ) {
+                players.add(
+                  PlayerModel.fromJson(item.data()),
+                );
+              }
 
-        if ( responseMatch != null ) {
-          final index = listMatches.indexWhere((match) => match.hasRound(responseMatch));
-          if ( index.isNegative ) {
-            listMatches.add(responseMatch);
+            })
+            .onError((error, stackTrace) {
+              Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+              throw ServerExceptions(error.toString());
+            })
+            .catchError((onError) {
+              Session.crash.log(onError);
+              throw ServerExceptions(onError.toString());
+            });
+
+            await item.reference
+            .collection("matches")
+            .get()
+            .then((items) {
+
+              for ( final item in items.docs ) {
+                matches.add(
+                  MatchModel.fromJson(item.data()),
+                );
+              }
+
+            })
+            .onError((error, stackTrace) {
+              Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+              throw ServerExceptions(error.toString());
+            })
+            .catchError((onError) {
+              Session.crash.log(onError);
+              throw ServerExceptions(onError.toString());
+            });
+
+            tournaments.add(
+              TournamentModel.fromJson(item.data(), players, matches),
+            );
           }
 
-          if ( !responseMatch.isLoserOrWinner() && responseMatch.isScoreNotNull() && !index.isNegative ) {
-            listMatches.removeAt(index);
-            listMatches.insert(index, responseMatch);
-          }
+        })
+        .onError((error, stackTrace) {
+          Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+          throw ServerExceptions(error.toString());
+        })
+        .catchError((onError) {
+          Session.crash.log(onError);
+          throw ServerExceptions(onError.toString());
+        });
 
-        }
-      }
+      return tournaments;
 
-      bool hasMoreItems = false;
-      TournamentMapperEntity? nextEntity;
-      if ( ( i + 1 ) <= responseMapper.length - 1 ) {
-        hasMoreItems = true;
-        nextEntity = responseMapper[i + 1];
-      }
-
-      if ( tournament != null ) {
-
-        if ( !hasMoreItems && nextEntity == null ) {
-          listMatches.sort((a, b) => b.round.compareTo(a.round));
-          listTournaments.add(
-            TournamentModel.fromQuery(tournament, List.from(listPlayers), List.from(listMatches)),
-          );
-
-          listPlayers.clear();
-          listMatches.clear();
-          break;
-        }
-
-        if ( tournamentId != nextEntity!.tournamentId ) {
-          tournamentId = nextEntity.tournamentId;
-          listMatches.sort((a, b) => b.round.compareTo(a.round));
-
-          listTournaments.add(
-            TournamentModel.fromQuery(tournament, List.from(listPlayers), List.from(listMatches)),
-          );
-
-          listPlayers.clear();
-          listMatches.clear();
-
-        }
-
-      }
-
+    } catch (e) {
+      Session.logs.errorLog("getTournaments failure => ${e.toString()}");
+      throw ServerExceptions(e.toString());
     }
-
-    return listTournaments;
   }
 
   @override
-  Future<TournamentEntity?> getTournamentById( int tournamentId ) async {
-    return await _localDb.tournamentDao.getTournamentById(tournamentId);
+  Future<TournamentEntity?> getTournamentById( String tournamentId ) async {
+
+    final base = await _firebaseService.getTournamentBaseUrl();
+
+    late TournamentModel tournament;
+
+    await base
+      .doc(tournamentId)
+      .get()
+      .then((value) async {
+  
+        final List<PlayerModel> players = [];
+        final List<MatchModel> matches = [];
+  
+        await value.reference
+          .collection("players")
+          .get()
+          .then((items) {
+    
+            for ( final item in items.docs ) {
+              players.add(
+                PlayerModel.fromJson(item.data()),
+              );
+            }
+    
+          })
+          .onError((error, stackTrace) {
+            Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+            throw ServerExceptions(error.toString());
+          })
+          .catchError((onError) {
+            Session.crash.log(onError);
+            throw ServerExceptions(onError.toString());
+          });
+  
+        await value.reference
+          .collection("matches")
+          .get()
+          .then((items) {
+    
+            for ( final item in items.docs ) {
+              matches.add(
+                MatchModel.fromJson(item.data()),
+              );
+            }
+    
+          })
+          .onError((error, stackTrace) {
+            Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+            throw ServerExceptions(error.toString());
+          })
+          .catchError((onError) {
+            Session.crash.log(onError);
+            throw ServerExceptions(onError.toString());
+          });
+  
+        if ( value.data() != null ) {
+          tournament = TournamentModel.fromJson(value.data()!, players, matches);
+        }
+  
+      })
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return tournament;
   }
 
   @override
-  Future<List<PlayerEntity>> getPlayers() async {
-    return await _localDb.playerDao.getAllPlayers();
+  Future<void> createPlayer( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
+
+    final tournamentId = json["tournament_id"];
+    json.remove("tournament_id");
+    
+    await base
+      .doc(tournamentId)
+      .collection("players")
+      .doc(json["id"])
+      .set(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return;
   }
 
   @override
-  Future<List<int>> createPlayers( List<PlayerEntity> players ) async {
+  Future<void> updatePlayer( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
 
-    if ( players.isEmpty ) {
-      Session.crash.onError("Failure on createPlayers: Empty ListPlayers");
-      throw CacheExceptions("Failure on createPlayers: Empty ListPlayers");
-    }
+    final tournamentId = json["tournament_id"];
+    json.remove("tournament_id");
 
-    return await _localDb.playerDao.insertAllPlayers(players);
+    await base
+      .doc(tournamentId)
+      .collection("players")
+      .doc(json["id"])
+      .update(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return;
   }
 
   @override
-  Future<void> updatePlayer( PlayerEntity player ) async {
-    return await _localDb.playerDao.updatePlayer(player);
+  Future<void> createMatches( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
+
+    final tournamentId = json["tournament_id"];
+    json.remove("tournament_id");
+
+    await base
+      .doc(tournamentId)
+      .collection("matches")
+      .doc(json["id"])
+      .set(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
+
+    return;
   }
 
   @override
-  Future<List<MatchEntity>> getMatches() async {
-    final matches = await _localDb.matchDao.getAllMatches();
+  Future<void> updateMatches( Map<String, dynamic> json ) async {
+    final base = await _firebaseService.getTournamentBaseUrl();
 
-    matches.sort((a, b) => b.round.compareTo(a.round));
+    final tournamentId = json["tournament_id"];
+    json.remove("tournament_id");
 
-    return matches;
-  }
+    await base
+      .doc(tournamentId)
+      .collection("matches")
+      .doc(json["id"])
+      .update(json)
+      .onError((error, stackTrace) {
+        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
+        throw ServerExceptions(error.toString());
+      })
+      .catchError((onError) {
+        Session.crash.log(onError);
+        throw ServerExceptions(onError.toString());
+      });
 
-  @override
-  Future<List<int>> createOrUpdateMatches( List<MatchEntity> matches ) async {
-
-    if ( matches.isEmpty ) {
-      Session.crash.onError("Failure on createMatches: Empty ListMatches");
-      throw CacheExceptions("Failure on createMatches: Empty ListMatches");
-    }
-
-    return await _localDb.matchDao.createOrUpdateMatches(matches);
-  }
-
-  @override
-  Future<int> createTournament( TournamentEntity tournament ) async {
-    return await _localDb.tournamentDao.insertTournament(tournament);
-  }
-
-  @override
-  Future<void> updateTournament( TournamentEntity tournament ) async {
-    return await _localDb.tournamentDao.updateTournament(tournament);
-  }
-
-  @override
-  Future<List<int>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers ) async {
-    return await _localDb.tournamentMapperDap.insertOrUpdateTournamentMapper(mappers);
+    return;
   }
 
 }

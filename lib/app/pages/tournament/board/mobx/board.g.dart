@@ -89,7 +89,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx._getTournament', context: context);
 
   @override
-  Future<TournamentEntity?> _getTournament(int tournamentId) {
+  Future<TournamentEntity?> _getTournament(String tournamentId) {
     return _$_getTournamentAsyncAction
         .run(() => super._getTournament(tournamentId));
   }
