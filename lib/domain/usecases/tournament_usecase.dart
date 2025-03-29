@@ -44,7 +44,6 @@ class TournamentUseCase {
   }
 
   Future<Either<Failure, void>> createOrUpdateMatches( String tournamentId, List<MatchEntity> matches ) async {
-    print("matches => $matches");
     final List<Map<String, dynamic>> list = [];
     for ( final match in matches ) {
       list.add(match.toJson());

@@ -124,6 +124,7 @@ abstract class _BoardMobx with Store {
       match = response["match"] as MatchEntity;
       listPlayers.clear();
       listPlayers.addAll(response["players"] as List<PlayerEntity>);
+      listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
     }
 
     listMatches.insert(elementIndex, match);
@@ -164,6 +165,9 @@ abstract class _BoardMobx with Store {
     final player2Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player2, match.logoTeam2));
 
     final miss1Loser = ( _tournament.defeats - 1 == 0 ) ? 1 : _tournament.defeats - 1;
+    print("miss1Loser => $miss1Loser");
+    print("player1Index.isNegative => ${player1Index.isNegative}");
+    print("player2Index.isNegative => ${player2Index.isNegative}");
 
     bool isLoserGame = false;
     if ( !player1Index.isNegative && !player2Index.isNegative ) {
@@ -184,10 +188,15 @@ abstract class _BoardMobx with Store {
 
       isLoserGame = player2.getLosses >= miss1Loser;
     }
+    print("isLoserGame => $isLoserGame");
 
     bool hasNextWinnerPosition = false;
     final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"));
-    if ( nextWinnerPosition != -1 && !isLoserGame ) {
+    print("nextWinnerPosition => $nextWinnerPosition");
+    final secondGame = listMatches[1];
+    print("secondGame => ${secondGame.logoTeam2}");
+    print("winnerTeam => $winnerTeam");
+    if ( nextWinnerPosition != -1 && secondGame.logoTeam2 != winnerTeam ) {
       hasNextWinnerPosition = true;
 
       final previousWinner = listMatches[nextWinnerPosition];
@@ -208,9 +217,7 @@ abstract class _BoardMobx with Store {
 
     }
 
-    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
-
-    if ( listPlayers.length > 2 && !hasNextWinnerPosition && !isLoserGame ) {
+    if ( listPlayers.length > 2 && !hasNextWinnerPosition && !isLoserGame && secondGame.logoTeam2 != winnerTeam) {
 
       final emptyPlayer = PlayerEntity.nextWinner();
 
@@ -344,8 +351,6 @@ abstract class _BoardMobx with Store {
       );
 
     }
-
-    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
 
     if ( listPlayers.length > 2 && !hasNextLoserPosition && qtdLosses < _tournament.defeats ) {
 
