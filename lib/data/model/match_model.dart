@@ -12,8 +12,8 @@ class MatchModel extends MatchEntity {
       json["logo_team2"],
       json["winner"],
       json["round"],
-      score1: json["losses"],
-      score2: json["losses"],
+      score1: json["score1"],
+      score2: json["score2"],
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:mobx/mobx.dart';
 
 part 'board.g.dart';
@@ -17,9 +18,9 @@ abstract class _BoardMobx with Store {
 
   final _tournamentUseCase = TournamentUseCase(getIt());
 
-  ObservableList<MatchEntity> listMatches = ObservableList();
+  final ObservableList<MatchEntity> listMatches = ObservableList();
 
-  ObservableList<PlayerEntity> listPlayers = ObservableList();
+  final ObservableList<PlayerEntity> listPlayers = ObservableList();
 
   @observable
   bool isLoading = true;
@@ -61,8 +62,8 @@ abstract class _BoardMobx with Store {
       return NavigationRoutes.navigation(NavigationTypeEnum.pushAndRemoveUntil.value, RoutesNameEnum.home.name);
     }
 
-    listPlayers.addAll(tournament.getPlayers);
-    listMatches.addAll(tournament.getMatches);
+    listPlayers.addAll(tournamentResponse.getPlayers);
+    listMatches.addAll(tournamentResponse.getMatches);
 
     _tournament = TournamentEntity.fromMapper(tournamentResponse, listPlayers, listMatches);
     _setSteps();
@@ -132,16 +133,14 @@ abstract class _BoardMobx with Store {
       await _updNextWinnerGame(match);
     }
 
-    /*
-    final response = await _tournamentUseCase.createOrUpdateMatches(listMatches);
+    final response = await _tournamentUseCase.createOrUpdateMatches(_tournament.id, listMatches);
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
-      (ids) async => await _updateTournament(ids),
+      (success) => Session.logs.successLog("matches_created_or_updated_with_successfully"),
     );
 
     listMatches.sort((a, b) => b.round.compareTo(a.round));
-    */
 
     updIsLoading(false);
   }
@@ -149,7 +148,6 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> _updNextWinnerGame( MatchEntity match ) async {
 
-    /*
     String winnerName = match.player1;
     String winnerTeam = match.logoTeam1;
     String loserName = match.player2;
@@ -198,6 +196,7 @@ abstract class _BoardMobx with Store {
       listMatches.insert(
         nextWinnerPosition,
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           previousWinner.player1,
           previousWinner.logoTeam1,
           winnerName,
@@ -217,6 +216,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           emptyPlayer.name,
@@ -238,6 +238,7 @@ abstract class _BoardMobx with Store {
     if ( listPlayers.length == 2 && qtdLosses < _tournament.defeats ) {
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           loserName,
@@ -256,6 +257,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           previousWinner.player1,
           previousWinner.logoTeam1,
           winnerName,
@@ -279,6 +281,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           winner.name,
@@ -290,14 +293,12 @@ abstract class _BoardMobx with Store {
 
       return;
     }
-     */
 
   }
 
   @action
   Future<void> _updNextLoserGame( MatchEntity match ) async {
 
-    /*
     String winnerName = match.player1;
     String winnerTeam = match.logoTeam1;
     String loserName = match.player2;
@@ -332,7 +333,7 @@ abstract class _BoardMobx with Store {
       listMatches.insert(
         nextLoserPosition,
         MatchEntity(
-          id: emptyPLayer.id,
+          emptyPLayer.id,
           emptyPLayer.player1,
           emptyPLayer.logoTeam1,
           loserName,
@@ -352,6 +353,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           loserName,
           loserTeam,
           emptyPlayer.name,
@@ -375,6 +377,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           winner.name,
@@ -386,43 +389,6 @@ abstract class _BoardMobx with Store {
 
       return;
     }
-     */
-
-  }
-
-  @action
-  Future<void> _updateTournament( List<int> matchesIds ) async {
-
-    /*
-    final List<int> playersIds = [];
-
-    for ( final player in listPlayers ) {
-      if ( player.id != null ) {
-        playersIds.add(player.id!);
-      }
-    }
-
-    final List<TournamentMapperEntity> tournamentMapperList = [];
-
-    for ( final playerId in playersIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromPlayerId(_tournament.id!, playerId),
-      );
-    }
-
-    for ( final matchId in matchesIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromMatchId(_tournament.id!, matchId),
-      );
-    }
-
-    final response = await _tournamentUseCase.createOrUpdateTournamentMapper(tournamentMapperList);
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (success) => success,
-    );
-     */
 
   }
 

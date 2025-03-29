@@ -7,13 +7,15 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 class TournamentModel extends TournamentEntity {
   const TournamentModel( super.id, super.name, super.date, super.drawTeams, super.isActive, super.defeats, super.hasChampion, super.createdAt, { super.players, super.matches });
 
-  factory TournamentModel.fromJson( Map<String, dynamic> json, List<PlayerModel> players, List<MatchModel> matches ) {
+  factory TournamentModel.fromJson( Map<String, dynamic> json, { List<PlayerModel>? players, List<MatchModel>? matches }) {
 
-    final index = matches.indexWhere((match) => match.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion"));
+    bool hasChampion = json["has_champion"];
+    if ( matches != null ) {
+      final index = matches.indexWhere((match) => match.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion"));
 
-    bool hasChampion = true;
-    if ( index.isNegative ) {
-      hasChampion = false;
+      if ( index.isNegative ) {
+        hasChampion = false;
+      }
     }
 
     return TournamentModel(

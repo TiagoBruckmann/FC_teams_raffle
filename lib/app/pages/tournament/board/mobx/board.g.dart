@@ -121,15 +121,6 @@ mixin _$BoardMobx on _BoardMobx, Store {
         .run(() => super._updNextLoserGame(match));
   }
 
-  late final _$_updateTournamentAsyncAction =
-      AsyncAction('_BoardMobx._updateTournament', context: context);
-
-  @override
-  Future<void> _updateTournament(List<int> matchesIds) {
-    return _$_updateTournamentAsyncAction
-        .run(() => super._updateTournament(matchesIds));
-  }
-
   late final _$_BoardMobxActionController =
       ActionController(name: '_BoardMobx', context: context);
 

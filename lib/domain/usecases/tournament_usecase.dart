@@ -30,34 +30,33 @@ class TournamentUseCase {
     return await _tournamentRepo.getTournamentById(tournamentId);
   }
 
-  Future<Either<Failure, void>> createPlayer( String tournamentId, PlayerEntity player ) async {
-    final Map<String, dynamic> json = player.toJson({
+  Future<Either<Failure, void>> createOrUpdatePlayers( String tournamentId, List<PlayerEntity> players ) async {
+    final List<Map<String, dynamic>> list = [];
+    for ( final player in players ) {
+      list.add(player.toJson());
+    }
+
+    final Map<String, dynamic> json = {
       "tournament_id": tournamentId,
-    });
-    return await _tournamentRepo.createPlayer( json );
+      "players": list,
+    };
+    return await _tournamentRepo.createOrUpdatePlayers( json );
   }
 
-  Future<Either<Failure, void>> updatePlayer( String tournamentId, PlayerEntity player ) async {
-    final Map<String, dynamic> json = player.toJson({
+  Future<Either<Failure, void>> createOrUpdateMatches( String tournamentId, List<MatchEntity> matches ) async {
+    print("matches => $matches");
+    final List<Map<String, dynamic>> list = [];
+    for ( final match in matches ) {
+      list.add(match.toJson());
+    }
+
+    final Map<String, dynamic> json = {
       "tournament_id": tournamentId,
-    });
-    return await _tournamentRepo.updatePlayer( json );
+      "matches": list,
+    };
+
+    return await _tournamentRepo.createOrUpdateMatches( json );
   }
 
-  Future<Either<Failure, void>> createMatch( String tournamentId, MatchEntity match ) async {
-    final json = match.toJson({
-      "tournament_id": tournamentId,
-    });
-
-    return await _tournamentRepo.createMatch( json );
-  }
-
-  Future<Either<Failure, void>> updateMatch( String tournamentId, MatchEntity match ) async {
-    final json = match.toJson({
-      "tournament_id": tournamentId,
-    });
-
-    return await _tournamentRepo.updateMatch( json );
-  }
 
 }

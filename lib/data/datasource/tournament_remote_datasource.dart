@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/data/model/match_model.dart';
 import 'package:fc_teams_drawer/data/model/player_model.dart';
@@ -5,6 +6,7 @@ import 'package:fc_teams_drawer/data/model/tournament_model.dart';
 import 'package:fc_teams_drawer/data/utils/firebase_service.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
 import 'package:fc_teams_drawer/session.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class TournamentRemoteDatasource {
@@ -13,10 +15,8 @@ abstract class TournamentRemoteDatasource {
   Future<void> updateTournament( Map<String, dynamic> json );
   Future<List<TournamentModel>> getTournaments();
   Future<TournamentEntity?> getTournamentById( String tournamentId );
-  Future<void> createPlayer( Map<String, dynamic> json );
-  Future<void> updatePlayer( Map<String, dynamic> json );
-  Future<void> createMatch( Map<String, dynamic> json );
-  Future<void> updateMatch( Map<String, dynamic> json );
+  Future<void> createOrUpdatePlayers( Map<String, dynamic> json );
+  Future<void> createOrUpdateMatches( Map<String, dynamic> json );
 
 }
 
@@ -75,55 +75,9 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
         .get()
         .then((value) async {
 
-          final List<PlayerModel> players = [];
-          final List<MatchModel> matches = [];
-
           for ( final item in value.docs ) {
-
-            await item.reference
-            .collection("players")
-            .get()
-            .then((items) {
-
-              for ( final item in items.docs ) {
-                players.add(
-                  PlayerModel.fromJson(item.data()),
-                );
-              }
-
-            })
-            .onError((error, stackTrace) {
-              Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-              throw ServerExceptions(error.toString());
-            })
-            .catchError((onError) {
-              Session.crash.log(onError);
-              throw ServerExceptions(onError.toString());
-            });
-
-            await item.reference
-            .collection("matches")
-            .get()
-            .then((items) {
-
-              for ( final item in items.docs ) {
-                matches.add(
-                  MatchModel.fromJson(item.data()),
-                );
-              }
-
-            })
-            .onError((error, stackTrace) {
-              Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-              throw ServerExceptions(error.toString());
-            })
-            .catchError((onError) {
-              Session.crash.log(onError);
-              throw ServerExceptions(onError.toString());
-            });
-
             tournaments.add(
-              TournamentModel.fromJson(item.data(), players, matches),
+              TournamentModel.fromJson(item.data()),
             );
           }
 
@@ -185,7 +139,7 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
           .collection("matches")
           .get()
           .then((items) {
-    
+
             for ( final item in items.docs ) {
               matches.add(
                 MatchModel.fromJson(item.data()),
@@ -203,7 +157,24 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
           });
   
         if ( value.data() != null ) {
-          tournament = TournamentModel.fromJson(value.data()!, players, matches);
+
+          final List<MatchModel> tempMatches = List.from(matches);
+          tempMatches.sort((a, b) => a.round.compareTo(b.round));
+          int lastRound = 0;
+          final nextWinner = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner");
+          final nextLoser = FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser");
+
+          for ( final match in tempMatches ) {
+
+            if ( lastRound == match.round ) {
+              matches.removeWhere((element) => element.round == match.round && ( element.player2 == nextWinner || element.player2 == nextLoser ));
+            }
+            lastRound = match.round;
+
+          }
+
+          matches.sort((a, b) => b.round.compareTo(a.round));
+          tournament = TournamentModel.fromJson(value.data()!, players: players, matches: matches);
         }
   
       })
@@ -220,97 +191,49 @@ class TournamentRemoteDatasourceImpl implements TournamentRemoteDatasource {
   }
 
   @override
-  Future<void> createPlayer( Map<String, dynamic> json ) async {
-    final base = await _firebaseService.getTournamentBaseUrl();
+  Future<void> createOrUpdatePlayers( Map<String, dynamic> json ) async {
+    try {
+      final base = await _firebaseService.getTournamentBaseUrl();
 
-    final tournamentId = json["tournament_id"];
-    json.remove("tournament_id");
-    
-    await base
-      .doc(tournamentId)
-      .collection("players")
-      .doc(json["id"])
-      .set(json)
-      .onError((error, stackTrace) {
-        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(error.toString());
-      })
-      .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
-      });
+      final batch = _firebaseService.firestore.batch();
 
-    return;
-  }
+      final tournamentId = json["tournament_id"];
 
-  @override
-  Future<void> updatePlayer( Map<String, dynamic> json ) async {
-    final base = await _firebaseService.getTournamentBaseUrl();
+      final playersRef = base.doc(tournamentId).collection("players");
 
-    final tournamentId = json["tournament_id"];
-    json.remove("tournament_id");
+      for ( final player in json["players"] ) {
+        final newDoc = playersRef.doc(player["id"]);
+        batch.set(newDoc, player, SetOptions(merge: true));
+      }
 
-    await base
-      .doc(tournamentId)
-      .collection("players")
-      .doc(json["id"])
-      .update(json)
-      .onError((error, stackTrace) {
-        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(error.toString());
-      })
-      .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
-      });
+      await batch.commit();
+    } catch ( error ) {
+      Session.logs.errorLog(error.toString());
+      throw ServerExceptions(error.toString());
+    }
 
     return;
   }
-
   @override
-  Future<void> createMatch( Map<String, dynamic> json ) async {
-    final base = await _firebaseService.getTournamentBaseUrl();
+  Future<void> createOrUpdateMatches( Map<String, dynamic> json ) async {
+    try {
+      final base = await _firebaseService.getTournamentBaseUrl();
+      final batch = _firebaseService.firestore.batch();
 
-    final tournamentId = json["tournament_id"];
-    json.remove("tournament_id");
+      final tournamentId = json["tournament_id"];
 
-    await base
-      .doc(tournamentId)
-      .collection("matches")
-      .doc(json["id"])
-      .set(json)
-      .onError((error, stackTrace) {
-        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(error.toString());
-      })
-      .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
-      });
+      final matchesRef = base.doc(tournamentId).collection("matches");
 
-    return;
-  }
+      for ( final match in json["matches"] ) {
+        final newDoc = matchesRef.doc(match["id"]);
+        batch.set(newDoc, match, SetOptions(merge: true));
+      }
 
-  @override
-  Future<void> updateMatch( Map<String, dynamic> json ) async {
-    final base = await _firebaseService.getTournamentBaseUrl();
-
-    final tournamentId = json["tournament_id"];
-    json.remove("tournament_id");
-
-    await base
-      .doc(tournamentId)
-      .collection("matches")
-      .doc(json["id"])
-      .update(json)
-      .onError((error, stackTrace) {
-        Session.crash.onError(error.toString(), error: error, stackTrace: stackTrace);
-        throw ServerExceptions(error.toString());
-      })
-      .catchError((onError) {
-        Session.crash.log(onError);
-        throw ServerExceptions(onError.toString());
-      });
+      await batch.commit();
+    } catch ( error ) {
+      Session.logs.errorLog(error.toString());
+      throw ServerExceptions(error.toString());
+    }
 
     return;
   }

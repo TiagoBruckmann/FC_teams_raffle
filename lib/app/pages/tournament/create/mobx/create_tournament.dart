@@ -191,21 +191,24 @@ abstract class _CreateTournamentMobx with Store {
 
       }
 
-      PlayerEntity playerEntity = PlayerEntity(
-        Session.sharedServices.getRandomString(20),
-        player,
-        logo,
-        0,
+      listPlayers.add(
+        PlayerEntity(
+          Session.sharedServices.getRandomString(20),
+          player,
+          logo,
+          0,
+        ),
       );
 
-      final response = await _tournamentUseCase.createPlayer(tournamentId, playerEntity);
-      response.fold(
-        (failure) => Session.logs.errorLog(failure.message),
-        (success) => listPlayers.add(playerEntity),
-      );
     }
 
     listTeams.clear();
+
+    final response = await _tournamentUseCase.createOrUpdatePlayers(tournamentId, listPlayers);
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (success) => Session.logs.successLog("players_created_with_successfully"),
+    );
 
     return;
   }
@@ -301,17 +304,17 @@ abstract class _CreateTournamentMobx with Store {
         round,
       );
 
-      final response = await _tournamentUseCase.createMatch(tournamentId, matchEntity);
-
-      response.fold(
-        (failure) => Session.logs.errorLog(failure.message),
-        (ids) {
-          listMatches.add(matchEntity);
-          round++;
-        },
-      );
+      listMatches.add(matchEntity);
+      round++;
 
     }
+
+    final response = await _tournamentUseCase.createOrUpdateMatches(tournamentId, listMatches);
+
+    response.fold(
+      (failure) => Session.logs.errorLog(failure.message),
+      (success) => Session.logs.successLog("matches_created_with_successfully"),
+    );
 
     return;
   }

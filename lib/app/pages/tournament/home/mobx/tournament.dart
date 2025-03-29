@@ -1,7 +1,6 @@
 // import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';

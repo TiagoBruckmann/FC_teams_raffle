@@ -51,11 +51,11 @@ class PlayerEntity extends Equatable {
     );
 
     final useCase = TournamentUseCase(getIt());
-    final response = await useCase.updatePlayer(tournamentId, player);
+    final response = await useCase.createOrUpdatePlayers(tournamentId, [player]);
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
-      (success) => success,
+      (success) => Session.logs.successLog("players_updated_with_successfully"),
     );
 
     return player;
@@ -71,15 +71,13 @@ class PlayerEntity extends Equatable {
     return isEqual;
   }
 
-  Map<String, dynamic> toJson( Map<String, dynamic> json ) {
-    json.addAll({
+  Map<String, dynamic> toJson() {
+    return {
       "id": id,
       "name": name,
       "team": team,
       "losses": losses,
-    });
-
-    return json;
+    };
   }
 
   @override
