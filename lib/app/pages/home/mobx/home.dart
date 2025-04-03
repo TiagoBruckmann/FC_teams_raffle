@@ -1,10 +1,13 @@
 // imports globais
+import 'package:fc_teams_drawer/session.dart';
+
+// import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/services/shared.dart';
+
+// import dos domain
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/team_usecase.dart';
-import 'package:fc_teams_drawer/session.dart';
 
 // import dos pacotes
 import 'package:new_version_plus/new_version_plus.dart';
@@ -73,7 +76,7 @@ abstract class _HomeMobx with Store {
         return;
       }
     } catch ( error ) {
-      SharedServices.logError("open_terms", message: error.toString());
+      Session.logs.errorLog("open_terms => ${error.toString()}");
       return;
     }
 

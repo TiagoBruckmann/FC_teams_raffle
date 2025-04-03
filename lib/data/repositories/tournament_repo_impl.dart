@@ -1,19 +1,54 @@
 import 'package:dartz/dartz.dart';
 import 'package:fc_teams_drawer/data/datasource/tournament_remote_datasource.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
-import 'package:fc_teams_drawer/domain/entity/match.dart';
-import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
-import 'package:fc_teams_drawer/domain/repositories/tournament_repo.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:injectable/injectable.dart';
+
+abstract class TournamentRepo {
+
+  Future<Either<Failure, void>> createTournament( Map<String, dynamic> json );
+  Future<Either<Failure, void>> updateTournament( Map<String, dynamic> json );
+  Future<Either<Failure, List<TournamentEntity>>> getTournaments();
+  Future<Either<Failure, TournamentEntity?>> getTournamentById( String tournamentId );
+  Future<Either<Failure, void>> createOrUpdatePlayers( Map<String, dynamic> json);
+  Future<Either<Failure, void>> createOrUpdateMatches( Map<String, dynamic> json );
+
+}
 
 @Injectable(as: TournamentRepo)
 class TournamentRepoImpl implements TournamentRepo {
   final TournamentRemoteDatasource tournamentRemoteDatasource;
   TournamentRepoImpl( this.tournamentRemoteDatasource );
+
+  @override
+  Future<Either<Failure, void>> createTournament( Map<String, dynamic> json ) async {
+    try {
+      final result = await tournamentRemoteDatasource.createTournament( json );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("create_tournament_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("create_tournament_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateTournament( Map<String, dynamic> json ) async {
+    try {
+      final result = await tournamentRemoteDatasource.updateTournament( json );
+      return right(result);
+    } on ServerExceptions catch ( error ) {
+      Session.crash.onError("update_tournament_server_error", error: error.message);
+      return left(ServerFailure(error.message));
+    } catch (e) {
+      Session.crash.onError("update_tournament_error", error: e);
+      return left(GeneralFailure(e.toString()));
+    }
+  }
 
   @override
   Future<Either<Failure, List<TournamentEntity>>> getTournaments() async {
@@ -30,7 +65,7 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, TournamentEntity?>> getTournamentById( int tournamentId ) async {
+  Future<Either<Failure, TournamentEntity?>> getTournamentById( String tournamentId ) async {
     try {
       final result = await tournamentRemoteDatasource.getTournamentById( tournamentId );
       return right(result);
@@ -44,113 +79,29 @@ class TournamentRepoImpl implements TournamentRepo {
   }
 
   @override
-  Future<Either<Failure, List<PlayerEntity>>> getPlayers() async {
+  Future<Either<Failure, void>> createOrUpdatePlayers( Map<String, dynamic> json ) async {
     try {
-      final result = await tournamentRemoteDatasource.getPlayers();
+      final result = await tournamentRemoteDatasource.createOrUpdatePlayers( json );
       return right(result);
     } on ServerExceptions catch ( error ) {
-      Session.crash.onError("get_players_server_error", error: error.message);
+      Session.crash.onError("create_or_update_player_server_error", error: error.message);
       return left(ServerFailure(error.message));
     } catch (e) {
-      Session.crash.onError("get_players_error", error: e);
+      Session.crash.onError("create_player_error", error: e);
       return left(GeneralFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, List<int>>> createPlayers( List<PlayerEntity> players ) async {
+  Future<Either<Failure, void>> createOrUpdateMatches( Map<String, dynamic> json ) async {
     try {
-      final result = await tournamentRemoteDatasource.createPlayers( players );
+      final result = await tournamentRemoteDatasource.createOrUpdateMatches( json );
       return right(result);
     } on ServerExceptions catch ( error ) {
-      Session.crash.onError("create_players_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("create_players_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> updatePlayer( PlayerEntity player ) async {
-    try {
-      final result = await tournamentRemoteDatasource.updatePlayer( player );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("update_player_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("update_player_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<MatchEntity>>> getMatches() async {
-    try {
-      final result = await tournamentRemoteDatasource.getMatches();
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("get_matches_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("get_matches_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<int>>> createOrUpdateMatches( List<MatchEntity> matches ) async {
-    try {
-      final result = await tournamentRemoteDatasource.createOrUpdateMatches( matches );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("create_matches_server_error", error: error.message);
+      Session.crash.onError("create_or_update_matches_server_error", error: error.message);
       return left(ServerFailure(error.message));
     } catch (e) {
       Session.crash.onError("create_matches_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, int>> createTournament( TournamentEntity tournament ) async {
-    try {
-      final result = await tournamentRemoteDatasource.createTournament( tournament );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("create_tournament_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("create_tournament_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> updateTournament( TournamentEntity tournament ) async {
-    try {
-      final result = await tournamentRemoteDatasource.updateTournament( tournament );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("update_tournament_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("update_tournament_error", error: e);
-      return left(GeneralFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<int>>> createOrUpdateTournamentMapper( List<TournamentMapperEntity> mappers ) async {
-    try {
-      final result = await tournamentRemoteDatasource.createOrUpdateTournamentMapper( mappers );
-      return right(result);
-    } on ServerExceptions catch ( error ) {
-      Session.crash.onError("create_tournament_mapper_server_error", error: error.message);
-      return left(ServerFailure(error.message));
-    } catch (e) {
-      Session.crash.onError("create_tournament_mapper_error", error: e);
       return left(GeneralFailure(e.toString()));
     }
   }

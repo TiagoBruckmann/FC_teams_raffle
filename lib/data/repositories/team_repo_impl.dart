@@ -2,9 +2,14 @@ import 'package:dartz/dartz.dart';
 import 'package:fc_teams_drawer/data/datasource/team_remote_datasource.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
 import 'package:fc_teams_drawer/domain/failures/failures.dart';
-import 'package:fc_teams_drawer/domain/repositories/team_repo.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:injectable/injectable.dart';
+
+abstract class TeamRepo {
+
+  Future<Either<Failure, void>> getDataSync();
+
+}
 
 @Injectable(as: TeamRepo)
 class TeamRepoImpl implements TeamRepo {

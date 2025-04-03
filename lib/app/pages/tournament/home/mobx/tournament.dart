@@ -1,7 +1,6 @@
 // import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
-import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 
 // import dos pacotes
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
@@ -131,18 +130,16 @@ abstract class _TournamentMobx with Store {
 
   @action
   Future<void> openTournament( TournamentEntity entity ) async {
-    if ( entity.id == null ) {
-      CustomSnackBar(messageKey: "pages.tournament.board.error.get_tournament");
-      return;
-    }
-
     await NavigationRoutes.asyncNavigation(RoutesNameEnum.board.name, extra: entity);
     await refresh(forceRefresh: true);
   }
 
   @action
   Future<void> goToNewTournament() async {
-    await NavigationRoutes.asyncNavigation(RoutesNameEnum.newTournament.name);
+    final response = await NavigationRoutes.asyncNavigation(RoutesNameEnum.newTournament.name);
+    if ( response != null && response is TournamentEntity ) {
+      await NavigationRoutes.asyncNavigation(RoutesNameEnum.board.name, extra: response);
+    }
     await refresh(forceRefresh: true);
   }
 

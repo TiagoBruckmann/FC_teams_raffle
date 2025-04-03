@@ -2,23 +2,19 @@
 import 'package:equatable/equatable.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/session.dart';
-import 'package:floor/floor.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-@Entity(tableName: "matches")
 class MatchEntity extends Equatable {
 
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-  final String player1, logoTeam1, player2, logoTeam2, winner;
+  final String id, player1, logoTeam1, player2, logoTeam2, winner;
   final int round;
   final int? score1, score2;
 
-  const MatchEntity( this.player1, this.logoTeam1, this.player2, this.logoTeam2, this.winner, this.round, { this.id, this.score1, this.score2, });
+  const MatchEntity( this.id, this.player1, this.logoTeam1, this.player2, this.logoTeam2, this.winner, this.round, { this.score1, this.score2, });
 
   MatchEntity setPlayer1Score( int score ) {
     return MatchEntity(
-      id: id,
+      id,
       player1,
       logoTeam1,
       player2,
@@ -32,7 +28,7 @@ class MatchEntity extends Equatable {
 
   MatchEntity setPlayer2Score( int score ) {
     return MatchEntity(
-      id: id,
+      id,
       player1,
       logoTeam1,
       player2,
@@ -46,7 +42,7 @@ class MatchEntity extends Equatable {
 
   void setPlayer2( String playerName ) => playerName;
 
-  Future<Map<String, dynamic>> setWinner( List<PlayerEntity> players ) async {
+  Future<Map<String, dynamic>> setWinner(  String tournamentId, List<PlayerEntity> players ) async {
 
     final List<PlayerEntity> allPlayers = List.from(players);
 
@@ -59,7 +55,7 @@ class MatchEntity extends Equatable {
 
     players.retainWhere((player) => player.team == loserTeam);
     if ( players.isNotEmpty ) {
-      final loser = await players.first.setLoser();
+      final loser = await players.first.setLoser(tournamentId);
       final loserIndex = allPlayers.indexWhere((player) => player.team == loserTeam);
 
       allPlayers.removeAt(loserIndex);
@@ -68,7 +64,7 @@ class MatchEntity extends Equatable {
     }
 
     final match = MatchEntity(
-      id: id,
+      id,
       player1,
       logoTeam1,
       player2,
@@ -102,8 +98,22 @@ class MatchEntity extends Equatable {
     return score1 != null && score2 != null && winner.trim().isNotEmpty;
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "player1": player1,
+      "logo_team1": logoTeam1,
+      "score1": score1,
+      "player2": player2,
+      "logo_team2": logoTeam2,
+      "score2": score2,
+      "round": round,
+      "winner": winner,
+    };
+  }
+
   @override
-  String toString() => "MatchEntity($id, $player1, $score1, $player2, $score2, $round, $winner)";
+  String toString() => "MatchEntity($id, $player1, $logoTeam1, $score1, $player2, $logoTeam2, $score2, $round, $winner)";
 
   @override
   List<Object?> get props => [ id, player1, logoTeam1, player2, logoTeam2, winner, round, score1, score2 ];

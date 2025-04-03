@@ -80,6 +80,7 @@ class _TournamentPageState extends State<TournamentPage> {
                 child: Text(
                   "Você ainda não tem nenhum torneio criado, crie agora mesmo!",
                   style: theme.textTheme.headlineLarge,
+                  textAlign: TextAlign.center,
                 ),
               ),
               floatingFunction: () => _mobx.goToNewTournament(),

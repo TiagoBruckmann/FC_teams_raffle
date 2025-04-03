@@ -89,7 +89,7 @@ mixin _$BoardMobx on _BoardMobx, Store {
       AsyncAction('_BoardMobx._getTournament', context: context);
 
   @override
-  Future<TournamentEntity?> _getTournament(int tournamentId) {
+  Future<TournamentEntity?> _getTournament(String tournamentId) {
     return _$_getTournamentAsyncAction
         .run(() => super._getTournament(tournamentId));
   }
@@ -119,15 +119,6 @@ mixin _$BoardMobx on _BoardMobx, Store {
   Future<void> _updNextLoserGame(MatchEntity match) {
     return _$_updNextLoserGameAsyncAction
         .run(() => super._updNextLoserGame(match));
-  }
-
-  late final _$_updateTournamentAsyncAction =
-      AsyncAction('_BoardMobx._updateTournament', context: context);
-
-  @override
-  Future<void> _updateTournament(List<int> matchesIds) {
-    return _$_updateTournamentAsyncAction
-        .run(() => super._updateTournament(matchesIds));
   }
 
   late final _$_BoardMobxActionController =

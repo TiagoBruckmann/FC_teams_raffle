@@ -1,8 +1,8 @@
+import 'package:fc_teams_drawer/app/core/db/collections/fc_teams.dart';
 import 'package:fc_teams_drawer/app/core/db/local_db.dart';
 import 'package:fc_teams_drawer/data/exceptions/exceptions.dart';
+import 'package:fc_teams_drawer/data/model/team_model.dart';
 import 'package:fc_teams_drawer/data/utils/firebase_service.dart';
-import 'package:fc_teams_drawer/domain/entity/fc_teams_drawer.dart';
-import 'package:fc_teams_drawer/domain/entity/team.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:injectable/injectable.dart';
@@ -38,11 +38,11 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
       return await _syncData(response.value);
 
     } catch ( error ) {
-      final teams = await _localDb.teamDao.getAllTeams();
+      final versionDataSync = int.parse(await Session.secureStorage.readStorage("version_data_sync") ?? "0");
+      final fcCollection = await _localDb.getFCTeamCollection(versionDataSync);
 
-      if ( teams.isNotEmpty ) {
-        Session.teams.clear();
-        Session.teams.addAll(teams.toSet().toList());
+      if ( fcCollection != null ) {
+        _setGlobalList(fcCollection);
       }
 
       Session.crash.onError("get_data_sync_firebase", error: error);
@@ -54,46 +54,41 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
 
     try {
 
-      final fcTeamCollection = FcTeamsDrawerEntity.fromJson(json);
-      int localVersion = await _localDb.fcTeamDrawerDao.getLastVersionDB() ?? 0;
+      final versionDataSync = int.parse(await Session.secureStorage.readStorage("version_data_sync") ?? "0");
 
-      if ( localVersion < fcTeamCollection.versionDataSync ) {
+      final localDb = await _localDb.getFCTeamCollection(versionDataSync);
 
-        final List<TeamEntity> teams = [];
-        for ( final team in json["teams"] ) {
-          if ( team != null ) {
-            teams.add(TeamEntity.fromJson(team));
-          }
+      final fcTeamCollection = FCTeamsCollection.fromJson(json);
+
+      int localVersion = localDb?.versionDataSync ?? versionDataSync;
+
+      if ( localVersion < fcTeamCollection.versionDataSync! ) {
+
+        final isSuccessSyncDataModel = await LocalDb().syncFCTeamDataModel(fcTeamCollection);
+
+        if ( !isSuccessSyncDataModel ) {
+          Session.crash.onError("Failure on Sync FC Teams data model");
+          throw CacheExceptions("Failure on Sync FC Teams data model");
         }
 
-        await _localDb.fcTeamDrawerDao.insertVersionDB(fcTeamCollection);
-        await _localDb.teamDao.insertAllTeams(teams);
-        Session.teams.clear();
-        Session.teams.addAll(teams.toSet().toList());
+        final fcCollection = FCTeamsCollection.collectionToEntity(fcTeamCollection);
 
-        if ( Session.teams.isEmpty ) {
-          Session.teams.addAll(teams);
-        }
+        _setGlobalList(fcCollection);
 
         return;
 
       }
 
-      final teams = await _localDb.teamDao.getAllTeams();
-      Session.teams.clear();
-      Session.teams.addAll(teams.toSet().toList());
-
-      if ( Session.teams.isEmpty ) {
-        Session.teams.addAll(teams);
-      }
+      final fcCollection = FCTeamsCollection.collectionToEntity(localDb!);
+      _setGlobalList(fcCollection);
 
       return;
 
     } catch ( error ) {
-      final List<TeamEntity> teams = [];
+      final List<TeamModel> teams = [];
       for ( final team in json["teams"] ) {
         if ( team != null ) {
-          teams.add(TeamEntity.fromJson(team));
+          teams.add(TeamModel.fromJson(team));
         }
       }
 
@@ -104,6 +99,25 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
       throw CacheExceptions("get_data_sync_local_service.db => $error");
     }
 
+  }
+
+  void _setGlobalList( FCTeamsCollection collection ) {
+    final List<TeamModel> list = [];
+
+    if ( collection.teamCollection != null && collection.teamCollection!.isNotEmpty ) {
+
+      for ( final team in collection.teamCollection! ) {
+        if ( team.isNotNull() ) {
+          list.add(
+            TeamModel.fromFcCollection(team),
+          );
+        }
+      }
+
+      Session.teams.clear();
+      Session.teams.addAll(list);
+
+    }
   }
 
 }

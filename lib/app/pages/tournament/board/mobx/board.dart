@@ -1,17 +1,13 @@
-// import das telas
 import 'package:fc_teams_drawer/app/core/routes/navigation_routes.dart';
 import 'package:fc_teams_drawer/app/core/services/app_enums.dart';
 import 'package:fc_teams_drawer/app/core/widgets/custom_snack_bar.dart';
 import 'package:fc_teams_drawer/domain/entity/match.dart';
 import 'package:fc_teams_drawer/domain/entity/player.dart';
 import 'package:fc_teams_drawer/domain/entity/tournament.dart';
-import 'package:fc_teams_drawer/domain/entity/tournament_mapper.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-
-// import dos pacotes
 import 'package:mobx/mobx.dart';
 
 part 'board.g.dart';
@@ -22,9 +18,9 @@ abstract class _BoardMobx with Store {
 
   final _tournamentUseCase = TournamentUseCase(getIt());
 
-  ObservableList<MatchEntity> listMatches = ObservableList();
+  final ObservableList<MatchEntity> listMatches = ObservableList();
 
-  ObservableList<PlayerEntity> listPlayers = ObservableList();
+  final ObservableList<PlayerEntity> listPlayers = ObservableList();
 
   @observable
   bool isLoading = true;
@@ -58,9 +54,7 @@ abstract class _BoardMobx with Store {
   @action
   Future<void> init( TournamentEntity tournament ) async {
 
-    int tournamentId = tournament.id ?? 1;
-
-    final tournamentResponse = await _getTournament(tournamentId);
+    final tournamentResponse = await _getTournament(tournament.id);
 
     if ( tournamentResponse == null ) {
       updIsLoading(false);
@@ -68,8 +62,8 @@ abstract class _BoardMobx with Store {
       return NavigationRoutes.navigation(NavigationTypeEnum.pushAndRemoveUntil.value, RoutesNameEnum.home.name);
     }
 
-    listPlayers.addAll(tournament.getPlayers);
-    listMatches.addAll(tournament.getMatches);
+    listPlayers.addAll(tournamentResponse.getPlayers);
+    listMatches.addAll(tournamentResponse.getMatches);
 
     _tournament = TournamentEntity.fromMapper(tournamentResponse, listPlayers, listMatches);
     _setSteps();
@@ -79,7 +73,7 @@ abstract class _BoardMobx with Store {
   }
 
   @action
-  Future<TournamentEntity?> _getTournament( int tournamentId ) async {
+  Future<TournamentEntity?> _getTournament( String tournamentId ) async {
     final response = await _tournamentUseCase.getTournamentById(tournamentId);
 
     return response.fold(
@@ -126,10 +120,11 @@ abstract class _BoardMobx with Store {
         return;
       }
 
-      final response = await match.setWinner(listPlayers);
+      final response = await match.setWinner(_tournament.id, listPlayers);
       match = response["match"] as MatchEntity;
       listPlayers.clear();
       listPlayers.addAll(response["players"] as List<PlayerEntity>);
+      listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
     }
 
     listMatches.insert(elementIndex, match);
@@ -139,14 +134,24 @@ abstract class _BoardMobx with Store {
       await _updNextWinnerGame(match);
     }
 
-    final response = await _tournamentUseCase.createOrUpdateMatches(listMatches);
+    final response = await _tournamentUseCase.createOrUpdateMatches(_tournament.id, listMatches);
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
-      (ids) async => await _updateTournament(ids),
+      (success) => Session.logs.successLog("matches_created_or_updated_with_successfully"),
     );
 
     listMatches.sort((a, b) => b.round.compareTo(a.round));
+
+    if ( _tournament.hasChampion ) {
+
+      final responseUpdTournament = await _tournamentUseCase.updateTournament(_tournament);
+
+      responseUpdTournament.fold(
+        (failure) => Session.logs.errorLog(failure.message),
+        (success) => Session.logs.successLog("tournament_updated_with_successfully"),
+      );
+    }
 
     updIsLoading(false);
   }
@@ -193,7 +198,10 @@ abstract class _BoardMobx with Store {
 
     bool hasNextWinnerPosition = false;
     final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"));
-    if ( nextWinnerPosition != -1 && !isLoserGame ) {
+    final secondGame = listMatches[1];
+
+    if ( nextWinnerPosition != -1 && ( !isLoserGame || secondGame.logoTeam2 != winnerTeam ) ) {
+
       hasNextWinnerPosition = true;
 
       final previousWinner = listMatches[nextWinnerPosition];
@@ -202,6 +210,7 @@ abstract class _BoardMobx with Store {
       listMatches.insert(
         nextWinnerPosition,
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           previousWinner.player1,
           previousWinner.logoTeam1,
           winnerName,
@@ -213,14 +222,24 @@ abstract class _BoardMobx with Store {
 
     }
 
-    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
+    if ( listPlayers.length > 2 && !hasNextWinnerPosition && ( !isLoserGame || secondGame.logoTeam2 != winnerTeam )) {
 
-    if ( listPlayers.length > 2 && !hasNextWinnerPosition && !isLoserGame ) {
+      final lastGameOfWinnerPlayerPosition = listMatches.indexWhere((match) => match.logoTeam1 == winnerTeam || match.logoTeam2 == winnerTeam);
+
+      if ( !lastGameOfWinnerPlayerPosition.isNegative ) {
+
+        final lastGameOfWinner = listMatches[lastGameOfWinnerPlayerPosition];
+
+        if ( lastGameOfWinner.score1 == null || lastGameOfWinner.score2 == null ) {
+          return;
+        }
+      }
 
       final emptyPlayer = PlayerEntity.nextWinner();
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           emptyPlayer.name,
@@ -242,6 +261,7 @@ abstract class _BoardMobx with Store {
     if ( listPlayers.length == 2 && qtdLosses < _tournament.defeats ) {
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           loserName,
@@ -260,6 +280,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           previousWinner.player1,
           previousWinner.logoTeam1,
           winnerName,
@@ -283,6 +304,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           winner.name,
@@ -291,6 +313,8 @@ abstract class _BoardMobx with Store {
           listMatches.length + 1,
         ),
       );
+
+      _tournament = _tournament.updChampion();
 
       return;
     }
@@ -334,7 +358,7 @@ abstract class _BoardMobx with Store {
       listMatches.insert(
         nextLoserPosition,
         MatchEntity(
-          id: emptyPLayer.id,
+          emptyPLayer.id,
           emptyPLayer.player1,
           emptyPLayer.logoTeam1,
           loserName,
@@ -346,14 +370,13 @@ abstract class _BoardMobx with Store {
 
     }
 
-    listPlayers.removeWhere((player) => player.getLosses >= _tournament.defeats);
-
     if ( listPlayers.length > 2 && !hasNextLoserPosition && qtdLosses < _tournament.defeats ) {
 
       final emptyPlayer = PlayerEntity.nextLoser();
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           loserName,
           loserTeam,
           emptyPlayer.name,
@@ -377,6 +400,7 @@ abstract class _BoardMobx with Store {
 
       listMatches.add(
         MatchEntity(
+          Session.sharedServices.getRandomString(20),
           winnerName,
           winnerTeam,
           winner.name,
@@ -386,42 +410,10 @@ abstract class _BoardMobx with Store {
         ),
       );
 
+      _tournament = _tournament.updChampion();
+
       return;
     }
-
-  }
-
-  @action
-  Future<void> _updateTournament( List<int> matchesIds ) async {
-
-    final List<int> playersIds = [];
-
-    for ( final player in listPlayers ) {
-      if ( player.id != null ) {
-        playersIds.add(player.id!);
-      }
-    }
-
-    final List<TournamentMapperEntity> tournamentMapperList = [];
-
-    for ( final playerId in playersIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromPlayerId(_tournament.id!, playerId),
-      );
-    }
-
-    for ( final matchId in matchesIds ) {
-      tournamentMapperList.add(
-        TournamentMapperEntity.fromMatchId(_tournament.id!, matchId),
-      );
-    }
-
-    final response = await _tournamentUseCase.createOrUpdateTournamentMapper(tournamentMapperList);
-
-    response.fold(
-      (failure) => Session.logs.errorLog(failure.message),
-      (success) => success,
-    );
 
   }
 

@@ -3,24 +3,21 @@ import 'package:equatable/equatable.dart';
 import 'package:fc_teams_drawer/domain/source/local/injection/injection.dart';
 import 'package:fc_teams_drawer/domain/usecases/tournament_usecase.dart';
 import 'package:fc_teams_drawer/session.dart';
-import 'package:floor/floor.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-@Entity(tableName: "players")
 class PlayerEntity extends Equatable {
 
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-  final String name, team;
+  final String id, name, team;
   final int losses;
 
   set setLosses( int value ) => losses + 1;
   int get getLosses => losses;
 
-  const PlayerEntity( this.name, this.team, this.losses, { this.id });
+  const PlayerEntity( this.id, this.name, this.team, this.losses );
 
   factory PlayerEntity.nextWinner() {
     return PlayerEntity(
+      "next_winner",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"),
       "",
       0,
@@ -29,6 +26,7 @@ class PlayerEntity extends Equatable {
 
   factory PlayerEntity.nextLoser() {
     return PlayerEntity(
+      "next_loser",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_loser"),
       "",
       0,
@@ -37,33 +35,27 @@ class PlayerEntity extends Equatable {
 
   factory PlayerEntity.champion() {
     return PlayerEntity(
+      "champion",
       FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.champion"),
       "",
       0,
     );
   }
 
-  factory PlayerEntity.fromJson( Map<String, dynamic> json ) {
-    return PlayerEntity(
-      json["name"] ?? "",
-      json["team"] ?? "",
-      json["losses"] ?? 0,
-    );
-  }
-
-  Future<PlayerEntity> setLoser() async {
+  Future<PlayerEntity> setLoser( String tournamentId ) async {
     final player = PlayerEntity(
+      id,
       name,
       team,
       losses + 1,
     );
 
     final useCase = TournamentUseCase(getIt());
-    final response = await useCase.updatePlayer(player);
+    final response = await useCase.createOrUpdatePlayers(tournamentId, [player]);
 
     response.fold(
       (failure) => Session.logs.errorLog(failure.message),
-      (success) => success,
+      (success) => Session.logs.successLog("players_updated_with_successfully"),
     );
 
     return player;
@@ -77,6 +69,15 @@ class PlayerEntity extends Equatable {
   bool isEqualPlayerMatch( String playerName, String teamLogo ) {
     final isEqual = playerName == name && teamLogo == team;
     return isEqual;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "team": team,
+      "losses": losses,
+    };
   }
 
   @override

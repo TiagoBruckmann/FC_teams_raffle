@@ -44,13 +44,14 @@ class _BoardPageState extends State<BoardPage> {
 
     final theme = Theme.of(context);
 
-    return VerifyConnection(
-      keyAppBar: "pages.tournament.app_bar",
-      appBarParams: const {"status": ""},
-      page: Observer(
-        builder: (context) {
+    return Observer(
+      builder: (context) {
 
-          return SingleChildScrollView(
+        return VerifyConnection(
+          keyAppBar: "pages.tournament.app_bar",
+          appBarParams: const {"status": ""},
+          isLoading: _mobx.isLoading,
+          page: SingleChildScrollView(
             padding: const EdgeInsets.symmetric( horizontal: 5, vertical: 10 ),
             child: Column(
               children: [
@@ -127,10 +128,10 @@ class _BoardPageState extends State<BoardPage> {
 
               ],
             ),
-          );
+          ),
+        );
 
-        },
-      ),
+      },
     );
   }
 }
