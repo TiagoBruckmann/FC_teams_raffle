@@ -114,6 +114,9 @@ class TeamRemoteDatasourceImpl implements TeamRemoteDatasource {
         }
       }
 
+      Session.teams.clear();
+      Session.teams.addAll(list);
+
     }
   }
 
