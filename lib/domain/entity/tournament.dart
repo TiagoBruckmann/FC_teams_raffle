@@ -66,6 +66,19 @@ class TournamentEntity extends Equatable {
     );
   }
 
+  TournamentEntity updChampion() {
+    return TournamentEntity(
+      id,
+      name,
+      date,
+      drawTeams,
+      false,
+      defeats,
+      true,
+      createdAt,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       "id": id,

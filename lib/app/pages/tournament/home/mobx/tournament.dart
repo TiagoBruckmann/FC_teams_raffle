@@ -136,7 +136,10 @@ abstract class _TournamentMobx with Store {
 
   @action
   Future<void> goToNewTournament() async {
-    await NavigationRoutes.asyncNavigation(RoutesNameEnum.newTournament.name);
+    final response = await NavigationRoutes.asyncNavigation(RoutesNameEnum.newTournament.name);
+    if ( response != null && response is TournamentEntity ) {
+      await NavigationRoutes.asyncNavigation(RoutesNameEnum.board.name, extra: response);
+    }
     await refresh(forceRefresh: true);
   }
 

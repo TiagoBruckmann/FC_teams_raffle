@@ -321,8 +321,8 @@ abstract class _CreateTournamentMobx with Store {
 
   @action
   void _goToBoard( TournamentEntity tournament ) {
-    NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "");
-    return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: tournament);
+    NavigationRoutes.navigation(NavigationTypeEnum.pop.value, "", extra: tournament);
+    // return NavigationRoutes.navigation(NavigationTypeEnum.push.value, RoutesNameEnum.board.name, extra: tournament);
   }
 
 }

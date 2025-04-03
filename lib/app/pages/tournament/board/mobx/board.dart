@@ -143,6 +143,16 @@ abstract class _BoardMobx with Store {
 
     listMatches.sort((a, b) => b.round.compareTo(a.round));
 
+    if ( _tournament.hasChampion ) {
+
+      final responseUpdTournament = await _tournamentUseCase.updateTournament(_tournament);
+
+      responseUpdTournament.fold(
+        (failure) => Session.logs.errorLog(failure.message),
+        (success) => Session.logs.successLog("tournament_updated_with_successfully"),
+      );
+    }
+
     updIsLoading(false);
   }
 
@@ -165,9 +175,6 @@ abstract class _BoardMobx with Store {
     final player2Index = listPlayers.indexWhere((player) => player.isEqualPlayerMatch(match.player2, match.logoTeam2));
 
     final miss1Loser = ( _tournament.defeats - 1 == 0 ) ? 1 : _tournament.defeats - 1;
-    print("miss1Loser => $miss1Loser");
-    print("player1Index.isNegative => ${player1Index.isNegative}");
-    print("player2Index.isNegative => ${player2Index.isNegative}");
 
     bool isLoserGame = false;
     if ( !player1Index.isNegative && !player2Index.isNegative ) {
@@ -188,15 +195,13 @@ abstract class _BoardMobx with Store {
 
       isLoserGame = player2.getLosses >= miss1Loser;
     }
-    print("isLoserGame => $isLoserGame");
 
     bool hasNextWinnerPosition = false;
     final nextWinnerPosition = listMatches.indexWhere((player) => player.player2 == FlutterI18n.translate(Session.globalContext.currentContext!, "pages.tournament.player.next_winner"));
-    print("nextWinnerPosition => $nextWinnerPosition");
     final secondGame = listMatches[1];
-    print("secondGame => ${secondGame.logoTeam2}");
-    print("winnerTeam => $winnerTeam");
-    if ( nextWinnerPosition != -1 && secondGame.logoTeam2 != winnerTeam ) {
+
+    if ( nextWinnerPosition != -1 && ( !isLoserGame || secondGame.logoTeam2 != winnerTeam ) ) {
+
       hasNextWinnerPosition = true;
 
       final previousWinner = listMatches[nextWinnerPosition];
@@ -217,7 +222,18 @@ abstract class _BoardMobx with Store {
 
     }
 
-    if ( listPlayers.length > 2 && !hasNextWinnerPosition && !isLoserGame && secondGame.logoTeam2 != winnerTeam) {
+    if ( listPlayers.length > 2 && !hasNextWinnerPosition && ( !isLoserGame || secondGame.logoTeam2 != winnerTeam )) {
+
+      final lastGameOfWinnerPlayerPosition = listMatches.indexWhere((match) => match.logoTeam1 == winnerTeam || match.logoTeam2 == winnerTeam);
+
+      if ( !lastGameOfWinnerPlayerPosition.isNegative ) {
+
+        final lastGameOfWinner = listMatches[lastGameOfWinnerPlayerPosition];
+
+        if ( lastGameOfWinner.score1 == null || lastGameOfWinner.score2 == null ) {
+          return;
+        }
+      }
 
       final emptyPlayer = PlayerEntity.nextWinner();
 
@@ -297,6 +313,8 @@ abstract class _BoardMobx with Store {
           listMatches.length + 1,
         ),
       );
+
+      _tournament = _tournament.updChampion();
 
       return;
     }
@@ -391,6 +409,8 @@ abstract class _BoardMobx with Store {
           listMatches.length + 1,
         ),
       );
+
+      _tournament = _tournament.updChampion();
 
       return;
     }
