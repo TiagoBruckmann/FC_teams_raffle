@@ -4,6 +4,21 @@ FC Raffle - An app for all FIFA players or any other soccer game.
 
 ---
 
+### :gear: Versão 2.2.1
+
+Está versão traz novos times, principalmente seleções e também os times lendários (Adidas e European). Também visa resolver a incompatibilidade do novo target SDK do Android para 36.
+
+Versão publicada no dia 12/07/2025.
+
+**:star2: Melhorias**
+
+<ul>
+    <li>Novos times, sendo principalmente seleções e times Lendários (Adidas e European).</li>
+    <li>Atualização do target SDK para 36.</li>
+</ul>
+
+---
+
 ### :gear: Versão 2.2.0
 
 Está versão traz melhorias de funcionalidades dos torneios / campeonatos, assim como muitos ajustes de bugs que foram encontrados recentemente.
