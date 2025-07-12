@@ -92,7 +92,7 @@ class Themes {
       color: _primaryColorDark,
       elevation: 8,
     ),
-    tabBarTheme: const TabBarTheme(
+    tabBarTheme: const TabBarThemeData(
       labelStyle: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 18,
@@ -114,7 +114,7 @@ class Themes {
       tertiary: _tertiaryColorDark,
       error: _errorColor,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: _primaryColorDark,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular( 10 ),
@@ -138,7 +138,7 @@ class Themes {
       linearTrackColor: _tertiaryColorDark,
       color: _secondaryColorDark,
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: _textPrimaryDark,
       titleTextStyle: TextStyle(
         color: _primaryColorDark,

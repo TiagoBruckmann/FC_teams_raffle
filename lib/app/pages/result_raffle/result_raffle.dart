@@ -19,7 +19,7 @@ class _ResultRaffleState extends State<ResultRaffle> {
 
   @override
   void initState() {
-    _mobx.sortTeams();
+    _mobx.getTeams();
 
     super.initState();
 

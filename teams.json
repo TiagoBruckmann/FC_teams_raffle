@@ -2,6 +2,66 @@
   "data": {
     "teams": [
       {
+        "league": "Resto do mundo",
+        "logo": "adidas",
+        "name": "Soccer Adidas",
+        "score": 90
+      },
+      {
+        "league": "Resto do mundo",
+        "logo": "european",
+        "name": "European XI",
+        "score": 90
+      },
+      {
+        "league": "Seleção",
+        "logo": "alemanha",
+        "name": "Alemanha",
+        "score": 82
+      },
+      {
+        "league": "Seleção",
+        "logo": "argentina",
+        "name": "Argentina",
+        "score": 83
+      },
+      {
+        "league": "Seleção",
+        "logo": "espanha",
+        "name": "Espanha",
+        "score": 83
+      },
+      {
+        "league": "Seleção",
+        "logo": "franca",
+        "name": "França",
+        "score": 84
+      },
+      {
+        "league": "Seleção",
+        "logo": "holanda",
+        "name": "Holanda",
+        "score": 82
+      },
+      {
+        "league": "Seleção",
+        "logo": "inglaterra",
+        "name": "Inglaterra",
+        "score": 85
+      },
+      {
+        "league": "Seleção",
+        "logo": "italia",
+        "name": "Italia",
+        "score": 82
+      },
+      {
+        "league": "Seleção",
+        "logo": "portugal",
+        "name": "Portugal",
+        "score": 84
+      },
+      {
         "league": "Italiana",
         "logo": "milan",
         "name": "AC Milan",

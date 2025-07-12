@@ -228,7 +228,10 @@ abstract class _CreateTournamentMobx with Store {
     final minimumScore = team.score - 3;
     final maximumScore = team.score + 3;
 
-    sortTeamsList.addAll(List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore)));
+    final List<TeamEntity> filteredList = List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore));
+    filteredList.retainWhere((team) => team.score < 89);
+
+    sortTeamsList.addAll(filteredList);
     sortTeamsList.removeWhere((entity) => listTeams.contains(team.logo) || entity.logo == team.logo);
     totalTeams = sortTeamsList.length;
 
@@ -245,6 +248,8 @@ abstract class _CreateTournamentMobx with Store {
   Future<String> _sortFilteredTeams( List<String> listTeams ) async {
     final random = Random();
 
+    sortTeamsList.retainWhere((team) => team.score < 89);
+
     int totalTeams = sortTeamsList.length;
 
     TeamEntity team = sortTeamsList[random.nextInt(totalTeams)];
@@ -259,7 +264,10 @@ abstract class _CreateTournamentMobx with Store {
       minimumScore = team.score - 3;
       maximumScore = team.score + 3;
 
-      sortTeamsList.addAll(List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore)));
+      final List<TeamEntity> filteredList = List.from(Session.teams.where((team) => team.score >= minimumScore && team.score <= maximumScore));
+      filteredList.retainWhere((team) => team.score < 89);
+
+      sortTeamsList.addAll(filteredList);
       sortTeamsList.removeWhere((entity) => listTeams.contains(team.logo) || entity.logo == team.logo);
       totalTeams = sortTeamsList.length;
 
