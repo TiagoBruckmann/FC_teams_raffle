@@ -32,7 +32,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "dev.tiagobruckmann.fc_teams_drawer"
-    compileSdk 35
+    compileSdk 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -51,7 +51,7 @@ android {
     defaultConfig {
         applicationId "dev.tiagobruckmann.fc_teams_drawer"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled = true
@@ -87,7 +87,7 @@ flutter {
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+    implementation platform('com.google.firebase:firebase-bom:33.16.0')
     implementation "com.google.firebase:firebase-crashlytics"
     implementation "com.google.firebase:firebase-analytics"
     implementation "com.google.firebase:firebase-perf"
